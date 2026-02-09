@@ -8,6 +8,7 @@ const LAST_NAME = 'Torres'
 const NAME = `${FIRST_NAME} ${LAST_NAME}`
 const EMAIL = 'emigdio@tahei.com'
 const PASSWORD = 'tahei123'
+const IMG_URL = 'https://avatars.githubusercontent.com/u/6751108?v=4'
 
 async function seed() {
   console.log('Seeding database...')
@@ -25,6 +26,7 @@ async function seed() {
       email: EMAIL,
       password: PASSWORD,
       name: NAME,
+      image: IMG_URL,
     },
   })
 

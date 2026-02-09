@@ -1,6 +1,8 @@
 'use client'
 
-import { IconLogout, IconMoon, IconRefresh, IconSelector, IconSun } from '@tabler/icons-react'
+import { IconLogout, IconMoon, IconRefresh, IconSelector, IconSettings, IconSun } from '@tabler/icons-react'
+import { useQuery } from '@tanstack/react-query'
+import Link from 'next/link'
 import { useTheme } from 'next-themes'
 import {
   DropdownMenu,
@@ -16,33 +18,35 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/menu'
-import { Avatar, AvatarFallback } from '../ui/avatar'
+import { loggedUserQueryOptions } from '@/tanstack-queries/logged-user'
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '../ui/sidebar'
 import { Skeleton } from '../ui/skeleton'
 
 export function NavUser() {
   const { theme, setTheme } = useTheme()
+  const { data: user = null, isLoading, error, refetch } = useQuery(loggedUserQueryOptions())
 
-  // function getAvatarFallback() {
-  //   if (!profile) return null
+  function getAvatarFallback() {
+    if (!user) return null
 
-  //   const profileName = profile.user.name
-  //   const fallabck = `${profileName.split(' ')[0].charAt(0)}${profileName.split(' ')[1]?.charAt(0) ?? ''}`
+    const userName = user.name
+    const fallback = `${userName.split(' ')[0].charAt(0)}${userName.split(' ')[1]?.charAt(0) ?? ''}`
 
-  //   return fallabck
-  // }
+    return fallback
+  }
 
-  // if (isLoading) return <Skeleton className="h-12 rounded-lg" />
+  if (isLoading) return <Skeleton className="h-12 rounded-lg" />
 
-  // if (error || !profile)
-  //   return (
-  //     <SidebarMenuButton onClick={() => refetch()} size="lg">
-  //       <div className="grid flex-1 text-left text-sm leading-tight">
-  //         <span className="truncate font-medium">Refetch profile</span>
-  //       </div>
-  //       <IconRefresh className="ml-auto size-4" />
-  //     </SidebarMenuButton>
-  //   )
+  if (error || !user)
+    return (
+      <SidebarMenuButton onClick={() => refetch()} size="lg">
+        <div className="grid flex-1 text-left text-sm leading-tight">
+          <span className="truncate font-medium">Refetch profile</span>
+        </div>
+        <IconRefresh className="ml-auto size-4" />
+      </SidebarMenuButton>
+    )
 
   return (
     <SidebarMenu>
@@ -56,11 +60,12 @@ export function NavUser() {
               >
                 <div className="flex min-w-0 flex-1 items-center gap-2">
                   <Avatar>
-                    <AvatarFallback>{/* getAvatarFallback() */}</AvatarFallback>
+                    <AvatarImage src={user.image || ''} alt={user.name} />
+                    <AvatarFallback>{getAvatarFallback()}</AvatarFallback>
                   </Avatar>
                   <div>
-                    {/* <p className="truncate font-medium">{profile.user.name.split(' ')[0]}</p>
-                    <p className="text-muted-foreground truncate text-xs">{profile.user.email}</p> */}
+                    <p className="truncate font-medium">{user.name.split(' ')[0]}</p>
+                    <p className="truncate text-muted-foreground text-xs">{user.email}</p>
                   </div>
                 </div>
                 <IconSelector className="ml-auto size-4 text-muted-foreground" />
@@ -69,48 +74,48 @@ export function NavUser() {
           />
           <DropdownMenuContent className="w-(--anchor-width)" align="center">
             <DropdownMenuGroup>
-              {/* <DropdownMenuLabel className="line-clamp-2">{profile.user.name}</DropdownMenuLabel> */}
+              <DropdownMenuLabel className="line-clamp-2">{user.name}</DropdownMenuLabel>
               <DropdownMenuSeparator />
 
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger>
                   <IconMoon className="hidden size-4 dark:block" />
                   <IconSun className="size-4 dark:hidden" />
-                  <span>Apariencia</span>
+                  <span>Appearance</span>
                 </DropdownMenuSubTrigger>
                 <DropdownMenuPortal>
                   <DropdownMenuSubContent>
                     <DropdownMenuCheckboxItem checked={theme === 'light'} onClick={() => setTheme('light')}>
-                      Claro
+                      Light
                     </DropdownMenuCheckboxItem>
                     <DropdownMenuCheckboxItem checked={theme === 'dark'} onClick={() => setTheme('dark')}>
-                      Oscuro
+                      Dark
                     </DropdownMenuCheckboxItem>
                     <DropdownMenuCheckboxItem checked={theme === 'system'} onClick={() => setTheme('system')}>
-                      Sistema
+                      System
                     </DropdownMenuCheckboxItem>
                   </DropdownMenuSubContent>
                 </DropdownMenuPortal>
               </DropdownMenuSub>
             </DropdownMenuGroup>
 
-            {/* <DropdownMenuGroup>
+            <DropdownMenuGroup>
               <DropdownMenuItem
                 render={
-                  <Link to="/settings">
+                  <Link href="/settings">
                     <IconSettings className="size-4" />
-                    Configuración
+                    Settings
                   </Link>
                 }
               />
-            </DropdownMenuGroup> */}
+            </DropdownMenuGroup>
 
-            {/* <DropdownMenuSeparator /> */}
+            <DropdownMenuSeparator />
 
             <DropdownMenuGroup>
               <DropdownMenuItem onClick={() => {}}>
                 <IconLogout className="size-4" />
-                Cerrar sesión
+                Logout
               </DropdownMenuItem>
             </DropdownMenuGroup>
           </DropdownMenuContent>

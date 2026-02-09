@@ -6,5 +6,9 @@ export const metadata: Metadata = {
 }
 
 export default function BookmarksPage() {
-  return 'Authed'
+  return (
+    <div>
+      <h1 className="font-heading font-medium text-lg leading-none">Bookmarks</h1>
+    </div>
+  )
 }

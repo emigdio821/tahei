@@ -1,6 +1,6 @@
 'use client'
 
-import { IconHomeStats } from '@tabler/icons-react'
+import { IconBookmark, IconHeart } from '@tabler/icons-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { appName } from '@/lib/config/site'
@@ -46,8 +46,21 @@ export function HeaderNav({ ...props }: React.ComponentProps<typeof SidebarGroup
             isActive={pathname === '/'}
             render={
               <Link href="/">
-                <IconHomeStats className="size-4" />
-                <span>Inicio</span>
+                <IconBookmark className="size-4" />
+                <span>Bookmarks</span>
+              </Link>
+            }
+          />
+        </SidebarMenuItem>
+
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            onClick={() => setOpenMobile(false)}
+            isActive={pathname === '/favorites'}
+            render={
+              <Link href="/favorites">
+                <IconHeart className="size-4" />
+                <span>Favorites</span>
               </Link>
             }
           />
