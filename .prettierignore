@@ -1,5 +1,0 @@
-node_modules
-.next
-.husky
-./supabase/*
-next-env.d.ts
