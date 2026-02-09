@@ -6,6 +6,7 @@ import { useId, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Footer } from '@/components/footer'
+import { TaheiIcon } from '@/components/icons'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
@@ -13,13 +14,15 @@ import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field
 import { Frame, FrameDescription, FrameHeader, FrameTitle } from '@/components/ui/frame'
 import { Input } from '@/components/ui/input'
 import { InputPassword } from '@/components/ui/input-password'
+import { authClient } from '@/lib/auth/client'
 import { appName } from '@/lib/config/site'
 
-const _DEFAULT_ERROR = 'Error en el servidor, intenta nuevamente.'
-
 const loginSchema = z.object({
-  email: z.email('Correo inválido').min(1, 'El correo es requerido'),
-  password: z.string().min(1, 'La contraseña es requerida'),
+  email: z.email().min(1, 'Email is required'),
+  password: z
+    .string()
+    .min(8, 'Password must be at least 8 characters')
+    .max(128, 'Password must be less than 128 characters'),
 })
 
 type LoginFormData = z.infer<typeof loginSchema>
@@ -37,27 +40,31 @@ export default function LoginPage() {
     },
   })
 
-  async function onSubmit(_data: LoginFormData) {
+  async function onSubmit(data: LoginFormData) {
     setLoading(true)
     setError('')
 
-    // try {
-    //   const { error } = await authClient.signIn.email({
-    //     email: data.email,
-    //     password: data.password,
-    //     callbackURL: '/',
-    //   })
+    try {
+      const { error } = await authClient.signIn.email({
+        email: data.email,
+        password: data.password,
+        callbackURL: '/',
+      })
 
-    //   if (error) {
-    //     setLoading(false)
-    //     console.error('login error:', error)
+      if (error) {
+        setLoading(false)
+        console.error('login error:', error)
 
-    //     setError(error.status === 401 ? 'Crendeciales inválidas, intenta nuevamente.' : DEFAULT_ERROR)
-    //   }
-    // } catch {
-    //   setLoading(false)
-    //   setError(DEFAULT_ERROR)
-    // }
+        setError(
+          error.status === 401
+            ? 'Invalid credentials, try again.'
+            : 'An unexpected error occurred, please try again later.',
+        )
+      }
+    } catch {
+      setLoading(false)
+      setError('An unexpected error occurred, please try again later.')
+    }
   }
 
   return (
@@ -65,22 +72,22 @@ export default function LoginPage() {
       <div className="flex w-full max-w-sm flex-col gap-6 px-2 py-6">
         <div className="flex items-center gap-2 self-center">
           <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            {/* <ResidoIcon className="size-4" /> */}
+            <TaheiIcon className="size-4" />
           </div>
           <span className="font-medium text-base text-foreground">{appName}</span>
         </div>
 
         <Frame className="w-full max-w-sm">
           <FrameHeader>
-            <FrameTitle>Iniciar sesión</FrameTitle>
-            <FrameDescription>Ingresa tus credenciales para acceder a tu cuenta.</FrameDescription>
+            <FrameTitle>Login</FrameTitle>
+            <FrameDescription>Enter your credentials to access your account.</FrameDescription>
           </FrameHeader>
           <Card>
             <CardContent>
               <form
-                className="space-y-4"
                 id={loginFormId}
-                aria-label="Iniciar sesión"
+                className="space-y-4"
+                aria-label="Login form"
                 onSubmit={form.handleSubmit(onSubmit)}
               >
                 <FieldGroup>
@@ -126,7 +133,7 @@ export default function LoginPage() {
                   {error && (
                     <Alert variant="error">
                       <IconAlertOctagon className="size-4" />
-                      <AlertTitle>Algo salió mal al iniciar sesión</AlertTitle>
+                      <AlertTitle>Something went wrong</AlertTitle>
                       <AlertDescription>{error}</AlertDescription>
                     </Alert>
                   )}

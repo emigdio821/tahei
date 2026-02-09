@@ -3,7 +3,8 @@
 import { IconHomeStats } from '@tabler/icons-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-// import { TaheiIcon } from '../icons'
+import { appName } from '@/lib/config/site'
+import { TaheiIcon } from '../icons'
 import {
   SidebarGroupContent,
   SidebarMenu,
@@ -24,15 +25,15 @@ export function HeaderNav({ ...props }: React.ComponentProps<typeof SidebarGroup
             size="lg"
             render={
               <Link href="/" onClick={() => setOpenMobile(false)}>
-                <div className='flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary'>
-                  {/* <TaheiIcon className="text-sidebar-primary-foreground size-4" /> */}
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary">
+                  <TaheiIcon className="size-4 text-sidebar-primary-foreground" />
                 </div>
 
                 <div className="grid flex-1 text-left text-sm leading-none">
-                  <span className='truncate font-medium text-base text-sidebar-accent-foreground'>
-                    Resido
+                  <span className="truncate font-medium text-base text-sidebar-accent-foreground">
+                    {appName}
                   </span>
-                  <span className='truncate text-sidebar-foreground text-xs'>Manejo residencial</span>
+                  <span className="truncate text-sidebar-foreground text-xs">Bookmark manager</span>
                 </div>
               </Link>
             }

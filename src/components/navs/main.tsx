@@ -22,7 +22,7 @@ export function NavMain({ ...props }: React.ComponentProps<typeof SidebarGroup>)
       <SidebarGroupLabel>Secciones</SidebarGroupLabel>
       <SidebarGroupContent className="flex flex-col gap-2">
         <SidebarMenu>
-          <SidebarMenuItem>
+          {/* <SidebarMenuItem>
             <SidebarMenuButton
               onClick={() => setOpenMobile(false)}
               isActive={pathname === '/presidency'}
@@ -98,7 +98,7 @@ export function NavMain({ ...props }: React.ComponentProps<typeof SidebarGroup>)
                 </Link>
               }
             />
-          </SidebarMenuItem>
+          </SidebarMenuItem> */}
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>
