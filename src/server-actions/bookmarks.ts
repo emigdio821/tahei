@@ -4,7 +4,7 @@ import { eq } from 'drizzle-orm'
 import { db } from '@/db'
 import { bookmarks, bookmarkTags } from '@/db/schema'
 import type { Bookmark, BookmarkInsert } from '@/db/schema/zod/bookmarks'
-import type { CreateManualBookmarkFormData } from '@/lib/form-schemas/bookmarks'
+import type { CreateBookmarkFormData } from '@/lib/form-schemas/bookmarks'
 import { getBookmarkMetadata } from './bookmark-metadata'
 import { getSession } from './session'
 
@@ -31,52 +31,31 @@ export async function getBookmarks() {
   return bookmarks satisfies Bookmark[]
 }
 
-export async function createManualBookmark(data: CreateManualBookmarkFormData) {
+export async function createBookmark(data: CreateBookmarkFormData) {
   const session = await getSession()
 
   if (!session) {
     throw new Error('Unauthorized')
   }
 
-  const { title, description, image, favicon } = await getBookmarkMetadata(data.url)
+  const { name, url, folderId, description, isFavorite, tags } = data
+  const { title, description: metaDescription, image, favicon } = await getBookmarkMetadata(data.url)
 
   const payload: BookmarkInsert = {
+    url,
     image,
     favicon,
-    url: data.url,
+    folderId,
+    isFavorite,
     userId: session.user.id,
-    isFavorite: data.isFavorite,
-    name: data.name || title || 'bookmark',
-    description: data.description || description,
-  }
-
-  await db.insert(bookmarks).values({ ...payload })
-}
-
-export async function createAutomaticBookmark(data: CreateManualBookmarkFormData) {
-  const session = await getSession()
-
-  if (!session) {
-    throw new Error('Unauthorized')
-  }
-
-  const { title, description, image, favicon } = await getBookmarkMetadata(data.url)
-
-  const payload: BookmarkInsert = {
-    image,
-    favicon,
-    url: data.url,
-    userId: session.user.id,
-    isFavorite: data.isFavorite,
-    folderId: data.folderId || null,
-    name: data.name || title || 'bookmark',
-    description: data.description || description,
+    name: name || title || 'bookmark',
+    description: description || metaDescription,
   }
 
   const [bookmark] = await db.insert(bookmarks).values(payload).returning()
 
-  if (data.tags && data.tags.length > 0 && bookmark.id) {
-    const tagsToInsert = data.tags.map((tagId) => ({
+  if (tags && tags.length > 0 && bookmark.id) {
+    const tagsToInsert = tags.map((tagId) => ({
       bookmarkId: bookmark.id,
       tagId,
     }))

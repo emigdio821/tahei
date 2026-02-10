@@ -15,14 +15,14 @@ import {
   DialogPanel,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Field, FieldError, FieldLabel } from '@/components/ui/field'
+import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { useEntityMutation } from '@/hooks/use-entity-mutation'
-import { type CreateManualBookmarkFormData, createManualBookmarkSchema } from '@/lib/form-schemas/bookmarks'
-import { createManualBookmark } from '@/server-actions/bookmarks'
+import { type CreateBookmarkFormData, createBookmarkSchema } from '@/lib/form-schemas/bookmarks'
+import { createBookmark } from '@/server-actions/bookmarks'
 import { BOOKMARKS_QUERY_KEY } from '@/tanstack-queries/bookmarks'
 
 interface CreateManualBookmarkDialogProps {
@@ -32,13 +32,13 @@ interface CreateManualBookmarkDialogProps {
   }
 }
 
-export function CreateManualBookmarkDialog({ state }: CreateManualBookmarkDialogProps) {
+export function CreateBookmarkDialog({ state }: CreateManualBookmarkDialogProps) {
   const createBookmarkFormId = useId()
   const { isOpen, onOpenChange } = state
 
-  const form = useForm<CreateManualBookmarkFormData>({
+  const form = useForm<CreateBookmarkFormData>({
     shouldUnregister: true,
-    resolver: zodResolver(createManualBookmarkSchema),
+    resolver: zodResolver(createBookmarkSchema),
     defaultValues: {
       url: '',
       name: '',
@@ -49,9 +49,9 @@ export function CreateManualBookmarkDialog({ state }: CreateManualBookmarkDialog
     },
   })
 
-  const createManualBookmarkMutation = useEntityMutation({
-    mutationFn: async (data: CreateManualBookmarkFormData) => {
-      return await createManualBookmark(data)
+  const createBookmarkMutation = useEntityMutation({
+    mutationFn: async (data: CreateBookmarkFormData) => {
+      return await createBookmark(data)
     },
     invalidateKeys: [BOOKMARKS_QUERY_KEY],
     successTitle: 'Bookmark created',
@@ -62,12 +62,12 @@ export function CreateManualBookmarkDialog({ state }: CreateManualBookmarkDialog
     },
   })
 
-  function onSubmit(data: CreateManualBookmarkFormData) {
-    createManualBookmarkMutation.mutate(data)
+  function onSubmit(data: CreateBookmarkFormData) {
+    createBookmarkMutation.mutate(data)
   }
 
   function handleOpenChange(open: boolean) {
-    if (createManualBookmarkMutation.isPending) return
+    if (createBookmarkMutation.isPending) return
     onOpenChange(open)
   }
 
@@ -98,7 +98,7 @@ export function CreateManualBookmarkDialog({ state }: CreateManualBookmarkDialog
                     {...field}
                     id={field.name}
                     aria-invalid={fieldState.invalid}
-                    disabled={createManualBookmarkMutation.isPending}
+                    disabled={createBookmarkMutation.isPending}
                   />
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>
@@ -110,15 +110,16 @@ export function CreateManualBookmarkDialog({ state }: CreateManualBookmarkDialog
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={field.name}>
-                    Name <span className="text-destructive">*</span>
-                  </FieldLabel>
+                  <FieldLabel htmlFor={field.name}>Name</FieldLabel>
                   <Input
                     {...field}
                     id={field.name}
                     aria-invalid={fieldState.invalid}
-                    disabled={createManualBookmarkMutation.isPending}
+                    disabled={createBookmarkMutation.isPending}
                   />
+                  <FieldDescription>
+                    Leave it empty to use the title from the website metadata.
+                  </FieldDescription>
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>
               )}
@@ -133,10 +134,12 @@ export function CreateManualBookmarkDialog({ state }: CreateManualBookmarkDialog
                   <Textarea
                     {...field}
                     id={field.name}
-                    placeholder="Description of the bookmark (optional)"
                     aria-invalid={fieldState.invalid}
-                    disabled={createManualBookmarkMutation.isPending}
+                    disabled={createBookmarkMutation.isPending}
                   />
+                  <FieldDescription>
+                    Leave it empty to use the description from the website metadata.
+                  </FieldDescription>
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>
               )}
@@ -190,7 +193,7 @@ export function CreateManualBookmarkDialog({ state }: CreateManualBookmarkDialog
                       id={field.name}
                       className="ms-auto"
                       checked={field.value}
-                      disabled={createManualBookmarkMutation.isPending}
+                      disabled={createBookmarkMutation.isPending}
                       onCheckedChange={(value) => {
                         field.onChange(value)
                       }}
@@ -211,8 +214,8 @@ export function CreateManualBookmarkDialog({ state }: CreateManualBookmarkDialog
               </Button>
             }
           />
-          <Button type="submit" form={createBookmarkFormId} disabled={createManualBookmarkMutation.isPending}>
-            {createManualBookmarkMutation.isPending && <LoaderIcon />}
+          <Button type="submit" form={createBookmarkFormId} disabled={createBookmarkMutation.isPending}>
+            {createBookmarkMutation.isPending && <LoaderIcon />}
             Create
           </Button>
         </DialogFooter>

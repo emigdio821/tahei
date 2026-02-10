@@ -7,6 +7,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   type SortingState,
+  type TableOptions,
   type Table as TableType,
   useReactTable,
 } from '@tanstack/react-table'
@@ -31,16 +32,26 @@ interface DataTableProps<TData, TValue> {
   header?: (table: TableType<TData>) => React.ReactNode
   caption?: React.ReactNode
   pageSize?: number
+  tableOptions?: Partial<TableOptions<TData>>
 }
 
 export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
-  const { data, tableId, header, caption, columns, pageSize: tablePageSize = DEFAULT_TABLE_PAGE_SIZE } = props
+  const {
+    data,
+    tableId,
+    header,
+    caption,
+    columns,
+    pageSize: tablePageSize = DEFAULT_TABLE_PAGE_SIZE,
+    tableOptions,
+  } = props
   const paginationUrlKeys = {
     pageIndex: tableId ? `${tableId}-page` : 'page',
     pageSize: tableId ? `${tableId}-perPage` : 'perPage',
   }
 
   const [rowSelection, setRowSelection] = useState({})
+  const [globalFilter, setGlobalFilter] = useState({})
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 
@@ -68,10 +79,11 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     autoResetPageIndex: false,
-
+    onGlobalFilterChange: setGlobalFilter,
     state: {
       sorting,
       rowSelection,
+      globalFilter,
       columnFilters,
       pagination: {
         pageIndex,
@@ -84,6 +96,7 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
         pageSize,
       },
     },
+    ...tableOptions,
   })
 
   const rowLength = table.getFilteredRowModel().rows.length

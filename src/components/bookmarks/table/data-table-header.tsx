@@ -1,27 +1,27 @@
 'use client'
 
-import { IconBookmarkPlus, IconInfoCircle, IconPlus, IconSearch, IconTrash } from '@tabler/icons-react'
+import {
+  IconHeart,
+  IconHeartFilled,
+  IconInfoCircle,
+  IconPlus,
+  IconSearch,
+  IconTrash,
+} from '@tabler/icons-react'
 import type { Table } from '@tanstack/react-table'
-import { parseAsString, useQueryState } from 'nuqs'
+import { parseAsBoolean, parseAsString, useQueryState } from 'nuqs'
 import { useEffect, useState } from 'react'
 import { AlertDialogGeneric } from '@/components/shared/alert-dialog-generic'
 import { Button } from '@/components/ui/button'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/menu'
+import { Toggle } from '@/components/ui/toggle'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import type { Bookmark } from '@/db/schema/zod/bookmarks'
 import { useBatchDelete } from '@/hooks/use-bulk-delete'
+import { cn } from '@/lib/utils'
 import { deleteBookmark } from '@/server-actions/bookmarks'
 import { BOOKMARKS_QUERY_KEY } from '@/tanstack-queries/bookmarks'
-import { CreateManualBookmarkDialog } from '../dialogs/create-manual'
+import { CreateBookmarkDialog } from '../dialogs/create'
 
 interface BookmarksDataTableHeaderProps {
   table: Table<Bookmark>
@@ -31,7 +31,10 @@ export function BookmarksDataTableHeader({ table }: BookmarksDataTableHeaderProp
   const [isSearchTooltipOpen, setSearchTooltipOpen] = useState(false)
   const [isCreateManualOpen, setIsCreateManualOpen] = useState(false)
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [searchQuery, setSearchQuery] = useQueryState('search-hoa-members', parseAsString.withDefault(''))
+  const [isOpenFavTooltip, setOpenFavTooltip] = useState(false)
+
+  const [searchQuery, setSearchQuery] = useQueryState('search-bookmarks', parseAsString.withDefault(''))
+  const [favoritesOnly, setFavoritesOnly] = useQueryState('favorites-only', parseAsBoolean.withDefault(false))
 
   const tableRowsLength = table.getCoreRowModel().rows.length
   const selectedRows = table.getFilteredSelectedRowModel().rows
@@ -58,6 +61,12 @@ export function BookmarksDataTableHeader({ table }: BookmarksDataTableHeaderProp
     table.getColumn('name')?.setFilterValue(searchQuery)
   }, [searchQuery, table])
 
+  useEffect(() => {
+    table.setGlobalFilter({
+      isFavorite: favoritesOnly,
+    })
+  }, [favoritesOnly, table])
+
   return (
     <>
       <AlertDialogGeneric
@@ -79,7 +88,7 @@ export function BookmarksDataTableHeader({ table }: BookmarksDataTableHeaderProp
         }
       />
 
-      <CreateManualBookmarkDialog
+      <CreateBookmarkDialog
         state={{
           isOpen: isCreateManualOpen,
           onOpenChange: setIsCreateManualOpen,
@@ -137,30 +146,32 @@ export function BookmarksDataTableHeader({ table }: BookmarksDataTableHeaderProp
             </Tooltip>
           )}
 
-          <DropdownMenu>
-            <DropdownMenuTrigger
+          <Tooltip open={isOpenFavTooltip} onOpenChange={setOpenFavTooltip}>
+            <TooltipTrigger
               render={
-                <Button>
-                  <IconPlus className="size-4" />
-                  Create
-                </Button>
+                <Toggle
+                  variant="outline"
+                  pressed={favoritesOnly}
+                  onPressedChange={(value) => {
+                    setOpenFavTooltip(true)
+                    setFavoritesOnly(value)
+                  }}
+                  aria-label={favoritesOnly ? 'Showing only favorites' : 'Show only favorites'}
+                >
+                  <IconHeart className={cn(favoritesOnly ? 'hidden' : 'block')} />
+                  <IconHeartFilled className={cn(favoritesOnly ? 'block' : 'hidden')} />
+                </Toggle>
               }
             />
-            <DropdownMenuContent align="start">
-              <DropdownMenuGroup>
-                <DropdownMenuLabel>Create bookmark</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => setIsCreateManualOpen(true)}>
-                  <IconBookmarkPlus className="size-4" />
-                  Manual
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <IconBookmarkPlus className="size-4" />
-                  Automatic
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            <TooltipContent>
+              <p>{favoritesOnly ? 'Showing only favorites' : 'Show only favorites'}</p>
+            </TooltipContent>
+          </Tooltip>
+
+          <Button onClick={() => setIsCreateManualOpen(true)}>
+            <IconPlus className="size-4" />
+            Create
+          </Button>
         </div>
       </div>
     </>

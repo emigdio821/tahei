@@ -1,6 +1,13 @@
 'use client'
 
-import { IconDotsVertical, IconEdit, IconInfoCircle, IconTrash } from '@tabler/icons-react'
+import {
+  IconDotsVertical,
+  IconEdit,
+  IconHeart,
+  IconHeartFilled,
+  IconInfoCircle,
+  IconTrash,
+} from '@tabler/icons-react'
 import { useState } from 'react'
 import { BookmarkDetailsDialog } from '@/components/bookmarks/dialogs/details'
 import { EditBookmarkDialog } from '@/components/bookmarks/dialogs/edit'
@@ -15,6 +22,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/menu'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import type { Bookmark } from '@/db/schema/zod/bookmarks'
 import { useEntityMutation } from '@/hooks/use-entity-mutation'
 import { deleteBookmark } from '@/server-actions/bookmarks'
@@ -28,6 +36,7 @@ export function BookmarksTableActions({ bookmark }: ActionsProps) {
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [isDetailsDialogOpen, setDetailsDialogOpen] = useState(false)
   const [isEditDialogOpen, setEditDialogOpen] = useState(false)
+  const [isOpenFavTooltip, setOpenFavTooltip] = useState(false)
 
   const deleteBookmarkMutation = useEntityMutation({
     mutationFn: async (id: string) => {
@@ -75,11 +84,36 @@ export function BookmarksTableActions({ bookmark }: ActionsProps) {
         state={{ isOpen: isDetailsDialogOpen, onOpenChange: setDetailsDialogOpen }}
       />
 
-      <div className="flex">
+      <div className="flex justify-end">
+        <Tooltip open={isOpenFavTooltip} onOpenChange={setOpenFavTooltip}>
+          <TooltipTrigger
+            render={
+              <Button
+                onClick={(e) => {
+                  e.preventBaseUIHandler()
+                  setOpenFavTooltip(true)
+                }}
+                variant="ghost"
+                size="icon"
+                aria-label="Toggle favorite"
+              >
+                {bookmark.isFavorite ? (
+                  <IconHeartFilled className="size-4" />
+                ) : (
+                  <IconHeart className="size-4" />
+                )}
+              </Button>
+            }
+          />
+          <TooltipContent>
+            <p>{bookmark.isFavorite ? 'Remove from favorites' : 'Add to favorites'}</p>
+          </TooltipContent>
+        </Tooltip>
+
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
-              <Button aria-label="Table actions" size="icon" variant="ghost" className="ml-auto">
+              <Button aria-label="Table actions" size="icon" variant="ghost">
                 <IconDotsVertical className="size-4" />
               </Button>
             }

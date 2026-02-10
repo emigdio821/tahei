@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { HoaMembersDataTable } from '@/components/bookmarks/table/data-table'
+import { BookmarksDataTable } from '@/components/bookmarks/table/data-table'
 import { appName } from '@/lib/config/site'
 
 export const metadata: Metadata = {
@@ -16,7 +16,7 @@ export default function BookmarksPage() {
         </p>
       </div>
 
-      <HoaMembersDataTable />
+      <BookmarksDataTable />
     </div>
   )
 }
