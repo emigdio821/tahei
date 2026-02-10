@@ -1,8 +1,7 @@
 'use client'
 
 import { IconLogout, IconMoon, IconRefresh, IconSelector, IconSettings, IconSun } from '@tabler/icons-react'
-import { useQuery } from '@tanstack/react-query'
-import type { User } from 'better-auth'
+import { useSuspenseQuery } from '@tanstack/react-query'
 import Link from 'next/link'
 import { useTheme } from 'next-themes'
 import {
@@ -24,23 +23,14 @@ import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '../ui/sidebar'
 import { Skeleton } from '../ui/skeleton'
 
-interface NavUserProps {
-  user: User
-}
-
-export function NavUser({ user }: NavUserProps) {
+export function NavUser() {
   const { theme, setTheme } = useTheme()
-  const {
-    data: loggedUser = null,
-    isLoading,
-    error,
-    refetch,
-  } = useQuery({ ...loggedUserQueryOptions(), initialData: user })
+  const { data: user, isLoading, error, refetch } = useSuspenseQuery(loggedUserQueryOptions())
 
   function getAvatarFallback() {
-    if (!loggedUser) return null
+    if (!user) return null
 
-    const userName = loggedUser.name
+    const userName = user.name
     const fallback = `${userName.split(' ')[0].charAt(0)}${userName.split(' ')[1]?.charAt(0) ?? ''}`
 
     return fallback

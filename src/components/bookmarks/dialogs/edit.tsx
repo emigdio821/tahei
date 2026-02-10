@@ -39,9 +39,8 @@ export function EditBookmarkDialog({ bookmark, state }: EditBookmarkDialogProps)
   const { isOpen, onOpenChange } = state
 
   const form = useForm<UpdateBookmarkFormData>({
-    shouldUnregister: true,
     resolver: zodResolver(updateBookmarkSchema),
-    defaultValues: {
+    values: {
       url: bookmark.url,
       name: bookmark.name,
       description: bookmark.description || '',

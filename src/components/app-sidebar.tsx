@@ -1,14 +1,14 @@
-import { redirect } from 'next/navigation'
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query'
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from '@/components/ui/sidebar'
-import { getSession } from '@/server-actions/session'
+import { getQueryClient } from '@/lib/query-client'
+import { loggedUserQueryOptions } from '@/tanstack-queries/logged-user'
 import { HeaderNav } from './navs/header'
 import { NavMain } from './navs/main'
 import { NavUser } from './navs/user'
 
 export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const session = await getSession()
-
-  if (!session) redirect('/login')
+  const queryClient = getQueryClient()
+  await queryClient.prefetchQuery(loggedUserQueryOptions())
 
   return (
     <Sidebar {...props}>
@@ -19,7 +19,9 @@ export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sideb
         <NavMain />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={session.user} />
+        <HydrationBoundary state={dehydrate(queryClient)}>
+          <NavUser />
+        </HydrationBoundary>
       </SidebarFooter>
     </Sidebar>
   )
