@@ -8,7 +8,9 @@ export const loggedUserQueryOptions = () =>
     queryKey: [LOGGED_USER_QUERY_KEY],
     queryFn: async () => {
       const session = await getSession()
-      return session?.user
+      if (!session) return null
+
+      return session.user
     },
     staleTime: Number.POSITIVE_INFINITY,
     gcTime: Number.POSITIVE_INFINITY,

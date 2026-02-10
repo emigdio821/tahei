@@ -28,3 +28,7 @@ export function formatDate(
     ...options,
   })
 }
+
+export function truncateString(str: string, size: number) {
+  return `${str.slice(0, size)}...`
+}

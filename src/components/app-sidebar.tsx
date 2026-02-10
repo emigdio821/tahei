@@ -1,9 +1,15 @@
+import { redirect } from 'next/navigation'
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from '@/components/ui/sidebar'
+import { getSession } from '@/server-actions/session'
 import { HeaderNav } from './navs/header'
 import { NavMain } from './navs/main'
 import { NavUser } from './navs/user'
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const session = await getSession()
+
+  if (!session) redirect('/login')
+
   return (
     <Sidebar {...props}>
       <SidebarHeader>
@@ -13,7 +19,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser />
+        <NavUser user={session.user} />
       </SidebarFooter>
     </Sidebar>
   )
