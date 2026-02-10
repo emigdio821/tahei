@@ -9,9 +9,10 @@ export const TaheiIcon = (props: IconProps) => (
     data-asc="0.959"
     width="42.79999923706055"
     height="35.05000686645508"
+    role="img"
+    aria-label="Tahei logo made with Mrs Sheppards font"
     {...props}
   >
-    <title>Tahei Logo - Mrs Sheppards font</title>
     <defs />
     <g fill="currentColor">
       <g transform="translate(0, 0)">
@@ -25,21 +26,23 @@ export const LoaderIcon = ({ className, ...props }: IconProps) => (
   <IconLoader className={cn('size-4 animate-spin', className)} {...props} />
 )
 
-export const RadioIcon = (props: IconProps) => (
+export const IndeterminateIcon = (props: IconProps) => (
   <svg
+    className="size-3.5 sm:size-3"
     fill="none"
     height="24"
     stroke="currentColor"
     strokeLinecap="round"
     strokeLinejoin="round"
-    strokeWidth="2"
+    strokeWidth="3"
     viewBox="0 0 24 24"
     width="24"
     xmlns="http://www.w3.org/2000/svg"
+    role="img"
+    aria-label="Indeterminate Indicator"
     {...props}
   >
-    <title>Radio Item Indicator</title>
-    <path d="M5.252 12.7 10.2 18.63 18.748 5.37" />
+    <path d="M5.252 12h13.496" />
   </svg>
 )
 
@@ -54,9 +57,10 @@ export const CheckIcon = (props: IconProps) => (
     viewBox="0 0 24 24"
     width="24"
     xmlns="http://www.w3.org/2000/svg"
+    role="img"
+    aria-label="Check Indicator"
     {...props}
   >
-    <title>Check Indicator</title>
     <path d="M5.252 12.7 10.2 18.63 18.748 5.37" />
   </svg>
 )

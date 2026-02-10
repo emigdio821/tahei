@@ -3,7 +3,7 @@
 import { Menu as MenuPrimitive } from '@base-ui/react/menu'
 import { IconChevronRight } from '@tabler/icons-react'
 import { cn } from '@/lib/utils'
-import { CheckIcon, RadioIcon } from '../icons'
+import { CheckIcon } from '../icons'
 
 const MenuCreateHandle = MenuPrimitive.createHandle
 
@@ -138,7 +138,7 @@ function MenuRadioItem({ className, children, ...props }: MenuPrimitive.RadioIte
       {...props}
     >
       <MenuPrimitive.RadioItemIndicator className="col-start-1">
-        <RadioIcon />
+        <CheckIcon />
       </MenuPrimitive.RadioItemIndicator>
       <span className="col-start-2">{children}</span>
     </MenuPrimitive.RadioItem>

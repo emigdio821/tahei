@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { HoaMembersDataTable } from '@/components/bookmarks/table/data-table'
 import { appName } from '@/lib/config/site'
 
 export const metadata: Metadata = {
@@ -8,7 +9,14 @@ export const metadata: Metadata = {
 export default function BookmarksPage() {
   return (
     <div>
-      <h1 className="font-heading font-medium text-lg leading-none">Bookmarks</h1>
+      <div className="mb-4 flex flex-col gap-2">
+        <h1 className="font-heading font-semibold text-xl leading-none">Bookmarks</h1>
+        <p className="text-muted-foreground text-sm">
+          Manage your bookmarks here. You can view, edit, and delete your bookmarks as needed.
+        </p>
+      </div>
+
+      <HoaMembersDataTable />
     </div>
   )
 }

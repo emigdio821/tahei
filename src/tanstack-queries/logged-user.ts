@@ -1,5 +1,5 @@
 import { queryOptions } from '@tanstack/react-query'
-import { getSession } from '@/app/server-actions/session'
+import { getSession } from '@/server-actions/session'
 
 export const LOGGED_USER_QUERY_KEY = 'logged-user'
 

@@ -30,7 +30,7 @@ export function HeaderNav({ ...props }: React.ComponentProps<typeof SidebarGroup
                 </div>
 
                 <div className="grid flex-1 text-left text-sm leading-none">
-                  <span className="truncate font-medium text-base text-sidebar-accent-foreground">
+                  <span className="truncate font-heading font-semibold text-sidebar-accent-foreground text-sm leading-none">
                     {appName}
                   </span>
                   <span className="truncate text-sidebar-foreground text-xs">Bookmark manager</span>
