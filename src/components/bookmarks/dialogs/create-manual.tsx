@@ -2,6 +2,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useId } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { LoaderIcon } from '@/components/icons'
+import { FoldersCombobox } from '@/components/shared/dropdowns/folders-combobox'
+import { TagsMultiCombobox } from '@/components/shared/dropdowns/tags-multi-combobox'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -40,9 +42,10 @@ export function CreateManualBookmarkDialog({ state }: CreateManualBookmarkDialog
     defaultValues: {
       url: '',
       name: '',
+      tags: [],
       description: '',
       isFavorite: false,
-      folderId: undefined,
+      folderId: null,
     },
   })
 
@@ -133,6 +136,35 @@ export function CreateManualBookmarkDialog({ state }: CreateManualBookmarkDialog
                     placeholder="Description of the bookmark (optional)"
                     aria-invalid={fieldState.invalid}
                     disabled={createManualBookmarkMutation.isPending}
+                  />
+                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                </Field>
+              )}
+            />
+
+            <Controller
+              name="folderId"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor={field.name}>Folder</FieldLabel>
+                  <FoldersCombobox value={field.value} onValueChange={(value) => field.onChange(value)} />
+                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                </Field>
+              )}
+            />
+
+            <Controller
+              name="tags"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor={field.name}>Tags</FieldLabel>
+                  <TagsMultiCombobox
+                    value={field.value}
+                    onValueChange={(value) => {
+                      field.onChange(value || [])
+                    }}
                   />
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>

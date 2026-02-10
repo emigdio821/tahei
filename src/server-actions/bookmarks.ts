@@ -2,7 +2,7 @@
 
 import { eq } from 'drizzle-orm'
 import { db } from '@/db'
-import { bookmarks } from '@/db/schema'
+import { bookmarks, bookmarkTags } from '@/db/schema'
 import type { Bookmark, BookmarkInsert } from '@/db/schema/zod/bookmarks'
 import type { CreateManualBookmarkFormData } from '@/lib/form-schemas/bookmarks'
 import { getBookmarkMetadata } from './bookmark-metadata'
@@ -51,6 +51,38 @@ export async function createManualBookmark(data: CreateManualBookmarkFormData) {
   }
 
   await db.insert(bookmarks).values({ ...payload })
+}
+
+export async function createAutomaticBookmark(data: CreateManualBookmarkFormData) {
+  const session = await getSession()
+
+  if (!session) {
+    throw new Error('Unauthorized')
+  }
+
+  const { title, description, image, favicon } = await getBookmarkMetadata(data.url)
+
+  const payload: BookmarkInsert = {
+    image,
+    favicon,
+    url: data.url,
+    userId: session.user.id,
+    isFavorite: data.isFavorite,
+    folderId: data.folderId || null,
+    name: data.name || title || 'bookmark',
+    description: data.description || description,
+  }
+
+  const [bookmark] = await db.insert(bookmarks).values(payload).returning()
+
+  if (data.tags && data.tags.length > 0 && bookmark.id) {
+    const tagsToInsert = data.tags.map((tagId) => ({
+      bookmarkId: bookmark.id,
+      tagId,
+    }))
+
+    await db.insert(bookmarkTags).values(tagsToInsert)
+  }
 }
 
 export async function updateBookmark(id: string, data: Partial<BookmarkInsert>): Promise<void> {
