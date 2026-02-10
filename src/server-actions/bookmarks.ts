@@ -31,7 +31,7 @@ export async function getBookmarks() {
   return bookmarks satisfies Bookmark[]
 }
 
-export async function createBookmark(data: CreateBookmarkFormData) {
+export async function createBookmark(data: CreateBookmarkFormData): Promise<void> {
   const session = await getSession()
 
   if (!session) {
@@ -82,4 +82,14 @@ export async function deleteBookmark(id: string): Promise<void> {
   }
 
   await db.delete(bookmarks).where(eq(bookmarks.id, id))
+}
+
+export async function toggleFavoriteBookmark(id: string, isFavorite: boolean): Promise<void> {
+  const session = await getSession()
+
+  if (!session) {
+    throw new Error('Unauthorized')
+  }
+
+  await db.update(bookmarks).set({ isFavorite }).where(eq(bookmarks.id, id))
 }

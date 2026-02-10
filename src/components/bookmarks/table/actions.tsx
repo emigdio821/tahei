@@ -25,7 +25,7 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import type { Bookmark } from '@/db/schema/zod/bookmarks'
 import { useEntityMutation } from '@/hooks/use-entity-mutation'
-import { deleteBookmark } from '@/server-actions/bookmarks'
+import { deleteBookmark, toggleFavoriteBookmark } from '@/server-actions/bookmarks'
 import { BOOKMARKS_QUERY_KEY } from '@/tanstack-queries/bookmarks'
 
 interface ActionsProps {
@@ -36,7 +36,6 @@ export function BookmarksTableActions({ bookmark }: ActionsProps) {
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [isDetailsDialogOpen, setDetailsDialogOpen] = useState(false)
   const [isEditDialogOpen, setEditDialogOpen] = useState(false)
-  const [isOpenFavTooltip, setOpenFavTooltip] = useState(false)
 
   const deleteBookmarkMutation = useEntityMutation({
     mutationFn: async (id: string) => {
@@ -48,6 +47,29 @@ export function BookmarksTableActions({ bookmark }: ActionsProps) {
     errorDescription: 'An error occurred while deleting the bookmark, please try again.',
     onSuccess: () => {
       setDeleteDialogOpen(false)
+    },
+  })
+
+  const toggleFavoriteBookmarkMutation = useEntityMutation<
+    void,
+    { id: string; isFavorite: boolean },
+    Bookmark[]
+  >({
+    mutationFn: async (data) => {
+      return await toggleFavoriteBookmark(data.id, data.isFavorite)
+    },
+    invalidateKeys: [BOOKMARKS_QUERY_KEY],
+    errorDescription: 'An error occurred while updating the bookmark, please try again.',
+    showSuccessToast: false,
+    optimisticUpdate: {
+      queryKey: [BOOKMARKS_QUERY_KEY],
+      updateFn: (oldData, variables) => {
+        if (!oldData) return []
+
+        return oldData.map((bookmark) =>
+          bookmark.id === variables.id ? { ...bookmark, isFavorite: variables.isFavorite } : bookmark,
+        )
+      },
     },
   })
 
@@ -85,16 +107,18 @@ export function BookmarksTableActions({ bookmark }: ActionsProps) {
       />
 
       <div className="flex justify-end">
-        <Tooltip open={isOpenFavTooltip} onOpenChange={setOpenFavTooltip}>
+        <Tooltip>
           <TooltipTrigger
             render={
               <Button
-                onClick={(e) => {
-                  e.preventBaseUIHandler()
-                  setOpenFavTooltip(true)
+                onClick={() => {
+                  toggleFavoriteBookmarkMutation.mutate({
+                    id: bookmark.id,
+                    isFavorite: !bookmark.isFavorite,
+                  })
                 }}
-                variant="ghost"
                 size="icon"
+                variant="ghost"
                 aria-label="Toggle favorite"
               >
                 {bookmark.isFavorite ? (

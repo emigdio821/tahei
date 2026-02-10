@@ -1,4 +1,3 @@
-import { GeistPixelSquare } from 'geist/font/pixel'
 import { GeistSans } from 'geist/font/sans'
 import type { Metadata } from 'next'
 import { Providers } from '@/components/providers'
@@ -16,7 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${GeistSans.variable} ${GeistPixelSquare.variable} antialiased`}>
+      <body className={`${GeistSans.variable} antialiased`}>
         <Providers>
           <main className="relative flex min-h-dvh flex-col">{children}</main>
         </Providers>
