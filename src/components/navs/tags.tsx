@@ -1,0 +1,99 @@
+'use client'
+
+import { useQuery } from '@tanstack/react-query'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { tagsQueryOptions } from '@/tanstack-queries/tags'
+import { Badge } from '../ui/badge'
+import { Button } from '../ui/button'
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from '../ui/empty'
+import { SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, useSidebar } from '../ui/sidebar'
+import { Skeleton } from '../ui/skeleton'
+
+export function NavTags({ ...props }: React.ComponentProps<typeof SidebarGroup>) {
+  const pathname = usePathname()
+  const { setOpenMobile } = useSidebar()
+  const { data: tags = [], isLoading, error, refetch } = useQuery(tagsQueryOptions())
+
+  function renderTags() {
+    if (error) {
+      return (
+        <Empty className="gap-2 rounded-xl bg-muted/50 p-2 md:p-2">
+          <EmptyHeader>
+            <EmptyTitle className="text-sm">Error</EmptyTitle>
+            <EmptyDescription className="text-xs">
+              Something went wrong while fetching your tags.
+            </EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            <Button variant="outline" className="w-full" size="xs" onClick={() => refetch()}>
+              Retry
+            </Button>
+          </EmptyContent>
+        </Empty>
+      )
+    }
+
+    if (isLoading) {
+      const widths = ['w-12', 'w-14', 'w-10', 'w-11', 'w-13', 'w-10']
+      return Array.from({ length: 8 }).map((_, index) => {
+        const width = widths[index % widths.length]
+        return <Skeleton key={crypto.randomUUID()} className={`h-4.5 ${width}`} />
+      })
+    }
+
+    if (tags.length === 0) {
+      return (
+        <Empty className="gap-2 rounded-xl bg-muted/50 p-2 md:p-2">
+          <EmptyHeader>
+            <EmptyTitle className="text-sm">Empty</EmptyTitle>
+            <EmptyDescription className="text-xs">There are no tags yet.</EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            <Button variant="outline" className="w-full" size="xs" onClick={() => refetch()}>
+              Create
+            </Button>
+          </EmptyContent>
+        </Empty>
+      )
+    }
+
+    const tagsToRender = (
+      <>
+        {tags.map((tag) => {
+          const href: `/tags/${string}` = `/tags/${tag.id}`
+          const isActive = pathname === href
+
+          return (
+            <Badge
+              key={tag.id}
+              variant={isActive ? 'default' : 'outline'}
+              render={
+                isActive ? (
+                  <span className="cursor-default">{tag.name}</span>
+                ) : (
+                  <Link onClick={() => setOpenMobile(false)} href={href}>
+                    {tag.name}
+                  </Link>
+                )
+              }
+            />
+          )
+        })}
+      </>
+    )
+
+    return tagsToRender
+  }
+
+  return (
+    <SidebarGroup {...props}>
+      <SidebarGroupLabel>Tags</SidebarGroupLabel>
+      <SidebarGroupContent className="flex flex-col gap-2">
+        <SidebarMenu>
+          <div className="flex flex-wrap gap-2 p-2">{renderTags()}</div>
+        </SidebarMenu>
+      </SidebarGroupContent>
+    </SidebarGroup>
+  )
+}

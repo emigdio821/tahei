@@ -1,13 +1,6 @@
 'use client'
 
-import {
-  IconHeart,
-  IconHeartFilled,
-  IconInfoCircle,
-  IconPlus,
-  IconSearch,
-  IconTrash,
-} from '@tabler/icons-react'
+import { IconHeart, IconHeartFilled, IconInfoCircle, IconSearch, IconTrash } from '@tabler/icons-react'
 import type { Table } from '@tanstack/react-table'
 import { parseAsBoolean, parseAsString, useQueryState } from 'nuqs'
 import { useEffect, useState } from 'react'
@@ -168,10 +161,7 @@ export function BookmarksDataTableHeader({ table }: BookmarksDataTableHeaderProp
             </TooltipContent>
           </Tooltip>
 
-          <Button onClick={() => setIsCreateManualOpen(true)}>
-            <IconPlus className="size-4" />
-            Create
-          </Button>
+          <Button onClick={() => setIsCreateManualOpen(true)}>Create</Button>
         </div>
       </div>
     </>

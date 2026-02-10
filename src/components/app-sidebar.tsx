@@ -2,8 +2,9 @@ import { dehydrate, HydrationBoundary } from '@tanstack/react-query'
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from '@/components/ui/sidebar'
 import { getQueryClient } from '@/lib/query-client'
 import { loggedUserQueryOptions } from '@/tanstack-queries/logged-user'
+import { NavFolders } from './navs/folders'
 import { HeaderNav } from './navs/header'
-import { NavMain } from './navs/main'
+import { NavTags } from './navs/tags'
 import { NavUser } from './navs/user'
 
 export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -16,7 +17,8 @@ export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sideb
         <HeaderNav />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain />
+        <NavFolders />
+        <NavTags />
       </SidebarContent>
       <SidebarFooter>
         <HydrationBoundary state={dehydrate(queryClient)}>

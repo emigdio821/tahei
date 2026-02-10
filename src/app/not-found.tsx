@@ -34,11 +34,11 @@ export default function NotFound() {
         <Frame className="w-full max-w-sm">
           <FrameHeader>
             <FrameTitle className="font-extrabold text-4xl">404</FrameTitle>
-            <FrameDescription>Esta página no existe.</FrameDescription>
+            <FrameDescription>This page does not exist.</FrameDescription>
           </FrameHeader>
           <Card>
             <CardFooter>
-              <Button nativeButton={false} className="grow" render={<Link href="/">Inicio</Link>} />
+              <Button nativeButton={false} className="grow" render={<Link href="/">Home</Link>} />
             </CardFooter>
           </Card>
         </Frame>

@@ -1,9 +1,8 @@
+import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-// import { TaheiIcon } from './icons'
-import { SidebarTrigger } from './ui/sidebar'
-import Link from 'next/link'
 import { siteConfig } from '@/lib/config/site'
+import { SidebarTrigger } from './ui/sidebar'
 
 export function AppHeader() {
   return (
@@ -20,8 +19,7 @@ export function AppHeader() {
           nativeButton={false}
           render={
             <Link href="/">
-              {/* <TaheiIcon className="size-4" /> */}
-              <span className="text-base font-medium">{siteConfig.name}</span>
+              <span className="font-medium text-base">{siteConfig.name}</span>
             </Link>
           }
         />
