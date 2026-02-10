@@ -37,7 +37,7 @@ export const bookmarksTableColumns: ColumnDef<Bookmark>[] = [
   },
   {
     accessorKey: 'name',
-    size: 140,
+    size: 160,
     cell: ({ row }) => <BookmarkNameCell bookmark={row.original} />,
     header: ({ column }) => <DataTableSortableHeader column={column} title="Name" />,
     filterFn: (row, _, value: string) => {
@@ -50,7 +50,7 @@ export const bookmarksTableColumns: ColumnDef<Bookmark>[] = [
   {
     accessorKey: 'description',
     header: ({ column }) => <DataTableSortableHeader column={column} title="Description" />,
-    size: 160,
+    size: 200,
     cell: ({ row }) =>
       row.original.description ? (
         <p className="line-clamp-2 whitespace-normal">{row.original.description}</p>
@@ -71,7 +71,7 @@ export const bookmarksTableColumns: ColumnDef<Bookmark>[] = [
   {
     accessorKey: 'folder',
     header: ({ column }) => <DataTableSortableHeader column={column} title="Folder" />,
-    size: 120,
+    size: 100,
     cell: ({ row }) => {
       const folder = row.original.folder
 
