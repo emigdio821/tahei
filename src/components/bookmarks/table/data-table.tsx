@@ -15,7 +15,7 @@ export function HoaMembersDataTable() {
     return (
       <TSQueryGenericError
         refetch={refetch}
-        errorDescription="Something went wrong while fetching your bookmarks. Please try again."
+        errorDescription="Something went wrong while fetching your bookmarks."
       />
     )
   }
