@@ -178,7 +178,7 @@ function ComboboxItem({ className, children, ...props }: ComboboxPrimitive.Item.
       <ComboboxPrimitive.ItemIndicator className="col-start-1">
         <CheckIcon />
       </ComboboxPrimitive.ItemIndicator>
-      <div className="col-start-2">{children}</div>
+      <div className="col-start-2 truncate">{children}</div>
     </ComboboxPrimitive.Item>
   )
 }

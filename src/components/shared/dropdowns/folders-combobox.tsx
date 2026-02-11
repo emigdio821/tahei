@@ -1,6 +1,6 @@
 'use client'
 
-import { IconReload, IconSearch, IconSelector } from '@tabler/icons-react'
+import { IconChevronRight, IconReload, IconSearch, IconSelector } from '@tabler/icons-react'
 import { useQuery } from '@tanstack/react-query'
 import type React from 'react'
 import { useMemo } from 'react'
@@ -15,6 +15,7 @@ import {
   ComboboxTrigger,
   ComboboxValue,
 } from '@/components/ui/combobox'
+import type { FolderTreeNode } from '@/server-actions/folders'
 import { foldersQueryOptions } from '@/tanstack-queries/folders'
 
 const NULL_OPTION_LABEL = 'Select folder'
@@ -28,22 +29,76 @@ interface FoldersComboboxProps
   includeNullOption?: boolean
 }
 
+interface FlatFolder {
+  id: string
+  name: string
+  path: string[]
+}
+
+function flattenFolders(folders: FolderTreeNode[], parentPath: string[] = []): FlatFolder[] {
+  const flattened: FlatFolder[] = []
+
+  for (const folder of folders) {
+    const currentPath = [...parentPath, folder.name]
+
+    flattened.push({
+      id: folder.id,
+      name: folder.name,
+      path: parentPath,
+    })
+
+    if (folder.subfolders.length > 0) {
+      flattened.push(...flattenFolders(folder.subfolders, currentPath))
+    }
+  }
+
+  return flattened
+}
+
+function buildFolderDisplayName(folder: FlatFolder): React.ReactNode {
+  if (folder.path.length === 0) {
+    return folder.name
+  }
+
+  if (folder.path.length === 1) {
+    return (
+      <span className="flex items-center gap-1 truncate">
+        <span className="text-muted-foreground text-xs">{folder.path[0]}</span>
+        <IconChevronRight className="size-3 text-muted-foreground" />
+        <span className="text-sm">{folder.name}</span>
+      </span>
+    )
+  }
+
+  return (
+    <span className="flex items-center gap-1">
+      <span className="text-muted-foreground text-xs">{folder.path[0]}</span>
+      <IconChevronRight className="size-3 text-muted-foreground" />
+      <span className="text-muted-foreground text-xs">...</span>
+      <IconChevronRight className="size-3 text-muted-foreground" />
+      <span className="text-sm">{folder.name}</span>
+    </span>
+  )
+}
+
 export function FoldersCombobox({
   disabled,
   includeNullOption = true,
   ...comboboxProps
 }: FoldersComboboxProps) {
-  const { data: folders = [], isLoading, error, refetch } = useQuery(foldersQueryOptions())
+  const { data: folderTree = [], isLoading, error, refetch } = useQuery(foldersQueryOptions())
+
+  const flatFolders = useMemo(() => flattenFolders(folderTree), [folderTree])
 
   const items: FoldersComboboxValue[] = useMemo(() => {
-    const mappedFolders: FoldersComboboxValue[] = folders.map((folder) => folder.id)
+    const mappedFolders: FoldersComboboxValue[] = flatFolders.map((folder) => folder.id)
 
     if (includeNullOption) {
       mappedFolders.unshift(null)
     }
 
     return mappedFolders
-  }, [folders, includeNullOption])
+  }, [flatFolders, includeNullOption])
 
   if (error) {
     return (
@@ -54,11 +109,11 @@ export function FoldersCombobox({
     )
   }
 
-  function getFolderNameById(folderId: FoldersComboboxValue) {
+  function getFolderDisplayById(folderId: FoldersComboboxValue) {
     if (folderId === null) return NULL_OPTION_LABEL
 
-    const folder = folders.find((f) => f.id === folderId)
-    return folder ? folder.name : folderId
+    const folder = flatFolders.find((f) => f.id === folderId)
+    return folder ? buildFolderDisplayName(folder) : folderId
   }
 
   function renderValue(value: FoldersComboboxValue) {
@@ -72,16 +127,16 @@ export function FoldersCombobox({
 
     if (!value) return NULL_OPTION_LABEL
 
-    return getFolderNameById(value)
+    return getFolderDisplayById(value)
   }
 
   return (
-    <Combobox disabled={folders.length === 0 || disabled} items={items} {...comboboxProps}>
+    <Combobox disabled={flatFolders.length === 0 || disabled} items={items} {...comboboxProps}>
       <ComboboxTrigger render={<Button className="w-full justify-between font-normal" variant="outline" />}>
         <ComboboxValue>{renderValue}</ComboboxValue>
         <IconSelector className="-me-1!" />
       </ComboboxTrigger>
-      <ComboboxPopup aria-label={NULL_OPTION_LABEL}>
+      <ComboboxPopup aria-label={NULL_OPTION_LABEL} className="max-w-(--anchor-width)">
         {items.length > 15 && (
           <div className="border-b p-2">
             <ComboboxInput
@@ -92,11 +147,11 @@ export function FoldersCombobox({
             />
           </div>
         )}
-        <ComboboxEmpty>No tags found.</ComboboxEmpty>
+        <ComboboxEmpty>No folders found.</ComboboxEmpty>
         <ComboboxList>
           {(folderId: string) => (
             <ComboboxItem key={folderId} value={folderId}>
-              {getFolderNameById(folderId)}
+              {getFolderDisplayById(folderId)}
             </ComboboxItem>
           )}
         </ComboboxList>

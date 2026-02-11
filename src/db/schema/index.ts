@@ -1,5 +1,15 @@
 import { relations } from 'drizzle-orm'
-import { boolean, index, pgTable, text, timestamp, uniqueIndex, uuid, varchar } from 'drizzle-orm/pg-core'
+import {
+  boolean,
+  foreignKey,
+  index,
+  pgTable,
+  text,
+  timestamp,
+  uniqueIndex,
+  uuid,
+  varchar,
+} from 'drizzle-orm/pg-core'
 import { user } from './auth'
 
 export * from './auth'
@@ -23,6 +33,11 @@ export const folders = pgTable(
   (table) => [
     index('folders_userId_idx').on(table.userId),
     index('folders_parentFolderId_idx').on(table.parentFolderId),
+    foreignKey({
+      columns: [table.parentFolderId],
+      foreignColumns: [table.id],
+      name: 'folders_parentFolderId_fkey',
+    }).onDelete('cascade'),
   ],
 )
 
@@ -99,10 +114,6 @@ export const foldersRelations = relations(folders, ({ one, many }) => ({
   parentFolder: one(folders, {
     fields: [folders.parentFolderId],
     references: [folders.id],
-    relationName: 'subfolders',
-  }),
-  subfolders: many(folders, {
-    relationName: 'subfolders',
   }),
   bookmarks: many(bookmarks),
 }))

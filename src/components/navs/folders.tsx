@@ -1,10 +1,10 @@
 'use client'
 
-import { IconChevronRight } from '@tabler/icons-react'
+import { IconChevronRight, IconFolder } from '@tabler/icons-react'
 import { useQuery } from '@tanstack/react-query'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import type { FolderSelect } from '@/db/schema/zod/folders'
+import type { FolderTreeNode } from '@/server-actions/folders'
 import { foldersQueryOptions } from '@/tanstack-queries/folders'
 import { TextGenericSkeleton } from '../shared/skeletons/text-generic'
 import { Button } from '../ui/button'
@@ -22,24 +22,26 @@ import {
   useSidebar,
 } from '../ui/sidebar'
 
-type TreeFolderItem = FolderSelect | FolderSelect[]
-
-function FolderTree({ item }: { item: TreeFolderItem }) {
+function FolderTree({ folder }: { folder: FolderTreeNode }) {
   const pathname = usePathname()
   const { setOpenMobile } = useSidebar()
+  const hasChildren = folder.subfolders.length > 0
 
-  const [folder, ...items] = Array.isArray(item) ? item : [item]
+  const href: `/folders/${string}` = `/folders/${folder.id}`
+  const isActive = pathname === href
 
-  if (!items.length) {
-    const href: `/folders/${string}` = `/folders/${folder.id}`
-    const isActive = pathname === href
-
+  if (!hasChildren) {
     return (
       <SidebarMenuItem>
         <SidebarMenuButton
           isActive={isActive}
           onClick={() => setOpenMobile(false)}
-          render={<Link href={href}>{folder.name}</Link>}
+          render={
+            <Link href={href}>
+              <IconFolder />
+              {folder.name}
+            </Link>
+          }
         />
       </SidebarMenuItem>
     )
@@ -56,17 +58,20 @@ function FolderTree({ item }: { item: TreeFolderItem }) {
           }
         />
 
-        <SidebarMenuButton className="ps-7">
-          <span className="truncate">{folder.name}</span>
-        </SidebarMenuButton>
+        <SidebarMenuButton
+          isActive={isActive}
+          onClick={() => setOpenMobile(false)}
+          className="ps-7"
+          render={<Link href={href}>{folder.name}</Link>}
+        />
 
         {/* <SidebarMenuAction>
           <IconDotsVertical className="size-4" />
         </SidebarMenuAction> */}
         <CollapsibleContent>
           <SidebarMenuSub>
-            {items.map((subItem) => (
-              <FolderTree key={subItem.id} item={subItem} />
+            {folder.subfolders.map((child) => (
+              <FolderTree key={child.id} folder={child} />
             ))}
           </SidebarMenuSub>
         </CollapsibleContent>
@@ -121,15 +126,13 @@ export function NavFolders({ ...props }: React.ComponentProps<typeof SidebarGrou
       )
     }
 
-    const tagsToRender = (
+    return (
       <>
-        {folders.map((item) => (
-          <FolderTree key={item.id} item={item} />
+        {folders.map((folder) => (
+          <FolderTree key={folder.id} folder={folder} />
         ))}
       </>
     )
-
-    return tagsToRender
   }
 
   return (
