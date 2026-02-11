@@ -27,6 +27,7 @@ interface FoldersComboboxProps
   value?: FoldersComboboxValue
   defaultValue?: FoldersComboboxValue
   includeNullOption?: boolean
+  excludeOptions?: FoldersComboboxValue[]
 }
 
 interface FlatFolder {
@@ -84,6 +85,7 @@ function buildFolderDisplayName(folder: FlatFolder): React.ReactNode {
 export function FoldersCombobox({
   disabled,
   includeNullOption = true,
+  excludeOptions = [],
   ...comboboxProps
 }: FoldersComboboxProps) {
   const { data: folderTree = [], isLoading, error, refetch } = useQuery(foldersQueryOptions())
@@ -92,13 +94,18 @@ export function FoldersCombobox({
 
   const items: FoldersComboboxValue[] = useMemo(() => {
     const mappedFolders: FoldersComboboxValue[] = flatFolders.map((folder) => folder.id)
+    let foldersToInclude = mappedFolders
 
     if (includeNullOption) {
       mappedFolders.unshift(null)
     }
 
-    return mappedFolders
-  }, [flatFolders, includeNullOption])
+    if (excludeOptions.length > 0) {
+      foldersToInclude = mappedFolders.filter((id) => !excludeOptions.includes(id))
+    }
+
+    return foldersToInclude
+  }, [flatFolders, includeNullOption, excludeOptions])
 
   if (error) {
     return (

@@ -125,7 +125,11 @@ export function EditFolderDialog({ open, onOpenChange, folder, ...props }: EditF
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor={field.name}>Parent folder</FieldLabel>
-                  <FoldersCombobox value={field.value} onValueChange={(value) => field.onChange(value)} />
+                  <FoldersCombobox
+                    value={field.value}
+                    excludeOptions={[folder.id]}
+                    onValueChange={(value) => field.onChange(value)}
+                  />
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>
               )}
