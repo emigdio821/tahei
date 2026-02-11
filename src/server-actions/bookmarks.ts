@@ -8,7 +8,7 @@ import type { CreateBookmarkFormData } from '@/lib/form-schemas/bookmarks'
 import { getBookmarkMetadata } from './bookmark-metadata'
 import { getSession } from './session'
 
-export async function getBookmarks() {
+export async function getBookmarks(): Promise<Bookmark[]> {
   const session = await getSession()
 
   if (!session) {
@@ -28,7 +28,31 @@ export async function getBookmarks() {
     orderBy: (bookmark, { desc }) => desc(bookmark.updatedAt),
   })
 
-  return bookmarks satisfies Bookmark[]
+  return bookmarks
+}
+
+export async function getFavoriteBookmarks(): Promise<Bookmark[]> {
+  const session = await getSession()
+
+  if (!session) {
+    throw new Error('Unauthorized')
+  }
+
+  const bookmarks = await db.query.bookmarks.findMany({
+    with: {
+      bookmarkTags: {
+        with: {
+          tag: true,
+        },
+      },
+      folder: true,
+    },
+    where: (bookmark, { eq, and }) =>
+      and(eq(bookmark.userId, session.user.id), eq(bookmark.isFavorite, true)),
+    orderBy: (bookmark, { desc }) => desc(bookmark.updatedAt),
+  })
+
+  return bookmarks
 }
 
 export async function createBookmark(data: CreateBookmarkFormData): Promise<void> {

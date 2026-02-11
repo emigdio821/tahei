@@ -1,17 +1,15 @@
 'use client'
 
-import { IconHeart, IconHeartFilled, IconInfoCircle, IconSearch, IconTrash } from '@tabler/icons-react'
+import { IconInfoCircle, IconSearch, IconTrash } from '@tabler/icons-react'
 import type { Table } from '@tanstack/react-table'
-import { parseAsBoolean, parseAsString, useQueryState } from 'nuqs'
+import { parseAsString, useQueryState } from 'nuqs'
 import { useEffect, useState } from 'react'
 import { AlertDialogGeneric } from '@/components/shared/alert-dialog-generic'
 import { Button } from '@/components/ui/button'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
-import { Toggle } from '@/components/ui/toggle'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import type { Bookmark } from '@/db/schema/zod/bookmarks'
 import { useBatchDelete } from '@/hooks/use-bulk-delete'
-import { cn } from '@/lib/utils'
 import { deleteBookmark } from '@/server-actions/bookmarks'
 import { BOOKMARKS_QUERY_KEY } from '@/tanstack-queries/bookmarks'
 import { CreateBookmarkDialog } from '../dialogs/create'
@@ -24,10 +22,8 @@ export function BookmarksDataTableHeader({ table }: BookmarksDataTableHeaderProp
   const [isSearchTooltipOpen, setSearchTooltipOpen] = useState(false)
   const [isCreateManualOpen, setIsCreateManualOpen] = useState(false)
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [isOpenFavTooltip, setOpenFavTooltip] = useState(false)
 
   const [searchQuery, setSearchQuery] = useQueryState('search-bookmarks', parseAsString.withDefault(''))
-  const [favoritesOnly, setFavoritesOnly] = useQueryState('favorites-only', parseAsBoolean.withDefault(false))
 
   const tableRowsLength = table.getCoreRowModel().rows.length
   const selectedRows = table.getFilteredSelectedRowModel().rows
@@ -53,12 +49,6 @@ export function BookmarksDataTableHeader({ table }: BookmarksDataTableHeaderProp
   useEffect(() => {
     table.getColumn('name')?.setFilterValue(searchQuery)
   }, [searchQuery, table])
-
-  useEffect(() => {
-    table.setGlobalFilter({
-      isFavorite: favoritesOnly,
-    })
-  }, [favoritesOnly, table])
 
   return (
     <>
@@ -131,28 +121,6 @@ export function BookmarksDataTableHeader({ table }: BookmarksDataTableHeaderProp
               <TooltipContent>Delete selected bookmarks</TooltipContent>
             </Tooltip>
           )}
-
-          <Tooltip open={isOpenFavTooltip} onOpenChange={setOpenFavTooltip}>
-            <TooltipTrigger
-              render={
-                <Toggle
-                  variant="outline"
-                  pressed={favoritesOnly}
-                  onPressedChange={(value) => {
-                    setOpenFavTooltip(true)
-                    setFavoritesOnly(value)
-                  }}
-                  aria-label={favoritesOnly ? 'Showing only favorites' : 'Show only favorites'}
-                >
-                  <IconHeart className={cn(favoritesOnly ? 'hidden' : 'block')} />
-                  <IconHeartFilled className={cn(favoritesOnly ? 'block' : 'hidden')} />
-                </Toggle>
-              }
-            />
-            <TooltipContent>
-              <p>{favoritesOnly ? 'Showing only favorites' : 'Show only favorites'}</p>
-            </TooltipContent>
-          </Tooltip>
 
           <Button onClick={() => setIsCreateManualOpen(true)}>Create</Button>
         </div>

@@ -51,7 +51,6 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
   }
 
   const [rowSelection, setRowSelection] = useState({})
-  const [globalFilter, setGlobalFilter] = useState({})
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 
@@ -79,11 +78,9 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     autoResetPageIndex: false,
-    onGlobalFilterChange: setGlobalFilter,
     state: {
       sorting,
       rowSelection,
-      globalFilter,
       columnFilters,
       pagination: {
         pageIndex,

@@ -4,18 +4,18 @@ import { useQuery } from '@tanstack/react-query'
 import { TSQueryGenericError } from '@/components/shared/errors/query-generic'
 import { TableGenericSkeleton } from '@/components/shared/skeletons/table-generic'
 import { DataTable } from '@/components/shared/table/data-table'
-import { bookmarksQueryOptions } from '@/tanstack-queries/bookmarks'
-import { bookmarksTableColumns } from './columns'
-import { BookmarksDataTableHeader } from './data-table-header'
+import { favoriteBookmarksQueryOptions } from '@/tanstack-queries/bookmarks'
+import { bookmarksTableColumns } from '../columns'
+import { BookmarksDataTableHeader } from '../data-table-header'
 
-export function BookmarksDataTable() {
-  const { data: bookmarks = [], isLoading, error, refetch } = useQuery(bookmarksQueryOptions())
+export function FavoriteBookmarksDataTable() {
+  const { data: bookmarks = [], isLoading, error, refetch } = useQuery(favoriteBookmarksQueryOptions())
 
   if (error) {
     return (
       <TSQueryGenericError
         refetch={refetch}
-        errorDescription="Something went wrong while fetching your bookmarks."
+        errorDescription="Something went wrong while fetching your favorite bookmarks."
       />
     )
   }
