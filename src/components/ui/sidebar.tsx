@@ -9,7 +9,6 @@ import { useIsMobile } from '@/hooks/use-mobile'
 import { cn } from '@/lib/utils'
 import { Button } from './button'
 import { Input } from './input'
-import { ScrollArea } from './scroll-area'
 import { Separator } from './separator'
 import { Sheet, SheetDescription, SheetHeader, SheetPopup, SheetTitle } from './sheet'
 import { Skeleton } from './skeleton'
@@ -351,17 +350,15 @@ function SidebarSeparator({ className, ...props }: React.ComponentProps<typeof S
 
 function SidebarContent({ className, ...props }: React.ComponentProps<'div'>) {
   return (
-    <ScrollArea className="**:data-[slot=scroll-area-scrollbar]:hidden" scrollFade>
-      <div
-        className={cn(
-          'flex min-h-0 flex-1 flex-col gap-2 overflow-auto group-data-[collapsible=icon]:overflow-hidden',
-          className,
-        )}
-        data-sidebar="content"
-        data-slot="sidebar-content"
-        {...props}
-      />
-    </ScrollArea>
+    <div
+      className={cn(
+        'flex min-h-0 flex-1 flex-col gap-2 overflow-auto overflow-y-auto group-data-[collapsible=icon]:overflow-hidden',
+        className,
+      )}
+      data-sidebar="content"
+      data-slot="sidebar-content"
+      {...props}
+    />
   )
 }
 

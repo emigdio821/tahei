@@ -63,10 +63,8 @@ export function BookmarksDataTableHeader({ table }: BookmarksDataTableHeaderProp
   return (
     <>
       <AlertDialogGeneric
-        state={{
-          isOpen: isDeleteDialogOpen,
-          onOpenChange: setDeleteDialogOpen,
-        }}
+        open={isDeleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
         action={handleBatchDelete}
         variant="destructive"
         actionLabel="Delete"

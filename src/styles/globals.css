@@ -71,7 +71,7 @@
   --card-foreground: var(--color-neutral-800);
   --popover: var(--color-white);
   --popover-foreground: var(--color-neutral-800);
-  --primary: var(--color-neutral-950);
+  --primary: var(--color-slate-700);
   --primary-foreground: var(--color-neutral-50);
   --secondary: --alpha(var(--color-black) / 4%);
   --secondary-foreground: var(--color-neutral-800);
@@ -91,7 +91,7 @@
 
   --sidebar: var(--color-neutral-50);
   --sidebar-foreground: var(--color-neutral-800);
-  --sidebar-primary: var(--color-neutral-950);
+  --sidebar-primary: var(--color-slate-700);
   --sidebar-primary-foreground: var(--color-neutral-50);
   --sidebar-accent: --alpha(var(--color-black) / 4%);
   --sidebar-accent-foreground: var(--color-neutral-900);
@@ -115,7 +115,7 @@
   --card-foreground: var(--color-neutral-50);
   --popover: color-mix(in srgb, var(--background) 98%, var(--color-white));
   --popover-foreground: var(--color-neutral-50);
-  --primary: var(--color-neutral-100);
+  --primary: var(--color-slate-500);
   --primary-foreground: var(--color-neutral-900);
   --secondary: --alpha(var(--color-white) / 4%);
   --secondary-foreground: var(--color-neutral-50);
@@ -135,7 +135,7 @@
 
   --sidebar: color-mix(in srgb, var(--color-neutral-950) 97%, var(--color-white));
   --sidebar-foreground: var(--color-neutral-300);
-  --sidebar-primary: var(--color-neutral-100);
+  --sidebar-primary: var(--color-slate-500);
   --sidebar-primary-foreground: var(--color-neutral-900);
   --sidebar-accent: --alpha(var(--color-white) / 4%);
   --sidebar-accent-foreground: var(--color-neutral-50);

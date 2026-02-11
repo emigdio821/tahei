@@ -1,86 +1,26 @@
 'use client'
 
-import { IconChevronRight, IconFolder } from '@tabler/icons-react'
+import { IconPlus } from '@tabler/icons-react'
 import { useQuery } from '@tanstack/react-query'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import type { FolderTreeNode } from '@/server-actions/folders'
+import { useState } from 'react'
 import { foldersQueryOptions } from '@/tanstack-queries/folders'
+import { CreateFolderDialog } from '../folders/dialogs/create'
+import { FolderTree } from '../folders/folder-tree'
 import { TextGenericSkeleton } from '../shared/skeletons/text-generic'
 import { Button } from '../ui/button'
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/collapsible'
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from '../ui/empty'
 import {
   SidebarGroup,
+  SidebarGroupAction,
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuAction,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuSub,
-  useSidebar,
 } from '../ui/sidebar'
-
-function FolderTree({ folder }: { folder: FolderTreeNode }) {
-  const pathname = usePathname()
-  const { setOpenMobile } = useSidebar()
-  const hasChildren = folder.subfolders.length > 0
-
-  const href: `/folders/${string}` = `/folders/${folder.id}`
-  const isActive = pathname === href
-
-  if (!hasChildren) {
-    return (
-      <SidebarMenuItem>
-        <SidebarMenuButton
-          isActive={isActive}
-          onClick={() => setOpenMobile(false)}
-          render={
-            <Link href={href}>
-              <IconFolder />
-              {folder.name}
-            </Link>
-          }
-        />
-      </SidebarMenuItem>
-    )
-  }
-
-  return (
-    <Collapsible>
-      <SidebarMenuItem>
-        <CollapsibleTrigger
-          render={
-            <SidebarMenuAction className="left-1 text-sidebar-accent-foreground aria-expanded:[&_svg]:rotate-90">
-              <IconChevronRight className="size-4 transition-transform" />
-            </SidebarMenuAction>
-          }
-        />
-
-        <SidebarMenuButton
-          isActive={isActive}
-          onClick={() => setOpenMobile(false)}
-          className="ps-7"
-          render={<Link href={href}>{folder.name}</Link>}
-        />
-
-        {/* <SidebarMenuAction>
-          <IconDotsVertical className="size-4" />
-        </SidebarMenuAction> */}
-        <CollapsibleContent>
-          <SidebarMenuSub>
-            {folder.subfolders.map((child) => (
-              <FolderTree key={child.id} folder={child} />
-            ))}
-          </SidebarMenuSub>
-        </CollapsibleContent>
-      </SidebarMenuItem>
-    </Collapsible>
-  )
-}
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
 
 export function NavFolders({ ...props }: React.ComponentProps<typeof SidebarGroup>) {
+  const [isCreateDialogOpen, setCreateDialogOpen] = useState(false)
+
   const { data: folders = [], isLoading, error, refetch } = useQuery(foldersQueryOptions())
 
   function renderFolders() {
@@ -136,11 +76,27 @@ export function NavFolders({ ...props }: React.ComponentProps<typeof SidebarGrou
   }
 
   return (
-    <SidebarGroup {...props}>
-      <SidebarGroupLabel>Folders</SidebarGroupLabel>
-      <SidebarGroupContent>
-        <SidebarMenu>{renderFolders()}</SidebarMenu>
-      </SidebarGroupContent>
-    </SidebarGroup>
+    <>
+      <CreateFolderDialog open={isCreateDialogOpen} onOpenChange={setCreateDialogOpen} />
+
+      <SidebarGroup {...props}>
+        <SidebarGroupLabel>
+          Folders
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <SidebarGroupAction onClick={() => setCreateDialogOpen(true)} aria-label="Create folder">
+                  <IconPlus />
+                </SidebarGroupAction>
+              }
+            />
+            <TooltipContent>Create folder</TooltipContent>
+          </Tooltip>
+        </SidebarGroupLabel>
+        <SidebarGroupContent>
+          <SidebarMenu>{renderFolders()}</SidebarMenu>
+        </SidebarGroupContent>
+      </SidebarGroup>
+    </>
   )
 }

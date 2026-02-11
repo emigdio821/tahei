@@ -1,18 +1,31 @@
 'use client'
 
+import { IconPlus } from '@tabler/icons-react'
 import { useQuery } from '@tanstack/react-query'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useState } from 'react'
 import { tagsQueryOptions } from '@/tanstack-queries/tags'
+import { CreateTagDialog } from '../tags/dialogs/create'
 import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from '../ui/empty'
-import { SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, useSidebar } from '../ui/sidebar'
+import {
+  SidebarGroup,
+  SidebarGroupAction,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  useSidebar,
+} from '../ui/sidebar'
 import { Skeleton } from '../ui/skeleton'
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
 
 export function NavTags({ ...props }: React.ComponentProps<typeof SidebarGroup>) {
   const pathname = usePathname()
   const { setOpenMobile } = useSidebar()
+  const [isCreateDialogOpen, setCreateDialogOpen] = useState(false)
+
   const { data: tags = [], isLoading, error, refetch } = useQuery(tagsQueryOptions())
 
   function renderTags() {
@@ -87,13 +100,29 @@ export function NavTags({ ...props }: React.ComponentProps<typeof SidebarGroup>)
   }
 
   return (
-    <SidebarGroup {...props}>
-      <SidebarGroupLabel>Tags</SidebarGroupLabel>
-      <SidebarGroupContent className="flex flex-col gap-2">
-        <SidebarMenu>
-          <div className="flex flex-wrap gap-2 p-2">{renderTags()}</div>
-        </SidebarMenu>
-      </SidebarGroupContent>
-    </SidebarGroup>
+    <>
+      <CreateTagDialog open={isCreateDialogOpen} onOpenChange={setCreateDialogOpen} />
+
+      <SidebarGroup {...props}>
+        <SidebarGroupLabel>
+          Tags
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <SidebarGroupAction onClick={() => setCreateDialogOpen(true)} aria-label="Create tag">
+                  <IconPlus />
+                </SidebarGroupAction>
+              }
+            />
+            <TooltipContent>Create tag</TooltipContent>
+          </Tooltip>
+        </SidebarGroupLabel>
+        <SidebarGroupContent className="flex flex-col gap-2">
+          <SidebarMenu>
+            <div className="flex flex-wrap gap-2 p-2">{renderTags()}</div>
+          </SidebarMenu>
+        </SidebarGroupContent>
+      </SidebarGroup>
+    </>
   )
 }

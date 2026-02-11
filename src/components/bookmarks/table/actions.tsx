@@ -80,18 +80,16 @@ export function BookmarksTableActions({ bookmark }: ActionsProps) {
   return (
     <>
       <AlertDialogGeneric
-        state={{
-          isOpen: isDeleteDialogOpen,
-          onOpenChange: setDeleteDialogOpen,
-        }}
+        open={isDeleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
         action={handleDeleteBookmark}
         variant="destructive"
         actionLabel="Delete"
         title="Delete bookmark?"
         description={
           <div>
-            You're about to delete the bookmark with name:{' '}
-            <span className="font-medium">{bookmark.name}</span>. This action cannot be undone.
+            You are about to delete the bookmark: "<span className="font-medium">{bookmark.name}</span>". This
+            action cannot be undone.
           </div>
         }
       />
@@ -162,7 +160,7 @@ export function BookmarksTableActions({ bookmark }: ActionsProps) {
 
               <DropdownMenuItem variant="destructive" onClick={() => setDeleteDialogOpen(true)}>
                 <IconTrash className="size-4" />
-                Eliminar
+                Delete
               </DropdownMenuItem>
             </DropdownMenuGroup>
           </DropdownMenuContent>

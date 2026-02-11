@@ -1,7 +1,10 @@
 'use server'
 
+import { and, eq } from 'drizzle-orm'
 import { db } from '@/db'
+import { folders } from '@/db/schema'
 import type { FolderSelect } from '@/db/schema/zod/folders'
+import type { CreateFolderFormData, UpdateFolderFormData } from '@/lib/form-schemas/folders'
 import { getSession } from './session'
 
 export type FolderTreeNode = FolderSelect & {
@@ -52,4 +55,46 @@ export async function getFolders() {
   })
 
   return buildFolderTree(allFolders) satisfies FolderTreeNode[]
+}
+
+export async function createFolder(data: CreateFolderFormData) {
+  const session = await getSession()
+
+  if (!session) {
+    throw new Error('Unauthorized')
+  }
+
+  await db.insert(folders).values({
+    name: data.name,
+    description: data.description,
+    parentFolderId: data.parentFolderId,
+    userId: session.user.id,
+  })
+}
+
+export async function updateFolder(data: UpdateFolderFormData) {
+  const session = await getSession()
+
+  if (!session) {
+    throw new Error('Unauthorized')
+  }
+
+  await db
+    .update(folders)
+    .set({
+      name: data.name,
+      description: data.description,
+      parentFolderId: data.parentFolderId,
+    })
+    .where(and(eq(folders.id, data.id), eq(folders.userId, session.user.id)))
+}
+
+export async function deleteFolder(folderId: string) {
+  const session = await getSession()
+
+  if (!session) {
+    throw new Error('Unauthorized')
+  }
+
+  await db.delete(folders).where(and(eq(folders.id, folderId), eq(folders.userId, session.user.id)))
 }

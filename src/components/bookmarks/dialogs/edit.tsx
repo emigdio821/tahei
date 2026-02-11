@@ -72,7 +72,13 @@ export function EditBookmarkDialog({ bookmark, state }: EditBookmarkDialogProps)
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={handleOpenChange}
+      onOpenChangeComplete={(isOpen) => {
+        if (!isOpen) form.reset()
+      }}
+    >
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Edit bookmark</DialogTitle>

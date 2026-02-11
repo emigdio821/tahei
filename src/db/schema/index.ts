@@ -18,7 +18,7 @@ export const folders = pgTable(
   'folders',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    name: text('name').notNull(),
+    name: varchar('name', { length: 50 }).notNull(),
     description: varchar('description', { length: 200 }),
     userId: text('user_id')
       .notNull()
@@ -72,7 +72,7 @@ export const tags = pgTable(
   'tags',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    name: text('name').notNull(),
+    name: varchar('name', { length: 50 }).notNull(),
     userId: text('user_id')
       .notNull()
       .references(() => user.id, { onDelete: 'cascade' }),

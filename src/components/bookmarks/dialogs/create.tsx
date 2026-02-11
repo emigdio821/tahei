@@ -75,7 +75,7 @@ export function CreateBookmarkDialog({ state }: CreateManualBookmarkDialogProps)
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create Bookmark</DialogTitle>
+          <DialogTitle>Create bookmark</DialogTitle>
           <DialogDescription>Enter the information for the new bookmark.</DialogDescription>
         </DialogHeader>
 

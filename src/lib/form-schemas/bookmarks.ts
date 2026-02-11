@@ -16,7 +16,7 @@ export const updateBookmarkSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   description: z.string().max(200, 'Description must be 200 characters or less').optional(),
   isFavorite: z.boolean().optional(),
-  folderId: z.string().uuid().nullable().optional(),
+  folderId: z.uuid().nullable().optional(),
 })
 
 export type UpdateBookmarkFormData = z.infer<typeof updateBookmarkSchema>

@@ -1,6 +1,6 @@
 'use server'
 
-import { eq } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import { db } from '@/db'
 import { bookmarks, bookmarkTags } from '@/db/schema'
 import type { Bookmark, BookmarkInsert } from '@/db/schema/zod/bookmarks'
@@ -91,5 +91,8 @@ export async function toggleFavoriteBookmark(id: string, isFavorite: boolean): P
     throw new Error('Unauthorized')
   }
 
-  await db.update(bookmarks).set({ isFavorite }).where(eq(bookmarks.id, id))
+  await db
+    .update(bookmarks)
+    .set({ isFavorite })
+    .where(and(eq(bookmarks.id, id), eq(bookmarks.userId, session.user.id)))
 }

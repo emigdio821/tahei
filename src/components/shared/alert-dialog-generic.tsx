@@ -13,22 +13,19 @@ import {
 import { Button, type ButtonProps } from '@/components/ui/button'
 import { LoaderIcon } from '../icons'
 
-interface AlertDialogGenericProps {
-  state: {
-    isOpen: boolean
-    onOpenChange: (open: boolean) => void
-  }
+interface AlertDialogGenericProps extends React.ComponentProps<typeof AlertDialog> {
   action?: () => void | Promise<void>
   title?: React.ReactNode
   description?: React.ReactNode
   actionLabel?: React.ReactNode
   variant?: ButtonProps['variant']
   content?: React.ReactNode
+  open: boolean
+  onOpenChange: (open: boolean) => void
 }
 
 export function AlertDialogGeneric(props: AlertDialogGenericProps) {
-  const { action, title, description, state, actionLabel, variant, content } = props
-  const { isOpen, onOpenChange } = state
+  const { action, title, description, actionLabel, variant, content, open, onOpenChange } = props
   const [isExecutingAction, setExecutingAction] = useState(false)
 
   async function handleAction() {
@@ -49,7 +46,7 @@ export function AlertDialogGeneric(props: AlertDialogGenericProps) {
 
   return (
     <AlertDialog
-      open={isOpen}
+      open={open}
       onOpenChange={(isOpen) => {
         if (isExecutingAction) return
         onOpenChange(isOpen)
