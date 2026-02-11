@@ -1,6 +1,5 @@
 'use client'
 
-import { IconPlus } from '@tabler/icons-react'
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { foldersQueryOptions } from '@/tanstack-queries/folders'
@@ -9,14 +8,7 @@ import { FolderTree } from '../folders/folder-tree'
 import { TextGenericSkeleton } from '../shared/skeletons/text-generic'
 import { Button } from '../ui/button'
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from '../ui/empty'
-import {
-  SidebarGroup,
-  SidebarGroupAction,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-} from '../ui/sidebar'
-import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
+import { SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu } from '../ui/sidebar'
 
 export function NavFolders({ ...props }: React.ComponentProps<typeof SidebarGroup>) {
   const [isCreateDialogOpen, setCreateDialogOpen] = useState(false)
@@ -52,17 +44,26 @@ export function NavFolders({ ...props }: React.ComponentProps<typeof SidebarGrou
 
     if (folders.length === 0) {
       return (
-        <Empty className="gap-2 rounded-xl bg-muted/50 p-2 md:p-2">
-          <EmptyHeader>
-            <EmptyTitle className="text-sm">Empty</EmptyTitle>
-            <EmptyDescription className="text-xs">There are no folders yet.</EmptyDescription>
-          </EmptyHeader>
-          <EmptyContent>
-            <Button variant="outline" className="w-full" size="xs" onClick={() => refetch()}>
-              Create
-            </Button>
-          </EmptyContent>
-        </Empty>
+        <>
+          <CreateFolderDialog open={isCreateDialogOpen} onOpenChange={setCreateDialogOpen} />
+
+          <Empty className="gap-2 rounded-xl bg-muted/50 p-2 md:p-2">
+            <EmptyHeader>
+              <EmptyTitle className="text-sm">Empty</EmptyTitle>
+              <EmptyDescription className="text-xs">There are no folders yet.</EmptyDescription>
+            </EmptyHeader>
+            <EmptyContent>
+              <Button
+                variant="outline"
+                className="w-full"
+                size="xs"
+                onClick={() => setCreateDialogOpen(true)}
+              >
+                Create
+              </Button>
+            </EmptyContent>
+          </Empty>
+        </>
       )
     }
 
@@ -76,27 +77,11 @@ export function NavFolders({ ...props }: React.ComponentProps<typeof SidebarGrou
   }
 
   return (
-    <>
-      <CreateFolderDialog open={isCreateDialogOpen} onOpenChange={setCreateDialogOpen} />
-
-      <SidebarGroup {...props}>
-        <SidebarGroupLabel>
-          Folders
-          <Tooltip>
-            <TooltipTrigger
-              render={
-                <SidebarGroupAction onClick={() => setCreateDialogOpen(true)} aria-label="Create folder">
-                  <IconPlus />
-                </SidebarGroupAction>
-              }
-            />
-            <TooltipContent>Create folder</TooltipContent>
-          </Tooltip>
-        </SidebarGroupLabel>
-        <SidebarGroupContent>
-          <SidebarMenu>{renderFolders()}</SidebarMenu>
-        </SidebarGroupContent>
-      </SidebarGroup>
-    </>
+    <SidebarGroup {...props}>
+      <SidebarGroupLabel>Folders</SidebarGroupLabel>
+      <SidebarGroupContent>
+        <SidebarMenu>{renderFolders()}</SidebarMenu>
+      </SidebarGroupContent>
+    </SidebarGroup>
   )
 }

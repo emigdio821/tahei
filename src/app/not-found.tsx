@@ -5,10 +5,13 @@ import { Footer } from '@/components/footer'
 import { Button } from '@/components/ui/button'
 import { Card, CardFooter } from '@/components/ui/card'
 import { Frame, FrameDescription, FrameHeader, FrameTitle } from '@/components/ui/frame'
-import { siteConfig } from '@/lib/config/site'
+import { appName, siteConfig } from '@/lib/config/site'
 
 export const metadata: Metadata = {
-  title: `Not found · ${siteConfig.name}`,
+  title: {
+    template: `%s · ${appName}`,
+    default: 'Not found',
+  },
   description: siteConfig.description,
   authors: [
     {

@@ -9,3 +9,4 @@ const tagUpdateSchema = createUpdateSchema(tags)
 export type TagSelect = z.infer<typeof tagSelectSchema>
 export type TagInsert = z.infer<typeof tagInsertSchema>
 export type TagUpdate = z.infer<typeof tagUpdateSchema>
+export type TagWithBookmarkCount = TagSelect & { bookmarkCount: number }

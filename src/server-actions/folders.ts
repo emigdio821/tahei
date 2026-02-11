@@ -1,17 +1,18 @@
 'use server'
 
-import { and, eq } from 'drizzle-orm'
+import { and, count, eq } from 'drizzle-orm'
 import { db } from '@/db'
-import { folders } from '@/db/schema'
+import { bookmarks, folders } from '@/db/schema'
 import type { FolderSelect } from '@/db/schema/zod/folders'
 import type { CreateFolderFormData, UpdateFolderFormData } from '@/lib/form-schemas/folders'
 import { getSession } from './session'
 
 export type FolderTreeNode = FolderSelect & {
   subfolders: FolderTreeNode[]
+  bookmarkCount: number
 }
 
-function buildFolderTree(folders: FolderSelect[]): FolderTreeNode[] {
+function buildFolderTree(folders: Array<FolderSelect & { bookmarkCount: number }>): FolderTreeNode[] {
   const folderMap = new Map<string, FolderTreeNode>()
   const rootFolders: FolderTreeNode[] = []
 
@@ -49,10 +50,22 @@ export async function getFolders() {
     throw new Error('Unauthorized')
   }
 
-  const allFolders = await db.query.folders.findMany({
-    where: (folder, { eq }) => eq(folder.userId, session.user.id),
-    orderBy: (folder, { asc }) => asc(folder.name),
-  })
+  const allFolders = await db
+    .select({
+      id: folders.id,
+      name: folders.name,
+      description: folders.description,
+      userId: folders.userId,
+      parentFolderId: folders.parentFolderId,
+      createdAt: folders.createdAt,
+      updatedAt: folders.updatedAt,
+      bookmarkCount: count(bookmarks.id).as('bookmark_count'),
+    })
+    .from(folders)
+    .leftJoin(bookmarks, eq(bookmarks.folderId, folders.id))
+    .where(eq(folders.userId, session.user.id))
+    .groupBy(folders.id)
+    .orderBy(folders.name)
 
   return buildFolderTree(allFolders) satisfies FolderTreeNode[]
 }

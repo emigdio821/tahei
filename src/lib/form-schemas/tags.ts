@@ -5,3 +5,9 @@ export const createTagSchema = z.object({
 })
 
 export type CreateTagFormData = z.infer<typeof createTagSchema>
+
+export const updateTagSchema = createTagSchema.extend({
+  id: z.uuid('Invalid tag ID'),
+})
+
+export type UpdateTagFormData = z.infer<typeof updateTagSchema>

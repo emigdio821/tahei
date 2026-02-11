@@ -2,7 +2,10 @@ import type { Metadata } from 'next'
 import { appName } from '@/lib/config/site'
 
 export const metadata: Metadata = {
-  title: `Settings · ${appName}`,
+  title: {
+    template: `%s · ${appName}`,
+    default: 'Settings',
+  },
 }
 
 export default function SettingsPage() {

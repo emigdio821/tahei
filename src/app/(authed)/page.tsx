@@ -3,7 +3,10 @@ import { BookmarksDataTable } from '@/components/bookmarks/table/data-table'
 import { appName } from '@/lib/config/site'
 
 export const metadata: Metadata = {
-  title: `Bookmarks · ${appName}`,
+  title: {
+    template: `%s · ${appName}`,
+    default: 'Bookmarks',
+  },
 }
 
 export default function BookmarksPage() {

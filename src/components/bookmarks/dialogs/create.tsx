@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import type React from 'react'
 import { useId } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { LoaderIcon } from '@/components/icons'
@@ -25,16 +26,13 @@ import { type CreateBookmarkFormData, createBookmarkSchema } from '@/lib/form-sc
 import { createBookmark } from '@/server-actions/bookmarks'
 import { BOOKMARKS_QUERY_KEY } from '@/tanstack-queries/bookmarks'
 
-interface CreateManualBookmarkDialogProps {
-  state: {
-    isOpen: boolean
-    onOpenChange: (open: boolean) => void
-  }
+interface CreateManualBookmarkDialogProps extends React.ComponentProps<typeof Dialog> {
+  open: boolean
+  onOpenChange: (open: boolean) => void
 }
 
-export function CreateBookmarkDialog({ state }: CreateManualBookmarkDialogProps) {
+export function CreateBookmarkDialog({ open, onOpenChange, ...props }: CreateManualBookmarkDialogProps) {
   const createBookmarkFormId = useId()
-  const { isOpen, onOpenChange } = state
 
   const form = useForm<CreateBookmarkFormData>({
     shouldUnregister: true,
@@ -72,7 +70,7 @@ export function CreateBookmarkDialog({ state }: CreateManualBookmarkDialogProps)
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange} {...props}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Create bookmark</DialogTitle>

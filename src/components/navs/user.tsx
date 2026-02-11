@@ -75,7 +75,6 @@ export function NavUser() {
           <DropdownMenuContent className="w-(--anchor-width)" align="center">
             <DropdownMenuGroup>
               <DropdownMenuLabel className="line-clamp-2">{user.name}</DropdownMenuLabel>
-              <DropdownMenuSeparator />
 
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger>

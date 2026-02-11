@@ -1,25 +1,18 @@
 'use client'
 
-import { IconPlus } from '@tabler/icons-react'
 import { useQuery } from '@tanstack/react-query'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { tagsQueryOptions } from '@/tanstack-queries/tags'
+import { TagsActionsCtxMenu } from '../tags/actions-context-menu'
 import { CreateTagDialog } from '../tags/dialogs/create'
 import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from '../ui/empty'
-import {
-  SidebarGroup,
-  SidebarGroupAction,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-  useSidebar,
-} from '../ui/sidebar'
+import { Separator } from '../ui/separator'
+import { SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, useSidebar } from '../ui/sidebar'
 import { Skeleton } from '../ui/skeleton'
-import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
 
 export function NavTags({ ...props }: React.ComponentProps<typeof SidebarGroup>) {
   const pathname = usePathname()
@@ -57,17 +50,26 @@ export function NavTags({ ...props }: React.ComponentProps<typeof SidebarGroup>)
 
     if (tags.length === 0) {
       return (
-        <Empty className="gap-2 rounded-xl bg-muted/50 p-2 md:p-2">
-          <EmptyHeader>
-            <EmptyTitle className="text-sm">Empty</EmptyTitle>
-            <EmptyDescription className="text-xs">There are no tags yet.</EmptyDescription>
-          </EmptyHeader>
-          <EmptyContent>
-            <Button variant="outline" className="w-full" size="xs" onClick={() => refetch()}>
-              Create
-            </Button>
-          </EmptyContent>
-        </Empty>
+        <>
+          <CreateTagDialog open={isCreateDialogOpen} onOpenChange={setCreateDialogOpen} />
+
+          <Empty className="gap-2 rounded-xl bg-muted/50 p-2 md:p-2">
+            <EmptyHeader>
+              <EmptyTitle className="text-sm">Empty</EmptyTitle>
+              <EmptyDescription className="text-xs">There are no tags yet.</EmptyDescription>
+            </EmptyHeader>
+            <EmptyContent>
+              <Button
+                size="xs"
+                variant="outline"
+                className="w-full"
+                onClick={() => setCreateDialogOpen(true)}
+              >
+                Create
+              </Button>
+            </EmptyContent>
+          </Empty>
+        </>
       )
     }
 
@@ -78,17 +80,42 @@ export function NavTags({ ...props }: React.ComponentProps<typeof SidebarGroup>)
           const isActive = pathname === href
 
           return (
-            <Badge
+            <TagsActionsCtxMenu
               key={tag.id}
-              variant={isActive ? 'default' : 'outline'}
-              render={
-                isActive ? (
-                  <span className="cursor-default">{tag.name}</span>
-                ) : (
-                  <Link onClick={() => setOpenMobile(false)} href={href}>
-                    {tag.name}
-                  </Link>
-                )
+              tag={tag}
+              trigger={
+                <Badge
+                  key={tag.id}
+                  className="gap-0.5"
+                  variant={isActive ? 'default' : 'outline'}
+                  render={
+                    isActive ? (
+                      <div>
+                        <span className="cursor-default text-xs">{tag.name}</span>
+                        {tag.bookmarkCount > 0 && (
+                          <>
+                            <Separator orientation="vertical" />
+                            <span className="tabular-nums">
+                              <div>{tag.bookmarkCount}</div>
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    ) : (
+                      <Link className="text-xs" onClick={() => setOpenMobile(false)} href={href}>
+                        <span className="text-xs">{tag.name}</span>
+                        {tag.bookmarkCount > 0 && (
+                          <>
+                            <Separator orientation="vertical" />
+                            <span className="tabular-nums">
+                              <div>{tag.bookmarkCount}</div>
+                            </span>
+                          </>
+                        )}
+                      </Link>
+                    )
+                  }
+                />
               }
             />
           )
@@ -100,29 +127,13 @@ export function NavTags({ ...props }: React.ComponentProps<typeof SidebarGroup>)
   }
 
   return (
-    <>
-      <CreateTagDialog open={isCreateDialogOpen} onOpenChange={setCreateDialogOpen} />
-
-      <SidebarGroup {...props}>
-        <SidebarGroupLabel>
-          Tags
-          <Tooltip>
-            <TooltipTrigger
-              render={
-                <SidebarGroupAction onClick={() => setCreateDialogOpen(true)} aria-label="Create tag">
-                  <IconPlus />
-                </SidebarGroupAction>
-              }
-            />
-            <TooltipContent>Create tag</TooltipContent>
-          </Tooltip>
-        </SidebarGroupLabel>
-        <SidebarGroupContent className="flex flex-col gap-2">
-          <SidebarMenu>
-            <div className="flex flex-wrap gap-2 p-2">{renderTags()}</div>
-          </SidebarMenu>
-        </SidebarGroupContent>
-      </SidebarGroup>
-    </>
+    <SidebarGroup {...props}>
+      <SidebarGroupLabel>Tags</SidebarGroupLabel>
+      <SidebarGroupContent className="flex flex-col gap-2">
+        <SidebarMenu>
+          <div className="flex flex-wrap gap-2 p-2">{renderTags()}</div>
+        </SidebarMenu>
+      </SidebarGroupContent>
+    </SidebarGroup>
   )
 }

@@ -2,7 +2,7 @@ import { createInsertSchema, createSelectSchema, createUpdateSchema } from 'driz
 import type { z } from 'zod'
 import { bookmarks, bookmarkTags } from '..'
 import type { FolderSelect } from './folders'
-import type { TagSelect } from './tags'
+import type { TagWithBookmarkCount } from './tags'
 
 const bookmarkSelectSchema = createSelectSchema(bookmarks)
 const bookmarkInsertSchema = createInsertSchema(bookmarks)
@@ -21,7 +21,7 @@ export type BookmarkTagsInsert = z.infer<typeof bookmarkTagsInsertSchema>
 export type BookmarkTagsUpdate = z.infer<typeof bookmarkTagsUpdateSchema>
 
 export type BookmarkTagsWithTag = BookmarkTagsSelect & {
-  tag: TagSelect
+  tag: TagWithBookmarkCount
 }
 
 export type Bookmark = BookmarkSelect & {

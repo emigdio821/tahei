@@ -79,12 +79,7 @@ export function BookmarksDataTableHeader({ table }: BookmarksDataTableHeaderProp
         }
       />
 
-      <CreateBookmarkDialog
-        state={{
-          isOpen: isCreateManualOpen,
-          onOpenChange: setIsCreateManualOpen,
-        }}
-      />
+      <CreateBookmarkDialog open={isCreateManualOpen} onOpenChange={setIsCreateManualOpen} />
 
       <div className="flex flex-col justify-between gap-2 sm:flex-row">
         <InputGroup className="w-full bg-background sm:w-sm">

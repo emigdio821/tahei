@@ -1,8 +1,11 @@
 import type { Metadata } from 'next'
-import { siteConfig } from '@/lib/config/site'
+import { appName, siteConfig } from '@/lib/config/site'
 
 export const metadata: Metadata = {
-  title: `Login · ${siteConfig.name}`,
+  title: {
+    template: `%s · ${appName}`,
+    default: 'Login',
+  },
   description: siteConfig.description,
   authors: [
     {
