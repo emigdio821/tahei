@@ -2,6 +2,7 @@
 
 import { IconExternalLink, IconFolder, IconTag } from '@tabler/icons-react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { BlurImage } from '@/components/shared/blur-img'
 import { CopyButton } from '@/components/shared/copy-btn'
 import { Badge } from '@/components/ui/badge'
@@ -29,6 +30,9 @@ interface BookmarkDetailsDialogProps {
 
 export function BookmarkDetailsDialog({ bookmark, state }: BookmarkDetailsDialogProps) {
   const { isOpen, onOpenChange } = state
+  const pathname = usePathname()
+
+  const folderHref: `/folders/${string}` | null = bookmark.folder ? `/folders/${bookmark.folder.id}` : null
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -41,26 +45,36 @@ export function BookmarkDetailsDialog({ bookmark, state }: BookmarkDetailsDialog
         <DialogPanel>
           <div className="space-y-4">
             <div className="space-y-2">
-              {bookmark.folder && (
+              {bookmark.folder && folderHref && (
                 <div className="flex items-center gap-2">
                   <IconFolder className="size-4 text-muted-foreground" />
-                  <Badge
-                    variant="outline"
-                    render={<Link href={`/folders/${bookmark.folder.id}`}>{bookmark.folder.name}</Link>}
-                  />
+                  {folderHref === pathname ? (
+                    <Badge variant="outline">{bookmark.folder.name}</Badge>
+                  ) : (
+                    <Badge variant="outline" render={<Link href={folderHref}>{bookmark.folder.name}</Link>} />
+                  )}
                 </div>
               )}
 
               {bookmark.bookmarkTags.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                   <IconTag className="size-4 text-muted-foreground" />
-                  {bookmark.bookmarkTags.map((bt) => (
-                    <Badge
-                      key={bt.tag.id}
-                      variant="outline"
-                      render={<Link href={`/tags/${bt.tag.id}`}>{bt.tag.name}</Link>}
-                    />
-                  ))}
+                  {bookmark.bookmarkTags.map((bt) => {
+                    const tagHref: `/tags/${string}` = `/tags/${bt.tag.id}`
+                    const isCurrentTag = tagHref === pathname
+
+                    return isCurrentTag ? (
+                      <Badge key={bt.tag.id} variant="outline">
+                        {bt.tag.name}
+                      </Badge>
+                    ) : (
+                      <Badge
+                        key={bt.tag.id}
+                        variant="outline"
+                        render={<Link href={tagHref}>{bt.tag.name}</Link>}
+                      />
+                    )
+                  })}
                 </div>
               )}
             </div>
