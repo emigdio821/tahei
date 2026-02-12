@@ -120,3 +120,20 @@ export async function toggleFavoriteBookmark(id: string, isFavorite: boolean): P
     .set({ isFavorite })
     .where(and(eq(bookmarks.id, id), eq(bookmarks.userId, session.user.id)))
 }
+
+export async function exportBookmarkUrls(): Promise<{ url: string }[]> {
+  const session = await getSession()
+
+  if (!session) {
+    throw new Error('Unauthorized')
+  }
+
+  const bookmarksToExport = await db
+    .select({
+      url: bookmarks.url,
+    })
+    .from(bookmarks)
+    .where(eq(bookmarks.userId, session.user.id))
+
+  return bookmarksToExport || []
+}

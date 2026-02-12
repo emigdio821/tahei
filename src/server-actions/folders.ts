@@ -71,6 +71,25 @@ export async function getFolders() {
   return buildFolderTree(allFolders) satisfies FolderTreeNode[]
 }
 
+export async function getFolderById(folderId: string): Promise<FolderSelect | null> {
+  const session = await getSession()
+
+  if (!session) {
+    throw new Error('Unauthorized')
+  }
+
+  const folder = await db.query.folders
+    .findFirst({
+      where: (folder, { eq, and }) => and(eq(folder.id, folderId), eq(folder.userId, session.user.id)),
+    })
+    .catch((e) => {
+      console.error('Error fetching folder by ID:', e)
+      return null
+    })
+
+  return folder || null
+}
+
 export async function createFolder(data: CreateFolderFormData) {
   const session = await getSession()
 

@@ -143,7 +143,7 @@ export default function LoginPage() {
 
             <CardFooter className="pt-4 text-center">
               <Button type="submit" form={loginFormId} className="w-full" disabled={isLoading}>
-                Iniciar sesión
+                Login
                 {isLoading && <IconLoader className="size-4 animate-spin" />}
               </Button>
             </CardFooter>

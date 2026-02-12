@@ -1,9 +1,10 @@
 'use client'
 
-import { IconLogout, IconMoon, IconRefresh, IconSelector, IconSettings, IconSun } from '@tabler/icons-react'
-import { useSuspenseQuery } from '@tanstack/react-query'
-import Link from 'next/link'
+import { IconFileExport, IconLogout, IconMoon, IconRefresh, IconSelector, IconSun } from '@tabler/icons-react'
+import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
+import { useRouter } from 'next/navigation'
 import { useTheme } from 'next-themes'
+import { useState } from 'react'
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -18,14 +19,34 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/menu'
+import { authClient } from '@/lib/auth/client'
 import { loggedUserQueryOptions } from '@/tanstack-queries/logged-user'
+import { ExportBookmarksDialog } from '../bookmarks/dialogs/export'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '../ui/sidebar'
 import { Skeleton } from '../ui/skeleton'
 
 export function NavUser() {
+  const router = useRouter()
+  const queryClient = useQueryClient()
   const { theme, setTheme } = useTheme()
+  const [isExportDialogOpen, setExportDialogOpen] = useState(false)
+
   const { data: user, isLoading, error, refetch } = useSuspenseQuery(loggedUserQueryOptions())
+
+  async function handleLogOut() {
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: async () => {
+          queryClient.clear()
+          router.replace('/login')
+        },
+        onError: (error) => {
+          console.error('Error during sign out:', error)
+        },
+      },
+    })
+  }
 
   function getAvatarFallback() {
     if (!user) return null
@@ -49,77 +70,80 @@ export function NavUser() {
     )
 
   return (
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <SidebarMenuButton
-                size="lg"
-                className="data-popup-open:bg-sidebar-accent data-popup-open:text-sidebar-accent-foreground"
-              >
-                <div className="flex min-w-0 flex-1 items-center gap-2">
-                  <Avatar>
-                    <AvatarImage src={user.image || ''} alt={user.name} />
-                    <AvatarFallback>{getAvatarFallback()}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="truncate font-medium">{user.name.split(' ')[0]}</p>
-                    <p className="truncate text-muted-foreground text-xs">{user.email}</p>
+    <>
+      <ExportBookmarksDialog open={isExportDialogOpen} onOpenChange={setExportDialogOpen} />
+
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <SidebarMenuButton
+                  size="lg"
+                  className="data-popup-open:bg-sidebar-accent data-popup-open:text-sidebar-accent-foreground"
+                >
+                  <div className="flex min-w-0 flex-1 items-center gap-2">
+                    <Avatar>
+                      <AvatarImage src={user.image || ''} alt={user.name} />
+                      <AvatarFallback>{getAvatarFallback()}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="truncate font-medium">{user.name.split(' ')[0]}</p>
+                      <p className="truncate text-muted-foreground text-xs">{user.email}</p>
+                    </div>
                   </div>
-                </div>
-                <IconSelector className="ml-auto size-4 text-muted-foreground" />
-              </SidebarMenuButton>
-            }
-          />
-          <DropdownMenuContent className="w-(--anchor-width)" align="center">
-            <DropdownMenuGroup>
-              <DropdownMenuLabel className="line-clamp-2">{user.name}</DropdownMenuLabel>
+                  <IconSelector className="ml-auto size-4 text-muted-foreground" />
+                </SidebarMenuButton>
+              }
+            />
+            <DropdownMenuContent className="w-(--anchor-width)" align="center">
+              <DropdownMenuGroup>
+                <DropdownMenuLabel className="line-clamp-2">{user.name}</DropdownMenuLabel>
 
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger>
-                  <IconMoon className="hidden size-4 dark:block" />
-                  <IconSun className="size-4 dark:hidden" />
-                  <span>Appearance</span>
-                </DropdownMenuSubTrigger>
-                <DropdownMenuPortal>
-                  <DropdownMenuSubContent>
-                    <DropdownMenuCheckboxItem checked={theme === 'light'} onClick={() => setTheme('light')}>
-                      Light
-                    </DropdownMenuCheckboxItem>
-                    <DropdownMenuCheckboxItem checked={theme === 'dark'} onClick={() => setTheme('dark')}>
-                      Dark
-                    </DropdownMenuCheckboxItem>
-                    <DropdownMenuCheckboxItem checked={theme === 'system'} onClick={() => setTheme('system')}>
-                      System
-                    </DropdownMenuCheckboxItem>
-                  </DropdownMenuSubContent>
-                </DropdownMenuPortal>
-              </DropdownMenuSub>
-            </DropdownMenuGroup>
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger>
+                    <IconMoon className="hidden size-4 dark:block" />
+                    <IconSun className="size-4 dark:hidden" />
+                    <span>Appearance</span>
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuPortal>
+                    <DropdownMenuSubContent>
+                      <DropdownMenuCheckboxItem checked={theme === 'light'} onClick={() => setTheme('light')}>
+                        Light
+                      </DropdownMenuCheckboxItem>
+                      <DropdownMenuCheckboxItem checked={theme === 'dark'} onClick={() => setTheme('dark')}>
+                        Dark
+                      </DropdownMenuCheckboxItem>
+                      <DropdownMenuCheckboxItem
+                        checked={theme === 'system'}
+                        onClick={() => setTheme('system')}
+                      >
+                        System
+                      </DropdownMenuCheckboxItem>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuPortal>
+                </DropdownMenuSub>
+              </DropdownMenuGroup>
 
-            <DropdownMenuGroup>
-              <DropdownMenuItem
-                render={
-                  <Link href="/settings">
-                    <IconSettings className="size-4" />
-                    Settings
-                  </Link>
-                }
-              />
-            </DropdownMenuGroup>
+              <DropdownMenuGroup>
+                <DropdownMenuItem onClick={() => setExportDialogOpen(true)}>
+                  <IconFileExport />
+                  Export bookmarks
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
 
-            <DropdownMenuSeparator />
+              <DropdownMenuSeparator />
 
-            <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => {}}>
-                <IconLogout className="size-4" />
-                Logout
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </SidebarMenuItem>
-    </SidebarMenu>
+              <DropdownMenuGroup>
+                <DropdownMenuItem onClick={handleLogOut}>
+                  <IconLogout className="size-4" />
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    </>
   )
 }
