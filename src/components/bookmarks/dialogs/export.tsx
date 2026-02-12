@@ -15,6 +15,7 @@ export function ExportBookmarksDialog({ open, onOpenChange }: ExportBookmarksDia
 
       if (!bookmarks || bookmarks.length === 0) {
         toast.warning('There are no bookmarks to export.')
+        onOpenChange(false)
         return
       }
 

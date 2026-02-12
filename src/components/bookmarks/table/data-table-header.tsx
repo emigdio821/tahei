@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import type { Bookmark } from '@/db/schema/zod/bookmarks'
-import { useBatchDelete } from '@/hooks/use-bulk-delete'
+import { useBatchDelete } from '@/hooks/use-batch-delete'
 import { deleteBookmark } from '@/server-actions/bookmarks'
 import { BOOKMARKS_QUERY_KEY } from '@/tanstack-queries/bookmarks'
 import { CreateBookmarkDialog } from '../dialogs/create'
@@ -29,8 +29,10 @@ export function BookmarksDataTableHeader({ table }: BookmarksDataTableHeaderProp
   const selectedRows = table.getFilteredSelectedRowModel().rows
   const selectedRowsLength = selectedRows.length
 
+  const selectedItems = selectedRows.map((row) => row.original)
+
   const batchDeleteMutation = useBatchDelete({
-    table,
+    items: selectedItems,
     successTitle: 'Bookmarks deleted',
     successDescription: 'The selected bookmarks have been successfully deleted.',
     deleteFn: async (bookmark) => {
@@ -38,6 +40,7 @@ export function BookmarksDataTableHeader({ table }: BookmarksDataTableHeaderProp
     },
     invalidateKeys: [BOOKMARKS_QUERY_KEY],
     onSuccess: () => {
+      table.resetRowSelection()
       setDeleteDialogOpen(false)
     },
   })

@@ -31,6 +31,7 @@ import {
 import { authClient } from '@/lib/auth/client'
 import { loggedUserQueryOptions } from '@/tanstack-queries/logged-user'
 import { ExportBookmarksDialog } from '../bookmarks/dialogs/export'
+import { ImportBookmarkDialog } from '../bookmarks/dialogs/import'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '../ui/sidebar'
 import { Skeleton } from '../ui/skeleton'
@@ -40,6 +41,7 @@ export function NavUser() {
   const queryClient = useQueryClient()
   const { theme, setTheme } = useTheme()
   const [isExportDialogOpen, setExportDialogOpen] = useState(false)
+  const [isImportDialogOpen, setImportDialogOpen] = useState(false)
 
   const { data: user, isLoading, error, refetch } = useSuspenseQuery(loggedUserQueryOptions())
 
@@ -81,6 +83,7 @@ export function NavUser() {
   return (
     <>
       <ExportBookmarksDialog open={isExportDialogOpen} onOpenChange={setExportDialogOpen} />
+      <ImportBookmarkDialog open={isImportDialogOpen} onOpenChange={setImportDialogOpen} />
 
       <SidebarMenu>
         <SidebarMenuItem>
@@ -142,7 +145,7 @@ export function NavUser() {
                   </DropdownMenuSubTrigger>
                   <DropdownMenuPortal>
                     <DropdownMenuSubContent>
-                      <DropdownMenuItem onClick={() => setTheme('light')}>
+                      <DropdownMenuItem onClick={() => setImportDialogOpen(true)}>
                         <IconFileImport />
                         Import
                       </DropdownMenuItem>

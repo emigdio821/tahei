@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import type { Table } from '@tanstack/react-table'
 import { toast } from 'sonner'
 
 interface BatchDeleteConfig<TData> {
@@ -9,7 +8,7 @@ interface BatchDeleteConfig<TData> {
   successDescription: React.ReactNode
   errorTitle?: React.ReactNode
   errorDescription?: React.ReactNode
-  table: Table<TData>
+  items: TData[]
   onSuccess?: () => void
 }
 
@@ -20,16 +19,14 @@ export function useBatchDelete<TData>({
   successDescription,
   errorTitle,
   errorDescription,
-  table,
+  items,
   onSuccess: customOnSuccess,
 }: BatchDeleteConfig<TData>) {
   const queryClient = useQueryClient()
-  const selectedRows = table.getFilteredSelectedRowModel().rows
-  const selectedItems = selectedRows.map((row) => row.original)
 
   return useMutation({
     mutationFn: async () => {
-      const results = await Promise.allSettled(selectedItems.map((item) => deleteFn(item)))
+      const results = await Promise.allSettled(items.map((item) => deleteFn(item)))
 
       const fulfilled = results.filter((r) => r.status === 'fulfilled').length
       const rejected = results.filter((r) => r.status === 'rejected').length
@@ -40,8 +37,6 @@ export function useBatchDelete<TData>({
       invalidateKeys.forEach((key) => {
         queryClient.invalidateQueries({ queryKey: [key] })
       })
-
-      table.resetRowSelection()
 
       if (rejected === 0) {
         toast.success(successTitle, {
