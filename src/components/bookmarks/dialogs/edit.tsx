@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useId } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { LoaderIcon } from '@/components/icons'
+import { TagsMultiCombobox } from '@/components/shared/dropdowns/tags-multi-combobox'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -46,6 +47,7 @@ export function EditBookmarkDialog({ bookmark, state }: EditBookmarkDialogProps)
       description: bookmark.description || '',
       isFavorite: bookmark.isFavorite,
       folderId: bookmark.folderId,
+      tags: bookmark.bookmarkTags.map((bt) => bt.tagId) || [],
     },
   })
 
@@ -144,6 +146,24 @@ export function EditBookmarkDialog({ bookmark, state }: EditBookmarkDialogProps)
                     aria-invalid={fieldState.invalid}
                     disabled={updateBookmarkMutation.isPending}
                     placeholder="Description of the bookmark (optional)"
+                  />
+                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                </Field>
+              )}
+            />
+
+            <Controller
+              name="tags"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor={field.name}>Tags</FieldLabel>
+                  <TagsMultiCombobox
+                    id={field.name}
+                    value={field.value}
+                    onValueChange={(value) => {
+                      field.onChange(value || [])
+                    }}
                   />
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>

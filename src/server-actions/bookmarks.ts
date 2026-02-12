@@ -4,7 +4,7 @@ import { and, eq } from 'drizzle-orm'
 import { db } from '@/db'
 import { bookmarks, bookmarkTags } from '@/db/schema'
 import type { Bookmark, BookmarkInsert } from '@/db/schema/zod/bookmarks'
-import type { CreateBookmarkFormData } from '@/lib/form-schemas/bookmarks'
+import type { CreateBookmarkFormData, UpdateBookmarkFormData } from '@/lib/form-schemas/bookmarks'
 import { getBookmarkMetadata } from './bookmark-metadata'
 import { getSession } from './session'
 
@@ -88,14 +88,27 @@ export async function createBookmark(data: CreateBookmarkFormData): Promise<void
   }
 }
 
-export async function updateBookmark(id: string, data: Partial<BookmarkInsert>): Promise<void> {
+export async function updateBookmark(id: string, data: UpdateBookmarkFormData): Promise<void> {
   const session = await getSession()
 
   if (!session) {
     throw new Error('Unauthorized')
   }
 
-  await db.update(bookmarks).set(data).where(eq(bookmarks.id, id))
+  const { tags, ...bookmark } = data
+
+  if (tags) {
+    await db.delete(bookmarkTags).where(eq(bookmarkTags.bookmarkId, id))
+
+    const tagsToInsert = tags.map((tagId) => ({
+      bookmarkId: id,
+      tagId,
+    }))
+
+    await db.insert(bookmarkTags).values(tagsToInsert)
+  }
+
+  await db.update(bookmarks).set(bookmark).where(eq(bookmarks.id, id))
 }
 
 export async function deleteBookmark(id: string): Promise<void> {

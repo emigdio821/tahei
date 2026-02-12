@@ -16,6 +16,7 @@ export const updateBookmarkSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   description: z.string().max(200, 'Description must be 200 characters or less').optional(),
   isFavorite: z.boolean().optional(),
+  tags: z.array(z.string()).optional(),
   folderId: z.uuid().nullable().optional(),
 })
 
