@@ -74,8 +74,8 @@ export function CreateFolderDialog({ open, onOpenChange, ...props }: CreateFolde
 
         <DialogPanel>
           <form
-            className="space-y-4"
             id={createFolderFormId}
+            className="flex flex-col gap-4"
             aria-label="Create folder form"
             onSubmit={form.handleSubmit(onSubmit)}
           >

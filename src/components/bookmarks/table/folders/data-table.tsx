@@ -5,18 +5,22 @@ import { TSQueryGenericError } from '@/components/shared/errors/query-generic'
 import { TableGenericSkeleton } from '@/components/shared/skeletons/table-generic'
 import { DataTable } from '@/components/shared/table/data-table'
 import { BookmarkCreationProvider } from '@/lib/contexts/bookmark-creation'
-import { favoriteBookmarksQueryOptions } from '@/tanstack-queries/bookmarks'
+import { foldersBookmarksQueryOptions } from '@/tanstack-queries/folders'
 import { bookmarksTableColumns } from '../columns'
 import { BookmarksDataTableHeader } from '../data-table-header'
 
-export function FavoriteBookmarksDataTable() {
-  const { data: bookmarks = [], isLoading, error, refetch } = useQuery(favoriteBookmarksQueryOptions())
+interface FolderBookmarksDataTableProps {
+  folderId: string
+}
+
+export function FolderBookmarksDataTable({ folderId }: FolderBookmarksDataTableProps) {
+  const { data: bookmarks = [], isLoading, error, refetch } = useQuery(foldersBookmarksQueryOptions(folderId))
 
   if (error) {
     return (
       <TSQueryGenericError
         refetch={refetch}
-        errorDescription="Something went wrong while fetching your favorite bookmarks."
+        errorDescription="Something went wrong while fetching bookmarks for this folder."
       />
     )
   }
@@ -28,13 +32,13 @@ export function FavoriteBookmarksDataTable() {
   return (
     <BookmarkCreationProvider
       value={{
-        defaultIsFavorite: true,
-        hiddenFields: { isFavorite: true },
+        defaultFolderId: folderId,
+        hiddenFields: { folder: true },
       }}
     >
       <DataTable
         data={bookmarks}
-        tableId="bookmarks"
+        tableId="folder-bookmarks"
         columns={bookmarksTableColumns}
         header={(table) => <BookmarksDataTableHeader table={table} />}
       />

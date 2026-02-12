@@ -75,8 +75,8 @@ export function EditTagDialog({ open, onOpenChange, tag, ...props }: EditTagDial
 
         <DialogPanel>
           <form
-            className="space-y-4"
             id={editTagFormId}
+            className="flex flex-col gap-4"
             aria-label="Edit tag form"
             onSubmit={form.handleSubmit(onSubmit)}
           >

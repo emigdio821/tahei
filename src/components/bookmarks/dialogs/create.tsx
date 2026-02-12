@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import type React from 'react'
-import { useId } from 'react'
+import { Activity, useId } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { LoaderIcon } from '@/components/icons'
 import { FoldersCombobox } from '@/components/shared/dropdowns/folders-combobox'
@@ -22,6 +22,7 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { useEntityMutation } from '@/hooks/use-entity-mutation'
+import { useBookmarkCreationContext } from '@/lib/contexts/bookmark-creation'
 import { type CreateBookmarkFormData, createBookmarkSchema } from '@/lib/form-schemas/bookmarks'
 import { createBookmark } from '@/server-actions/bookmarks'
 import { BOOKMARKS_QUERY_KEY } from '@/tanstack-queries/bookmarks'
@@ -33,6 +34,7 @@ interface CreateManualBookmarkDialogProps extends React.ComponentProps<typeof Di
 
 export function CreateBookmarkDialog({ open, onOpenChange, ...props }: CreateManualBookmarkDialogProps) {
   const createBookmarkFormId = useId()
+  const context = useBookmarkCreationContext()
 
   const form = useForm<CreateBookmarkFormData>({
     shouldUnregister: true,
@@ -40,10 +42,10 @@ export function CreateBookmarkDialog({ open, onOpenChange, ...props }: CreateMan
     defaultValues: {
       url: '',
       name: '',
-      tags: [],
+      tags: context.defaultTags ?? [],
       description: '',
-      isFavorite: false,
-      folderId: null,
+      isFavorite: context.defaultIsFavorite ?? false,
+      folderId: context.defaultFolderId ?? null,
     },
   })
 
@@ -79,8 +81,8 @@ export function CreateBookmarkDialog({ open, onOpenChange, ...props }: CreateMan
 
         <DialogPanel>
           <form
-            className="space-y-4"
             id={createBookmarkFormId}
+            className="flex flex-col gap-4"
             aria-label="Create bookmark form"
             onSubmit={form.handleSubmit(onSubmit)}
           >
@@ -112,6 +114,7 @@ export function CreateBookmarkDialog({ open, onOpenChange, ...props }: CreateMan
                   <Input
                     {...field}
                     id={field.name}
+                    autoComplete="off"
                     aria-invalid={fieldState.invalid}
                     disabled={createBookmarkMutation.isPending}
                   />
@@ -143,64 +146,78 @@ export function CreateBookmarkDialog({ open, onOpenChange, ...props }: CreateMan
               )}
             />
 
-            <Controller
-              name="folderId"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={field.name}>Folder</FieldLabel>
-                  <FoldersCombobox value={field.value} onValueChange={(value) => field.onChange(value)} />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-
-            <Controller
-              name="tags"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={field.name}>Tags</FieldLabel>
-                  <TagsMultiCombobox
-                    value={field.value}
-                    onValueChange={(value) => {
-                      field.onChange(value || [])
-                    }}
-                  />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-
-            <Controller
-              name="isFavorite"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <Label
-                    className="flex items-center gap-6 rounded-lg border p-3 hover:bg-accent/50 has-data-checked:border-primary/48 has-data-checked:bg-accent/50"
-                    htmlFor={field.name}
-                  >
-                    <div className="flex flex-col">
-                      <p className="text-sm">Favorite</p>
-                      <p className="font-normal text-muted-foreground text-sm">
-                        Add this bookmark to the favorites list.
-                      </p>
-                    </div>
-                    <Switch
+            <Activity name="folder-activity" mode={!context.hiddenFields?.folder ? 'visible' : 'hidden'}>
+              <Controller
+                name="folderId"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor={field.name}>Folder</FieldLabel>
+                    <FoldersCombobox
                       id={field.name}
-                      className="ms-auto"
-                      checked={field.value}
-                      disabled={createBookmarkMutation.isPending}
-                      onCheckedChange={(value) => {
-                        field.onChange(value)
+                      value={field.value}
+                      onValueChange={(value) => field.onChange(value)}
+                    />
+                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                  </Field>
+                )}
+              />
+            </Activity>
+
+            <Activity name="tags-activity" mode={!context.hiddenFields?.tags ? 'visible' : 'hidden'}>
+              <Controller
+                name="tags"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor={field.name}>Tags</FieldLabel>
+                    <TagsMultiCombobox
+                      id={field.name}
+                      value={field.value}
+                      onValueChange={(value) => {
+                        field.onChange(value || [])
                       }}
                     />
-                  </Label>
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
+                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                  </Field>
+                )}
+              />
+            </Activity>
+
+            <Activity
+              name="isFavorite-activity"
+              mode={!context.hiddenFields?.isFavorite ? 'visible' : 'hidden'}
+            >
+              <Controller
+                name="isFavorite"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <Label
+                      className="flex items-center gap-6 rounded-lg border p-3 hover:bg-accent/50 has-data-checked:border-primary/48 has-data-checked:bg-accent/50"
+                      htmlFor={field.name}
+                    >
+                      <div className="flex flex-col">
+                        <p className="text-sm">Favorite</p>
+                        <p className="font-normal text-muted-foreground text-sm">
+                          Add this bookmark to the favorites list.
+                        </p>
+                      </div>
+                      <Switch
+                        id={field.name}
+                        className="ms-auto"
+                        checked={field.value}
+                        disabled={createBookmarkMutation.isPending}
+                        onCheckedChange={(value) => {
+                          field.onChange(value)
+                        }}
+                      />
+                    </Label>
+                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                  </Field>
+                )}
+              />
+            </Activity>
           </form>
         </DialogPanel>
 

@@ -87,8 +87,8 @@ export function EditBookmarkDialog({ bookmark, state }: EditBookmarkDialogProps)
 
         <DialogPanel>
           <form
-            className="space-y-4"
             id={editBookmarkFormId}
+            className="flex flex-col gap-4"
             aria-label="Edit bookmark form"
             onSubmit={form.handleSubmit(onSubmit)}
           >

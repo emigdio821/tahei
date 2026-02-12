@@ -98,6 +98,10 @@ export const bookmarkTags = pgTable(
       .notNull()
       .references(() => tags.id, { onDelete: 'cascade' }),
     createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
   },
   (table) => [
     index('bookmarkTags_bookmarkId_idx').on(table.bookmarkId),

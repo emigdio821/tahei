@@ -86,8 +86,8 @@ export default function LoginPage() {
             <CardContent>
               <form
                 id={loginFormId}
-                className="space-y-4"
                 aria-label="Login form"
+                className="flex flex-col gap-4"
                 onSubmit={form.handleSubmit(onSubmit)}
               >
                 <FieldGroup>

@@ -3,6 +3,7 @@
 import { and, count, eq } from 'drizzle-orm'
 import { db } from '@/db'
 import { bookmarks, folders } from '@/db/schema'
+import type { Bookmark } from '@/db/schema/zod/bookmarks'
 import type { FolderSelect } from '@/db/schema/zod/folders'
 import type { CreateFolderFormData, UpdateFolderFormData } from '@/lib/form-schemas/folders'
 import { getSession } from './session'
@@ -110,4 +111,28 @@ export async function deleteFolder(folderId: string) {
   }
 
   await db.delete(folders).where(and(eq(folders.id, folderId), eq(folders.userId, session.user.id)))
+}
+
+export async function getBookmarksByFolder(folderId: string): Promise<Bookmark[]> {
+  const session = await getSession()
+
+  if (!session) {
+    throw new Error('Unauthorized')
+  }
+
+  const folderBookmarks = await db.query.bookmarks.findMany({
+    with: {
+      bookmarkTags: {
+        with: {
+          tag: true,
+        },
+      },
+      folder: true,
+    },
+    where: (bookmark, { eq, and }) =>
+      and(eq(bookmark.folderId, folderId), eq(bookmark.userId, session.user.id)),
+    orderBy: (bookmark, { desc }) => desc(bookmark.updatedAt),
+  })
+
+  return folderBookmarks
 }

@@ -78,8 +78,8 @@ export function EditFolderDialog({ open, onOpenChange, folder, ...props }: EditF
 
         <DialogPanel>
           <form
-            className="space-y-4"
             id={editFolderFormId}
+            className="flex flex-col gap-4"
             aria-label="Edit folder form"
             onSubmit={form.handleSubmit(onSubmit)}
           >

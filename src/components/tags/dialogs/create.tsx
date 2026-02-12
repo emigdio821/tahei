@@ -70,8 +70,8 @@ export function CreateTagDialog({ open, onOpenChange, ...props }: CreateTagDialo
 
         <DialogPanel>
           <form
-            className="space-y-4"
             id={createTagFormId}
+            className="flex flex-col gap-4"
             aria-label="Create tag form"
             onSubmit={form.handleSubmit(onSubmit)}
           >
