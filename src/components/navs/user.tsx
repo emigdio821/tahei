@@ -1,6 +1,15 @@
 'use client'
 
-import { IconFileExport, IconLogout, IconMoon, IconRefresh, IconSelector, IconSun } from '@tabler/icons-react'
+import {
+  IconBookmark,
+  IconFileExport,
+  IconFileImport,
+  IconLogout,
+  IconMoon,
+  IconRefresh,
+  IconSelector,
+  IconSun,
+} from '@tabler/icons-react'
 import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { useTheme } from 'next-themes'
@@ -126,10 +135,24 @@ export function NavUser() {
               </DropdownMenuGroup>
 
               <DropdownMenuGroup>
-                <DropdownMenuItem onClick={() => setExportDialogOpen(true)}>
-                  <IconFileExport />
-                  Export bookmarks
-                </DropdownMenuItem>
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger>
+                    <IconBookmark />
+                    <span>Bookmarks</span>
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuPortal>
+                    <DropdownMenuSubContent>
+                      <DropdownMenuItem onClick={() => setTheme('light')}>
+                        <IconFileImport />
+                        Import
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setExportDialogOpen(true)}>
+                        <IconFileExport />
+                        Export
+                      </DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuPortal>
+                </DropdownMenuSub>
               </DropdownMenuGroup>
 
               <DropdownMenuSeparator />

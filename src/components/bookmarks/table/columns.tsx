@@ -2,6 +2,7 @@
 
 import type { ColumnDef } from '@tanstack/react-table'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { DataTableSortableHeader } from '@/components/shared/table/sortable-header'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -74,10 +75,17 @@ export const bookmarksTableColumns: ColumnDef<Bookmark>[] = [
     size: 100,
     cell: ({ row }) => {
       const folder = row.original.folder
+      const pathname = usePathname()
 
       if (!folder) return null
 
-      return <Badge variant="outline" render={<Link href={`/folders/${folder.id}`}>{folder.name}</Link>} />
+      const folderHref: `/folders/${string}` = `/folders/${folder.id}`
+
+      if (folderHref === pathname) {
+        return <Badge variant="outline">{folder.name}</Badge>
+      }
+
+      return <Badge variant="outline" render={<Link href={folderHref}>{folder.name}</Link>} />
     },
   },
   {
@@ -86,14 +94,31 @@ export const bookmarksTableColumns: ColumnDef<Bookmark>[] = [
     size: 160,
     cell: ({ row }) => {
       const tags = row.original.bookmarkTags
+      const pathname = usePathname()
 
       if (tags.length === 0) return null
 
       return (
         <div className="flex flex-wrap gap-1">
-          {tags.map(({ tag }) => (
-            <Badge key={tag.id} variant="outline" render={<Link href={`/tags/${tag.id}`}>{tag.name}</Link>} />
-          ))}
+          {tags.map(({ tag }) => {
+            const tagHref: `/tags/${string}` = `/tags/${tag.id}`
+
+            if (tagHref === pathname) {
+              return (
+                <Badge key={tag.id} variant="outline">
+                  {tag.name}
+                </Badge>
+              )
+            }
+
+            return (
+              <Badge
+                key={tag.id}
+                variant="outline"
+                render={<Link href={`/tags/${tag.id}`}>{tag.name}</Link>}
+              />
+            )
+          })}
         </div>
       )
     },
