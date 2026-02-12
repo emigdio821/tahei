@@ -1,7 +1,7 @@
 export const appName = 'Tahei'
 export const appDesc = 'Tahei is a simple bookmark manager.'
 export const appUrl = 'https://tahei.vercel.app'
-export const appOgUrl = 'https://tahei.vercel.app/api/og'
+export const appOgUrl = 'https://tahei.vercel.app/og'
 
 export const siteConfig = {
   name: appName,
