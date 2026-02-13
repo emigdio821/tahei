@@ -80,8 +80,8 @@ export function BookmarkDetailsDialog({ bookmark, state }: BookmarkDetailsDialog
             </div>
 
             {bookmark.image && (
-              <div className="mt-4 h-48 w-full rounded-md bg-muted object-cover md:h-64">
-                <BlurImage src={bookmark.image} alt={bookmark.name} />
+              <div className="relative mt-4 h-48 w-full overflow-hidden rounded-md bg-muted md:h-64">
+                <BlurImage src={bookmark.image} alt={bookmark.name} fill className="object-cover" />
               </div>
             )}
           </div>
