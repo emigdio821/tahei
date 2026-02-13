@@ -7,7 +7,7 @@ export const FOLDERS_BOOKMARKS_QUERY_KEY = 'folders-bookmarks'
 export const foldersQueryOptions = () =>
   queryOptions({
     queryKey: [FOLDERS_QUERY_KEY],
-    queryFn: async () => await getFolders(),
+    queryFn: getFolders,
     staleTime: Number.POSITIVE_INFINITY,
   })
 

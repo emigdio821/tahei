@@ -7,11 +7,11 @@ export const FAVORITE_BOOKMARKS_QUERY_KEY = 'favorite-bookmarks'
 export const bookmarksQueryOptions = () =>
   queryOptions({
     queryKey: [BOOKMARKS_QUERY_KEY],
-    queryFn: async () => await getBookmarks(),
+    queryFn: getBookmarks,
   })
 
 export const favoriteBookmarksQueryOptions = () =>
   queryOptions({
     queryKey: [FAVORITE_BOOKMARKS_QUERY_KEY],
-    queryFn: async () => await getFavoriteBookmarks(),
+    queryFn: getFavoriteBookmarks,
   })

@@ -11,7 +11,7 @@ import {
   IconSelector,
   IconSun,
 } from '@tabler/icons-react'
-import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { useTheme } from 'next-themes'
 import { useState } from 'react'
@@ -48,7 +48,7 @@ export function NavUser() {
   const [isImportDialogOpen, setImportDialogOpen] = useState(false)
   const [isUpdatePassDialogOpen, setUpdatePassDialogOpen] = useState(false)
 
-  const { data: user, isLoading, error, refetch } = useSuspenseQuery(loggedUserQueryOptions())
+  const { data: user, isLoading, error, refetch } = useQuery(loggedUserQueryOptions())
 
   async function handleLogOut() {
     await authClient.signOut({

@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
   typedRoutes: true,
+  serverExternalPackages: ['re2'],
 }
 
 export default nextConfig

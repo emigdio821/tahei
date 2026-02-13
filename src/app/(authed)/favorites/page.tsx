@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   },
 }
 
-export default function BookmarksPage() {
+export default function FavoritesPage() {
   return (
     <div>
       <div className="mb-4 flex flex-col gap-2">
