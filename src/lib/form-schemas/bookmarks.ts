@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { DESCRIPTION_MAX_LENGTH } from '../constants'
 
 export const createBookmarkSchema = z.object({
   url: z.url(),
@@ -14,7 +15,10 @@ export type CreateBookmarkFormData = z.infer<typeof createBookmarkSchema>
 export const updateBookmarkSchema = z.object({
   url: z.url('Invalid URL').min(1, 'URL is required'),
   name: z.string().min(1, 'Name is required'),
-  description: z.string().max(200, 'Description must be 200 characters or less').optional(),
+  description: z
+    .string()
+    .max(DESCRIPTION_MAX_LENGTH, `Description must be ${DESCRIPTION_MAX_LENGTH} characters or less`)
+    .optional(),
   isFavorite: z.boolean().optional(),
   tags: z.array(z.string()).optional(),
   folderId: z.uuid().nullable().optional(),

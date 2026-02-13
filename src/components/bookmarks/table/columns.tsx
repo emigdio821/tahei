@@ -38,7 +38,7 @@ export const bookmarksTableColumns: ColumnDef<Bookmark>[] = [
   },
   {
     accessorKey: 'name',
-    size: 160,
+    size: 180,
     cell: ({ row }) => <BookmarkNameCell bookmark={row.original} />,
     header: ({ column }) => <DataTableSortableHeader column={column} title="Name" />,
     filterFn: (row, _, value: string) => {
@@ -63,6 +63,7 @@ export const bookmarksTableColumns: ColumnDef<Bookmark>[] = [
     size: 160,
     cell: ({ row }) => (
       <Button
+        className="truncate"
         nativeButton={false}
         variant="link"
         render={<a href={row.original.url}>{simplifiedURL(row.original.url)}</a>}

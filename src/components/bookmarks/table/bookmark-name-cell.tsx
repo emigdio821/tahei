@@ -21,7 +21,7 @@ export function BookmarkNameCell({ bookmark }: BookmarkNameCellProps) {
 
       <Button variant="plain" className="text-left" onClick={() => setIsSheetOpen(true)}>
         <Avatar className="size-4">
-          <AvatarImage src={bookmark.favicon || ''} alt={bookmark.name} />
+          {bookmark.favicon && <AvatarImage src={bookmark.favicon} alt={bookmark.name} />}
           <AvatarFallback>
             <IconWorld className="size-4 text-muted-foreground" />
           </AvatarFallback>

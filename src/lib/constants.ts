@@ -1,0 +1,6 @@
+export const TITLE_MAX_LENGTH = 100
+export const TAG_NAME_MAX_LENGTH = 50
+export const FOLDER_NAME_MAX_LENGTH = 50
+export const DESCRIPTION_MAX_LENGTH = 200
+export const PASSWORD_MIN_LENGTH = 8
+export const PASSWORD_MAX_LENGTH = 128

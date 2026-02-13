@@ -10,6 +10,12 @@ import {
   uuid,
   varchar,
 } from 'drizzle-orm/pg-core'
+import {
+  DESCRIPTION_MAX_LENGTH,
+  FOLDER_NAME_MAX_LENGTH,
+  TAG_NAME_MAX_LENGTH,
+  TITLE_MAX_LENGTH,
+} from '@/lib/constants'
 import { user } from './auth'
 
 export * from './auth'
@@ -18,8 +24,8 @@ export const folders = pgTable(
   'folders',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    name: varchar('name', { length: 50 }).notNull(),
-    description: varchar('description', { length: 200 }),
+    name: varchar('name', { length: FOLDER_NAME_MAX_LENGTH }).notNull(),
+    description: varchar('description', { length: DESCRIPTION_MAX_LENGTH }),
     userId: text('user_id')
       .notNull()
       .references(() => user.id, { onDelete: 'cascade' }),
@@ -46,8 +52,8 @@ export const bookmarks = pgTable(
   {
     id: uuid('id').primaryKey().defaultRandom(),
     url: text('url').notNull(),
-    name: varchar('name', { length: 100 }).notNull(),
-    description: varchar('description', { length: 200 }),
+    name: varchar('name', { length: TITLE_MAX_LENGTH }).notNull(),
+    description: varchar('description', { length: DESCRIPTION_MAX_LENGTH }),
     favicon: text('favicon'),
     image: text('image'),
     isFavorite: boolean('is_favorite').default(false).notNull(),
@@ -72,7 +78,7 @@ export const tags = pgTable(
   'tags',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    name: varchar('name', { length: 50 }).notNull(),
+    name: varchar('name', { length: TAG_NAME_MAX_LENGTH }).notNull(),
     userId: text('user_id')
       .notNull()
       .references(() => user.id, { onDelete: 'cascade' }),

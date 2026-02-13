@@ -1,16 +1,20 @@
 import { z } from 'zod'
+import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from '../constants'
 
 export const updatePasswordSchema = z
   .object({
     currentPassword: z.string().min(1, 'Current password is required'),
     newPassword: z
       .string()
-      .min(8, 'New password must be at least 8 characters')
-      .max(100, 'New password must be less than 100 characters'),
+      .min(PASSWORD_MIN_LENGTH, `New password must be at least ${PASSWORD_MIN_LENGTH} characters`)
+      .max(PASSWORD_MAX_LENGTH, `New password must be less than ${PASSWORD_MAX_LENGTH} characters`),
     newPasswordConfirmation: z
       .string()
-      .min(8, 'Please confirm your new password')
-      .max(100, 'New password confirmation must be less than 100 characters'),
+      .min(PASSWORD_MIN_LENGTH, `Please confirm your new password`)
+      .max(
+        PASSWORD_MAX_LENGTH,
+        `New password confirmation must be less than ${PASSWORD_MAX_LENGTH} characters`,
+      ),
   })
   .superRefine((data, ctx) => {
     if (data.newPassword !== data.newPasswordConfirmation) {

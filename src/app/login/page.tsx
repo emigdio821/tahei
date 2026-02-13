@@ -16,13 +16,14 @@ import { Input } from '@/components/ui/input'
 import { InputPassword } from '@/components/ui/input-password'
 import { authClient } from '@/lib/auth/client'
 import { appName } from '@/lib/config/site'
+import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from '@/lib/constants'
 
 const loginSchema = z.object({
   email: z.email().min(1, 'Email is required'),
   password: z
     .string()
-    .min(8, 'Password must be at least 8 characters')
-    .max(128, 'Password must be less than 128 characters'),
+    .min(PASSWORD_MIN_LENGTH, `Password must be at least ${PASSWORD_MIN_LENGTH} characters`)
+    .max(PASSWORD_MAX_LENGTH, `Password must be less than ${PASSWORD_MAX_LENGTH} characters`),
 })
 
 type LoginFormData = z.infer<typeof loginSchema>
