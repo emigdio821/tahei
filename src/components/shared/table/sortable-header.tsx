@@ -1,13 +1,12 @@
-import { IconArrowNarrowDown, IconArrowNarrowUp, IconArrowsSort, IconFilter2X } from '@tabler/icons-react'
+import { IconArrowNarrowDown, IconArrowNarrowUp, IconArrowsSort } from '@tabler/icons-react'
 import type { Column } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
+  MenuCheckboxItem,
 } from '@/components/ui/menu'
 import { cn } from '@/lib/utils'
 
@@ -43,25 +42,28 @@ export function DataTableSortableHeader<TData, TValue>({
         />
         <DropdownMenuContent align="start" className="max-w-42">
           <DropdownMenuGroup>
-            <DropdownMenuItem disabled={isAscSorted} onClick={() => column.toggleSorting(false)}>
-              <IconArrowNarrowDown className="size-4" />
+            <MenuCheckboxItem
+              onClick={() => {
+                if (isAscSorted) {
+                  column.clearSorting()
+                } else {
+                  column.toggleSorting(false)
+                }
+              }}
+            >
               Ascendant
-            </DropdownMenuItem>
-
-            <DropdownMenuItem disabled={isDescSorted} onClick={() => column.toggleSorting(true)}>
-              <IconArrowNarrowUp className="size-4" />
+            </MenuCheckboxItem>
+            <MenuCheckboxItem
+              onClick={() => {
+                if (isDescSorted) {
+                  column.clearSorting()
+                } else {
+                  column.toggleSorting(true)
+                }
+              }}
+            >
               Descendant
-            </DropdownMenuItem>
-
-            {column.getIsSorted() && (
-              <>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => column.clearSorting()}>
-                  <IconFilter2X className="size-4" />
-                  Reset
-                </DropdownMenuItem>
-              </>
-            )}
+            </MenuCheckboxItem>
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
