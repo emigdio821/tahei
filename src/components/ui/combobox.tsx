@@ -17,7 +17,7 @@ const ComboboxContext = React.createContext<{
 
 function Combobox<Value, Multiple extends boolean | undefined = false>(
   props: ComboboxPrimitive.Root.Props<Value, Multiple>,
-): React.JSX.Element {
+) {
   const chipsRef = React.useRef<Element | null>(null)
   return (
     <ComboboxContext.Provider value={{ chipsRef, multiple: !!props.multiple }}>
@@ -98,7 +98,9 @@ function ComboboxInput({
             sizeValue === 'sm' ? 'end-0' : 'end-0.5',
           )}
         >
-          <IconSelector />
+          <ComboboxPrimitive.Icon data-slot="combobox-icon">
+            <IconSelector />
+          </ComboboxPrimitive.Icon>
         </ComboboxTrigger>
       )}
       {showClear && (
@@ -115,8 +117,12 @@ function ComboboxInput({
   )
 }
 
-function ComboboxTrigger({ className, ...props }: ComboboxPrimitive.Trigger.Props) {
-  return <ComboboxPrimitive.Trigger className={className} data-slot="combobox-trigger" {...props} />
+function ComboboxTrigger({ className, children, ...props }: ComboboxPrimitive.Trigger.Props) {
+  return (
+    <ComboboxPrimitive.Trigger className={className} data-slot="combobox-trigger" {...props}>
+      {children}
+    </ComboboxPrimitive.Trigger>
+  )
 }
 
 function ComboboxPopup({
@@ -126,21 +132,24 @@ function ComboboxPopup({
   sideOffset = 4,
   alignOffset,
   align = 'start',
+  anchor: anchorProp,
   ...props
 }: ComboboxPrimitive.Popup.Props & {
   align?: ComboboxPrimitive.Positioner.Props['align']
   sideOffset?: ComboboxPrimitive.Positioner.Props['sideOffset']
   alignOffset?: ComboboxPrimitive.Positioner.Props['alignOffset']
   side?: ComboboxPrimitive.Positioner.Props['side']
+  anchor?: ComboboxPrimitive.Positioner.Props['anchor']
 }) {
   const { chipsRef } = React.useContext(ComboboxContext)
+  const anchor = anchorProp ?? chipsRef
 
   return (
     <ComboboxPrimitive.Portal>
       <ComboboxPrimitive.Positioner
         align={align}
         alignOffset={alignOffset}
-        anchor={chipsRef}
+        anchor={anchor}
         className="z-50 select-none"
         data-slot="combobox-positioner"
         side={side}
@@ -281,16 +290,6 @@ function ComboboxChips({
         className,
       )}
       data-slot="combobox-chips"
-      onMouseDown={(e) => {
-        const target = e.target as HTMLElement
-        const isChip = target.closest('[data-slot="combobox-chip"]')
-        if (isChip || !chipsRef?.current) return
-        e.preventDefault()
-        const input: HTMLInputElement | null = chipsRef.current.querySelector('input')
-        if (input && !chipsRef.current.querySelector('input:focus')) {
-          input.focus()
-        }
-      }}
       ref={chipsRef as React.Ref<HTMLDivElement> | null}
       {...props}
     >

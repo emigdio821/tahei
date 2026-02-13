@@ -11,8 +11,12 @@ const Menu = MenuPrimitive.Root
 
 const MenuPortal = MenuPrimitive.Portal
 
-function MenuTrigger(props: MenuPrimitive.Trigger.Props) {
-  return <MenuPrimitive.Trigger data-slot="menu-trigger" {...props} />
+function MenuTrigger({ className, children, ...props }: MenuPrimitive.Trigger.Props) {
+  return (
+    <MenuPrimitive.Trigger className={className} data-slot="menu-trigger" {...props}>
+      {children}
+    </MenuPrimitive.Trigger>
+  )
 }
 
 function MenuPopup({
@@ -22,18 +26,21 @@ function MenuPopup({
   align = 'center',
   alignOffset,
   side = 'bottom',
+  anchor,
   ...props
 }: MenuPrimitive.Popup.Props & {
   align?: MenuPrimitive.Positioner.Props['align']
   sideOffset?: MenuPrimitive.Positioner.Props['sideOffset']
   alignOffset?: MenuPrimitive.Positioner.Props['alignOffset']
   side?: MenuPrimitive.Positioner.Props['side']
+  anchor?: MenuPrimitive.Positioner.Props['anchor']
 }) {
   return (
     <MenuPrimitive.Portal>
       <MenuPrimitive.Positioner
         align={align}
         alignOffset={alignOffset}
+        anchor={anchor}
         className="z-50"
         data-slot="menu-positioner"
         side={side}
@@ -203,7 +210,7 @@ function MenuSubTrigger({
   return (
     <MenuPrimitive.SubmenuTrigger
       className={cn(
-        "flex min-h-8 items-center gap-2 rounded-sm px-2 py-1 text-base text-foreground outline-none data-disabled:pointer-events-none data-highlighted:bg-accent data-popup-open:bg-accent data-inset:ps-8 data-highlighted:text-accent-foreground data-popup-open:text-accent-foreground data-disabled:opacity-64 sm:min-h-7 sm:text-sm [&>svg]:not-[.indicator]:-mx-0.5 [&>svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4.5 sm:[&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none",
+        "flex min-h-8 items-center gap-2 rounded-sm px-2 py-1 text-base text-foreground outline-none data-disabled:pointer-events-none data-highlighted:bg-accent data-popup-open:bg-accent data-inset:ps-8 data-highlighted:text-accent-foreground data-popup-open:text-accent-foreground data-disabled:opacity-64 sm:min-h-7 sm:text-sm [&_svg:not([class*='size-'])]:size-4.5 sm:[&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none",
         className,
       )}
       data-inset={inset}
@@ -211,7 +218,7 @@ function MenuSubTrigger({
       {...props}
     >
       {children}
-      <IconChevronRight className="indicator ms-auto -me-0.5 opacity-80" />
+      <IconChevronRight className="ms-auto -me-0.5 opacity-80" />
     </MenuPrimitive.SubmenuTrigger>
   )
 }
