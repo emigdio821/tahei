@@ -13,7 +13,7 @@ export function InputPassword(props: InputProps) {
     <InputGroup>
       <InputGroupInput
         type={showPassword ? 'text' : 'password'}
-        aria-label="Contraseña con opción de mostrar u ocultar"
+        aria-label="Password input with show/hide toggle"
         {...props}
       />
       <InputGroupAddon align="inline-end">
@@ -23,7 +23,7 @@ export function InputPassword(props: InputProps) {
               <Button
                 size="icon-xs"
                 variant="ghost"
-                aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
                 onClick={(e) => {
                   e.preventBaseUIHandler()
                   setOpenTooltip(true)
@@ -34,7 +34,7 @@ export function InputPassword(props: InputProps) {
           >
             {showPassword ? <IconEyeOff /> : <IconEye />}
           </TooltipTrigger>
-          <TooltipContent>{showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}</TooltipContent>
+          <TooltipContent>{showPassword ? 'Hide password' : 'Show password'}</TooltipContent>
         </Tooltip>
       </InputGroupAddon>
     </InputGroup>

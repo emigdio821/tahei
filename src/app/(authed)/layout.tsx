@@ -12,7 +12,7 @@ export default function AuthedLayout({
       <AppSidebar />
       <SidebarInset>
         <AppHeader />
-        <section className="flex w-full flex-1 flex-col gap-4 p-6 xl:mx-auto xl:max-w-7xl">
+        <section className="mx-auto flex w-full flex-1 flex-col gap-4 p-6 md:max-w-xl lg:max-w-4xl xl:max-w-7xl">
           {children}
         </section>
       </SidebarInset>

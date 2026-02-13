@@ -4,6 +4,7 @@ import {
   IconBookmark,
   IconFileExport,
   IconFileImport,
+  IconHexagonAsterisk,
   IconLogout,
   IconMoon,
   IconRefresh,
@@ -32,9 +33,12 @@ import { authClient } from '@/lib/auth/client'
 import { loggedUserQueryOptions } from '@/tanstack-queries/logged-user'
 import { ExportBookmarksDialog } from '../bookmarks/dialogs/export'
 import { ImportBookmarkDialog } from '../bookmarks/dialogs/import'
+import { UpdatePasswordDialog } from '../shared/update-password-dialog'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
+import { Button } from '../ui/button'
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '../ui/sidebar'
 import { Skeleton } from '../ui/skeleton'
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
 
 export function NavUser() {
   const router = useRouter()
@@ -42,6 +46,7 @@ export function NavUser() {
   const { theme, setTheme } = useTheme()
   const [isExportDialogOpen, setExportDialogOpen] = useState(false)
   const [isImportDialogOpen, setImportDialogOpen] = useState(false)
+  const [isUpdatePassDialogOpen, setUpdatePassDialogOpen] = useState(false)
 
   const { data: user, isLoading, error, refetch } = useSuspenseQuery(loggedUserQueryOptions())
 
@@ -84,6 +89,7 @@ export function NavUser() {
     <>
       <ExportBookmarksDialog open={isExportDialogOpen} onOpenChange={setExportDialogOpen} />
       <ImportBookmarkDialog open={isImportDialogOpen} onOpenChange={setImportDialogOpen} />
+      <UpdatePasswordDialog open={isUpdatePassDialogOpen} onOpenChange={setUpdatePassDialogOpen} />
 
       <SidebarMenu>
         <SidebarMenuItem>
@@ -110,7 +116,25 @@ export function NavUser() {
             />
             <DropdownMenuContent className="w-(--anchor-width)" align="center">
               <DropdownMenuGroup>
-                <DropdownMenuLabel className="line-clamp-2">{user.name}</DropdownMenuLabel>
+                <DropdownMenuLabel className="flex items-center justify-between gap-2 whitespace-normal">
+                  <span className="line-clamp-2">{user.name}</span>
+                  <Tooltip>
+                    <TooltipTrigger
+                      render={
+                        <Button
+                          size="icon-xs"
+                          variant="ghost"
+                          className="-me-1.5"
+                          aria-label="Update password"
+                          onClick={() => setUpdatePassDialogOpen(true)}
+                        >
+                          <IconHexagonAsterisk />
+                        </Button>
+                      }
+                    />
+                    <TooltipContent>Update password</TooltipContent>
+                  </Tooltip>
+                </DropdownMenuLabel>
 
                 <DropdownMenuSub>
                   <DropdownMenuSubTrigger>

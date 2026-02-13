@@ -1,12 +1,12 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { IconAlertOctagon, IconLoader } from '@tabler/icons-react'
+import { IconAlertOctagon } from '@tabler/icons-react'
 import { useId, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Footer } from '@/components/footer'
-import { TaheiIcon } from '@/components/icons'
+import { LoaderIcon, TaheiIcon } from '@/components/icons'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
@@ -143,8 +143,8 @@ export default function LoginPage() {
 
             <CardFooter className="pt-4 text-center">
               <Button type="submit" form={loginFormId} className="w-full" disabled={isLoading}>
+                {isLoading && <LoaderIcon />}
                 Login
-                {isLoading && <IconLoader className="size-4 animate-spin" />}
               </Button>
             </CardFooter>
           </Card>
