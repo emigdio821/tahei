@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { IconUpload } from '@tabler/icons-react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import type React from 'react'
 import { useId, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -20,11 +21,16 @@ import {
 } from '@/components/ui/dialog'
 import { Field, FieldError, FieldLabel } from '@/components/ui/field'
 import { InputGroup, InputGroupAddon, InputGroupTextarea } from '@/components/ui/input-group'
-import { Progress, ProgressIndicator, ProgressTrack, ProgressValue } from '@/components/ui/progress'
+import {
+  Progress,
+  ProgressIndicator,
+  ProgressLabel,
+  ProgressTrack,
+  ProgressValue,
+} from '@/components/ui/progress'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { useBatchCreate } from '@/hooks/use-batch-create'
 import { type ImportBookmarksFormData, importBookmarksSchema } from '@/lib/form-schemas/bookmarks'
-import { createBookmark } from '@/server-actions/bookmarks'
+import { type CreateBookmarksBatchResult, createBookmarksBatch } from '@/server-actions/bookmarks'
 import { BOOKMARKS_QUERY_KEY } from '@/tanstack-queries/bookmarks'
 
 interface ImportBookmarksDialogProps extends React.ComponentProps<typeof Dialog> {
@@ -36,6 +42,8 @@ export function ImportBookmarkDialog({ open, onOpenChange, ...props }: ImportBoo
   const importBookmarksFormId = useId()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [unformattedUrls, setUnformattedUrls] = useState('')
+  const [progress, setProgress] = useState(0)
+  const queryClient = useQueryClient()
 
   const form = useForm<ImportBookmarksFormData>({
     shouldUnregister: true,
@@ -47,25 +55,61 @@ export function ImportBookmarkDialog({ open, onOpenChange, ...props }: ImportBoo
     },
   })
 
-  const batchImportMutation = useBatchCreate({
-    items: form.getValues().urls,
-    successTitle: 'Bookmarks imported',
-    successDescription: 'The bookmarks have been successfully imported.',
-    createFn: async (url) => {
-      await createBookmark({
+  const batchImportMutation = useMutation({
+    mutationFn: async (data: ImportBookmarksFormData) => {
+      setProgress(0)
+
+      const bookmarksData = data.urls.map((url) => ({
         url,
-        tags: form.getValues().tags,
-        folderId: form.getValues().folderId,
-      })
+        tags: data.tags,
+        folderId: data.folderId,
+      }))
+
+      const CHUNK_SIZE = 10
+      const allResults: CreateBookmarksBatchResult[] = []
+
+      for (let i = 0; i < bookmarksData.length; i += CHUNK_SIZE) {
+        const chunk = bookmarksData.slice(i, i + CHUNK_SIZE)
+        const chunkResults = await createBookmarksBatch(chunk)
+        allResults.push(...chunkResults)
+        setProgress((Math.min(i + CHUNK_SIZE, bookmarksData.length) / bookmarksData.length) * 100)
+      }
+
+      return allResults
     },
-    invalidateKeys: [BOOKMARKS_QUERY_KEY],
-    onSuccess: () => {
-      onOpenChange(false)
+    onSuccess: (results) => {
+      const succeeded = results.filter((r) => r.success).length
+      const failed = results.filter((r) => !r.success).length
+
+      queryClient.invalidateQueries({ queryKey: [BOOKMARKS_QUERY_KEY] })
+
+      if (failed === 0) {
+        toast.success('Bookmarks imported', {
+          description: `Successfully imported all bookmarks.`,
+        })
+      } else if (succeeded === 0) {
+        toast.error('Import failed', {
+          description: 'Failed to import any bookmarks. Please check the URLs and try again.',
+        })
+      } else {
+        toast.warning('Partial import', {
+          description: `${succeeded} imported, ${failed} failed.`,
+        })
+      }
+
+      if (succeeded > 0) {
+        onOpenChange(false)
+      }
+    },
+    onError: (error) => {
+      toast.error('Import failed', {
+        description: error instanceof Error ? error.message : 'An error occurred while importing bookmarks.',
+      })
     },
   })
 
-  function onSubmit() {
-    batchImportMutation.mutate()
+  function onSubmit(data: ImportBookmarksFormData) {
+    batchImportMutation.mutate(data)
   }
 
   function handleOpenChange(open: boolean) {
@@ -115,14 +159,15 @@ export function ImportBookmarkDialog({ open, onOpenChange, ...props }: ImportBoo
     event.target.value = ''
   }
 
-  const urlsWatch = form.watch('urls', [])
-
   return (
     <Dialog
       open={open}
       onOpenChange={handleOpenChange}
       onOpenChangeComplete={(isOpen) => {
-        if (!isOpen) setUnformattedUrls('')
+        if (!isOpen) {
+          setUnformattedUrls('')
+          setProgress(0)
+        }
       }}
       {...props}
     >
@@ -236,9 +281,10 @@ export function ImportBookmarkDialog({ open, onOpenChange, ...props }: ImportBoo
           </form>
 
           {batchImportMutation.isPending && (
-            <Progress className="mt-4" max={urlsWatch.length} value={batchImportMutation.processedItems}>
-              <div className="flex items-center justify-end gap-2">
-                <ProgressValue>{(_formatted, value) => `${value} / ${urlsWatch.length}`}</ProgressValue>
+            <Progress className="mt-4" value={progress}>
+              <div className="flex items-center justify-between gap-2 text-muted-foreground">
+                <ProgressLabel>Importing...</ProgressLabel>
+                <ProgressValue />
               </div>
               <ProgressTrack>
                 <ProgressIndicator />

@@ -5,7 +5,7 @@ import { db } from '@/db'
 import { bookmarks, bookmarkTags } from '@/db/schema'
 import type { Bookmark, BookmarkInsert } from '@/db/schema/zod/bookmarks'
 import type { CreateBookmarkFormData, UpdateBookmarkFormData } from '@/lib/form-schemas/bookmarks'
-import { getBookmarkMetadata } from './bookmark-metadata'
+import { getBookmarkMetadata, getBookmarkMetadataBatch } from './bookmark-metadata'
 import { getSession } from './session'
 
 export async function getBookmarks(): Promise<Bookmark[]> {
@@ -149,4 +149,71 @@ export async function exportBookmarkUrls(): Promise<{ url: string }[]> {
     .where(eq(bookmarks.userId, session.user.id))
 
   return bookmarksToExport || []
+}
+
+export interface CreateBookmarksBatchResult {
+  success: boolean
+  bookmarkId?: string
+  error?: string
+  url: string
+}
+
+export async function createBookmarksBatch(
+  bookmarksData: CreateBookmarkFormData[],
+): Promise<CreateBookmarksBatchResult[]> {
+  const session = await getSession()
+
+  if (!session) {
+    throw new Error('Unauthorized')
+  }
+
+  const urls = bookmarksData.map((data) => data.url)
+  const metadataList = await getBookmarkMetadataBatch(urls, 10)
+
+  const results = await Promise.allSettled(
+    bookmarksData.map(async (data, index) => {
+      const metadata = metadataList[index]
+      const { name, url, folderId, description, isFavorite, tags } = data
+
+      const payload: BookmarkInsert = {
+        url,
+        image: metadata.image,
+        favicon: metadata.favicon,
+        folderId,
+        isFavorite,
+        userId: session.user.id,
+        name: name || metadata.title || 'bookmark',
+        description: description || metadata.description,
+      }
+
+      const [bookmark] = await db.insert(bookmarks).values(payload).returning()
+
+      if (tags && tags.length > 0 && bookmark.id) {
+        const tagsToInsert = tags.map((tagId) => ({
+          bookmarkId: bookmark.id,
+          tagId,
+        }))
+
+        await db.insert(bookmarkTags).values(tagsToInsert)
+      }
+
+      return bookmark
+    }),
+  )
+
+  return results.map((result, index) => {
+    if (result.status === 'fulfilled') {
+      return {
+        success: true,
+        bookmarkId: result.value.id,
+        url: bookmarksData[index].url,
+      }
+    } else {
+      return {
+        success: false,
+        error: result.reason?.message || 'Unknown error',
+        url: bookmarksData[index].url,
+      }
+    }
+  })
 }
