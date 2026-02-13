@@ -64,11 +64,11 @@ export const bookmarksTableColumns: ColumnDef<Bookmark>[] = [
     size: 160,
     cell: ({ row }) => (
       <Button
-        className="line-clamp-1 whitespace-normal text-left"
+        className="min-w-0 text-left"
         nativeButton={false}
         variant="link"
         render={
-          <a href={row.original.url} target="_blank" rel="noopener noreferrer">
+          <a href={row.original.url} target="_blank" rel="noopener noreferrer" className="min-w-0 truncate">
             {simplifiedURL(row.original.url)}
           </a>
         }

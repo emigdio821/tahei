@@ -32,3 +32,7 @@ export function formatDate(
 export function truncateString(str: string, size: number) {
   return `${str.slice(0, size)}...`
 }
+
+export function hasWhiteSpaces(str: string): boolean {
+  return /\s/.test(str)
+}

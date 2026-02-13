@@ -18,7 +18,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import type { Bookmark } from '@/db/schema/zod/bookmarks'
-import { formatDate, simplifiedURL } from '@/lib/utils'
+import { cn, formatDate, hasWhiteSpaces, simplifiedURL } from '@/lib/utils'
 
 interface BookmarkDetailsDialogProps {
   bookmark: Bookmark
@@ -38,7 +38,9 @@ export function BookmarkDetailsDialog({ bookmark, state }: BookmarkDetailsDialog
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="line-clamp-2 break-all">{bookmark.name}</DialogTitle>
+          <DialogTitle className={cn(hasWhiteSpaces(bookmark.name) ? 'line-clamp-2' : 'truncate')}>
+            {bookmark.name}
+          </DialogTitle>
           <DialogDescription>{bookmark.description || 'Bookmark details'}</DialogDescription>
         </DialogHeader>
 
