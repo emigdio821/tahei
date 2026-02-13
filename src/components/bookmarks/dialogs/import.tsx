@@ -241,7 +241,7 @@ export function ImportBookmarkDialog({ open, onOpenChange, ...props }: ImportBoo
             >
               <div className="flex items-center justify-end gap-2">
                 <ProgressValue>
-                  {(_formatted, value) => `${value} / ${form.getValues('urls').length}`}
+                  {(_formatted, value) => `${value} / ${form.getValues('urls')?.length}`}
                 </ProgressValue>
               </div>
               <ProgressTrack>
@@ -254,7 +254,7 @@ export function ImportBookmarkDialog({ open, onOpenChange, ...props }: ImportBoo
         <DialogFooter>
           <DialogClose
             render={
-              <Button variant="outline" type="button">
+              <Button disabled={batchImportMutation.isPending} variant="outline" type="button">
                 Cancel
               </Button>
             }

@@ -35,7 +35,7 @@ export function useBatchDelete<TData>({
           const result = await deleteFn(item)
           setProcessedItems((prev) => prev + 1)
           return result
-        })
+        }),
       )
 
       const fulfilled = results.filter((r) => r.status === 'fulfilled').length

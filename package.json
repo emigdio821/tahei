@@ -13,7 +13,11 @@
     "db:push": "drizzle-kit push",
     "db:pull": "drizzle-kit pull",
     "db:studio": "drizzle-kit studio",
-    "db:seed": "tsx src/db/seed.ts"
+    "db:seed": "tsx src/db/seed.ts",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,ts,cjs,mjs,jsx,tsx,json,jsonc}": "biome check --no-errors-on-unmatched"
   },
   "dependencies": {
     "@base-ui/react": "^1.2.0",
@@ -56,6 +60,8 @@
     "@types/react": "^19.2.13",
     "@types/react-dom": "^19.2.3",
     "drizzle-kit": "^0.31.9",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
     "tailwindcss": "^4.1.18",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"

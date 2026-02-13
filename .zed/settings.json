@@ -1,13 +1,13 @@
 {
   "code_actions_on_format": {
     "source.fixAll.biome": true,
-    "source.organizeImports.biome": true,
+    "source.organizeImports.biome": true
   },
   "format_on_save": "on",
   "formatter": {
     "language_server": {
-      "name": "biome",
-    },
+      "name": "biome"
+    }
   },
-  "language_servers": ["!eslint", "!typescript-language-server", "..."],
+  "language_servers": ["!eslint", "!typescript-language-server", "..."]
 }
