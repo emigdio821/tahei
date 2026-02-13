@@ -47,22 +47,24 @@ export function NavFolders({ ...props }: React.ComponentProps<typeof SidebarGrou
         <>
           <CreateFolderDialog open={isCreateDialogOpen} onOpenChange={setCreateDialogOpen} />
 
-          <Empty className="gap-2 rounded-xl bg-muted/50 p-2 md:p-2">
-            <EmptyHeader>
-              <EmptyTitle className="text-sm">Empty</EmptyTitle>
-              <EmptyDescription className="text-xs">There are no folders yet.</EmptyDescription>
-            </EmptyHeader>
-            <EmptyContent>
-              <Button
-                variant="outline"
-                className="w-full"
-                size="xs"
-                onClick={() => setCreateDialogOpen(true)}
-              >
-                Create
-              </Button>
-            </EmptyContent>
-          </Empty>
+          <div className="p-2">
+            <Empty className="gap-2 rounded-xl bg-muted/50 p-2 md:p-2">
+              <EmptyHeader>
+                <EmptyTitle className="text-sm">Empty</EmptyTitle>
+                <EmptyDescription className="text-xs">There are no folders yet.</EmptyDescription>
+              </EmptyHeader>
+              <EmptyContent>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  size="xs"
+                  onClick={() => setCreateDialogOpen(true)}
+                >
+                  Create
+                </Button>
+              </EmptyContent>
+            </Empty>
+          </div>
         </>
       )
     }
