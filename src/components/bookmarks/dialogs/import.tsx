@@ -5,9 +5,11 @@ import type React from 'react'
 import { useId, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+import { z } from 'zod'
 import { LoaderIcon } from '@/components/icons'
 import { FoldersCombobox } from '@/components/shared/dropdowns/folders-combobox'
 import { TagsMultiCombobox } from '@/components/shared/dropdowns/tags-multi-combobox'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -159,6 +161,16 @@ export function ImportBookmarkDialog({ open, onOpenChange, ...props }: ImportBoo
     event.target.value = ''
   }
 
+  function renderValidUrlsBadge() {
+    const urls = form.getValues('urls')
+
+    const validUrlsLength = urls.filter((url) => {
+      return z.url().safeParse(url).success
+    }).length
+
+    return validUrlsLength > 5 ? <Badge variant="outline">{validUrlsLength} URLs</Badge> : null
+  }
+
   return (
     <Dialog
       open={open}
@@ -219,7 +231,9 @@ export function ImportBookmarkDialog({ open, onOpenChange, ...props }: ImportBoo
                       disabled={batchImportMutation.isPending}
                       aria-invalid={fieldState.invalid}
                     />
-                    <InputGroupAddon align="block-end" className="justify-end p-1 pt-0">
+                    <InputGroupAddon align="block-end" className="justify-between pt-1 pr-1 pb-1">
+                      {renderValidUrlsBadge()}
+
                       <Tooltip>
                         <TooltipTrigger
                           render={
@@ -227,6 +241,7 @@ export function ImportBookmarkDialog({ open, onOpenChange, ...props }: ImportBoo
                               type="button"
                               size="icon-xs"
                               variant="ghost"
+                              className="ms-auto"
                               aria-label="Upload .txt file"
                               onClick={handleUploadTxtFile}
                               disabled={batchImportMutation.isPending}
