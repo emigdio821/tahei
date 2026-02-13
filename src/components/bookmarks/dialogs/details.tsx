@@ -38,7 +38,7 @@ export function BookmarkDetailsDialog({ bookmark, state }: BookmarkDetailsDialog
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="line-clamp-2">{bookmark.name}</DialogTitle>
+          <DialogTitle className="line-clamp-2 break-all">{bookmark.name}</DialogTitle>
           <DialogDescription>{bookmark.description || 'Bookmark details'}</DialogDescription>
         </DialogHeader>
 

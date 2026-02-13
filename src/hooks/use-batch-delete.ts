@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useState } from 'react'
 import { toast } from 'sonner'
 
 interface BatchDeleteConfig<TData> {
@@ -23,10 +24,19 @@ export function useBatchDelete<TData>({
   onSuccess: customOnSuccess,
 }: BatchDeleteConfig<TData>) {
   const queryClient = useQueryClient()
+  const [processedItems, setProcessedItems] = useState(0)
 
-  return useMutation({
+  const mutation = useMutation({
     mutationFn: async () => {
-      const results = await Promise.allSettled(items.map((item) => deleteFn(item)))
+      setProcessedItems(0)
+
+      const results = await Promise.allSettled(
+        items.map(async (item) => {
+          const result = await deleteFn(item)
+          setProcessedItems((prev) => prev + 1)
+          return result
+        })
+      )
 
       const fulfilled = results.filter((r) => r.status === 'fulfilled').length
       const rejected = results.filter((r) => r.status === 'rejected').length
@@ -62,4 +72,9 @@ export function useBatchDelete<TData>({
       console.error('Batch delete error:', error)
     },
   })
+
+  return {
+    ...mutation,
+    processedItems,
+  }
 }

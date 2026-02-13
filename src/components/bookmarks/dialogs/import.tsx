@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/dialog'
 import { Field, FieldError, FieldLabel } from '@/components/ui/field'
 import { InputGroup, InputGroupAddon, InputGroupTextarea } from '@/components/ui/input-group'
+import { Progress, ProgressIndicator, ProgressTrack, ProgressValue } from '@/components/ui/progress'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useBatchCreate } from '@/hooks/use-batch-create'
 import { type ImportBookmarksFormData, importBookmarksSchema } from '@/lib/form-schemas/bookmarks'
@@ -168,6 +169,7 @@ export function ImportBookmarkDialog({ open, onOpenChange, ...props }: ImportBoo
                           .filter((url) => url !== '')
                         field.onChange(urls)
                       }}
+                      disabled={batchImportMutation.isPending}
                       aria-invalid={fieldState.invalid}
                     />
                     <InputGroupAddon align="block-end" className="justify-end p-1 pt-0">
@@ -203,6 +205,7 @@ export function ImportBookmarkDialog({ open, onOpenChange, ...props }: ImportBoo
                   <FoldersCombobox
                     id={field.name}
                     value={field.value}
+                    disabled={batchImportMutation.isPending}
                     onValueChange={(value) => field.onChange(value)}
                   />
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
@@ -219,6 +222,7 @@ export function ImportBookmarkDialog({ open, onOpenChange, ...props }: ImportBoo
                   <TagsMultiCombobox
                     id={field.name}
                     value={field.value}
+                    disabled={batchImportMutation.isPending}
                     onValueChange={(value) => {
                       field.onChange(value || [])
                     }}
@@ -228,6 +232,23 @@ export function ImportBookmarkDialog({ open, onOpenChange, ...props }: ImportBoo
               )}
             />
           </form>
+
+          {batchImportMutation.isPending && (
+            <Progress
+              className="mt-4"
+              max={form.getValues('urls').length}
+              value={batchImportMutation.processedItems}
+            >
+              <div className="flex items-center justify-end gap-2">
+                <ProgressValue>
+                  {(_formatted, value) => `${value} / ${form.getValues('urls').length}`}
+                </ProgressValue>
+              </div>
+              <ProgressTrack>
+                <ProgressIndicator />
+              </ProgressTrack>
+            </Progress>
+          )}
         </DialogPanel>
 
         <DialogFooter>

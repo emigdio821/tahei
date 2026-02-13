@@ -27,7 +27,7 @@ export function BookmarkNameCell({ bookmark }: BookmarkNameCellProps) {
           </AvatarFallback>
         </Avatar>
 
-        <span className="line-clamp-2 whitespace-normal">{bookmark.name}</span>
+        <span className="line-clamp-2 whitespace-normal break-all">{bookmark.name}</span>
       </Button>
     </>
   )

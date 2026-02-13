@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useState } from 'react'
 import { toast } from 'sonner'
 
 interface BatchCreateConfig<TData, TResult = unknown> {
@@ -23,10 +24,19 @@ export function useBatchCreate<TData, TResult = unknown>({
   onSuccess: customOnSuccess,
 }: BatchCreateConfig<TData, TResult>) {
   const queryClient = useQueryClient()
+  const [processedItems, setProcessedItems] = useState(0)
 
-  return useMutation({
+  const mutation = useMutation({
     mutationFn: async () => {
-      const results = await Promise.allSettled(items.map((item) => createFn(item)))
+      setProcessedItems(0)
+
+      const results = await Promise.allSettled(
+        items.map(async (item) => {
+          const result = await createFn(item)
+          setProcessedItems((prev) => prev + 1)
+          return result
+        }),
+      )
 
       const fulfilled = results.filter((r) => r.status === 'fulfilled').length
       const rejected = results.filter((r) => r.status === 'rejected').length
@@ -64,4 +74,9 @@ export function useBatchCreate<TData, TResult = unknown>({
       console.error('Batch create error:', error)
     },
   })
+
+  return {
+    ...mutation,
+    processedItems,
+  }
 }

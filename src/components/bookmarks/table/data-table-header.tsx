@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react'
 import { AlertDialogGeneric } from '@/components/shared/alert-dialog-generic'
 import { Button } from '@/components/ui/button'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
+import { Progress, ProgressIndicator, ProgressTrack, ProgressValue } from '@/components/ui/progress'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import type { Bookmark } from '@/db/schema/zod/bookmarks'
 import { useBatchDelete } from '@/hooks/use-batch-delete'
@@ -62,6 +63,18 @@ export function BookmarksDataTableHeader({ table }: BookmarksDataTableHeaderProp
         variant="destructive"
         actionLabel="Delete"
         title="Delete bookmarks?"
+        content={
+          batchDeleteMutation.isPending ? (
+            <Progress value={batchDeleteMutation.processedItems} max={selectedRowsLength} className="mb-4">
+              <div className="flex items-center justify-end gap-2">
+                <ProgressValue>{(_formatted, value) => `${value} / ${selectedRowsLength}`}</ProgressValue>
+              </div>
+              <ProgressTrack>
+                <ProgressIndicator />
+              </ProgressTrack>
+            </Progress>
+          ) : null
+        }
         description={
           <div>
             <p>
