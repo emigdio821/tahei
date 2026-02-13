@@ -115,6 +115,8 @@ export function ImportBookmarkDialog({ open, onOpenChange, ...props }: ImportBoo
     event.target.value = ''
   }
 
+  const urlsWatch = form.watch('urls', [])
+
   return (
     <Dialog
       open={open}
@@ -234,15 +236,9 @@ export function ImportBookmarkDialog({ open, onOpenChange, ...props }: ImportBoo
           </form>
 
           {batchImportMutation.isPending && (
-            <Progress
-              className="mt-4"
-              max={form.getValues('urls').length}
-              value={batchImportMutation.processedItems}
-            >
+            <Progress className="mt-4" max={urlsWatch.length} value={batchImportMutation.processedItems}>
               <div className="flex items-center justify-end gap-2">
-                <ProgressValue>
-                  {(_formatted, value) => `${value} / ${form.getValues('urls')?.length}`}
-                </ProgressValue>
+                <ProgressValue>{(_formatted, value) => `${value} / ${urlsWatch.length}`}</ProgressValue>
               </div>
               <ProgressTrack>
                 <ProgressIndicator />

@@ -46,6 +46,7 @@ export function AlertDialogGeneric(props: AlertDialogGenericProps) {
 
   return (
     <AlertDialog
+      {...props}
       open={open}
       onOpenChange={(isOpen) => {
         if (isExecutingAction) return
