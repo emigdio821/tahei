@@ -1,6 +1,6 @@
 'use server'
 
-import { and, eq } from 'drizzle-orm'
+import { and, eq, inArray } from 'drizzle-orm'
 import { db } from '@/db'
 import { bookmarks, bookmarkTags } from '@/db/schema'
 import type { Bookmark, BookmarkInsert } from '@/db/schema/zod/bookmarks'
@@ -119,6 +119,42 @@ export async function deleteBookmark(id: string): Promise<void> {
   }
 
   await db.delete(bookmarks).where(eq(bookmarks.id, id))
+}
+
+export interface DeleteBookmarksBatchResult {
+  success: boolean
+  bookmarkId: string
+  error?: string
+}
+
+export async function deleteBookmarksBatch(bookmarkIds: string[]): Promise<DeleteBookmarksBatchResult[]> {
+  const session = await getSession()
+
+  if (!session) {
+    throw new Error('Unauthorized')
+  }
+
+  if (bookmarkIds.length === 0) {
+    return []
+  }
+
+  try {
+    await db
+      .delete(bookmarks)
+      .where(and(inArray(bookmarks.id, bookmarkIds), eq(bookmarks.userId, session.user.id)))
+
+    return bookmarkIds.map((id) => ({
+      success: true,
+      bookmarkId: id,
+    }))
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    return bookmarkIds.map((id) => ({
+      success: false,
+      bookmarkId: id,
+      error: errorMessage,
+    }))
+  }
 }
 
 export async function toggleFavoriteBookmark(id: string, isFavorite: boolean): Promise<void> {

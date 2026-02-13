@@ -43,9 +43,10 @@ export const bookmarksTableColumns: ColumnDef<Bookmark>[] = [
     header: ({ column }) => <DataTableSortableHeader column={column} title="Name" />,
     filterFn: (row, _, value: string) => {
       const normalizedName = normalizeString(row.original.name).toLowerCase()
+      const normalizedDescription = normalizeString(row.original.description || '').toLowerCase()
       const normalizedValue = normalizeString(value).toLowerCase()
 
-      return normalizedName.includes(normalizedValue)
+      return normalizedName.includes(normalizedValue) || normalizedDescription.includes(normalizedValue)
     },
   },
   {
@@ -63,10 +64,14 @@ export const bookmarksTableColumns: ColumnDef<Bookmark>[] = [
     size: 160,
     cell: ({ row }) => (
       <Button
-        className="truncate"
+        className="line-clamp-1 whitespace-normal text-left"
         nativeButton={false}
         variant="link"
-        render={<a href={row.original.url}>{simplifiedURL(row.original.url)}</a>}
+        render={
+          <a href={row.original.url} target="_blank" rel="noopener noreferrer">
+            {simplifiedURL(row.original.url)}
+          </a>
+        }
       />
     ),
   },
