@@ -229,6 +229,7 @@ export function ImportBookmarkDialog({ open, onOpenChange, ...props }: ImportBoo
                               variant="ghost"
                               aria-label="Upload .txt file"
                               onClick={handleUploadTxtFile}
+                              disabled={batchImportMutation.isPending}
                             />
                           }
                         >
