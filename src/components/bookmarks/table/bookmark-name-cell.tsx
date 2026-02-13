@@ -21,12 +21,16 @@ export function BookmarkNameCell({ bookmark }: BookmarkNameCellProps) {
       />
 
       <Button variant="plain" className="min-w-0 max-w-full text-left" onClick={() => setIsSheetOpen(true)}>
-        <Avatar className="size-4 shrink-0">
-          {bookmark.favicon && <AvatarImage src={bookmark.favicon} alt={bookmark.name} />}
-          <AvatarFallback>
-            <IconWorld className="size-4 text-muted-foreground" />
-          </AvatarFallback>
-        </Avatar>
+        {bookmark.favicon ? (
+          <Avatar className="size-4 shrink-0">
+            <AvatarImage src={bookmark.favicon} alt={bookmark.name} />
+            <AvatarFallback>
+              <IconWorld className="size-4 text-muted-foreground" />
+            </AvatarFallback>
+          </Avatar>
+        ) : (
+          <IconWorld className="size-4 text-muted-foreground" />
+        )}
 
         <span
           className={cn(
