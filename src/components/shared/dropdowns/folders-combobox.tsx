@@ -128,7 +128,7 @@ export function FoldersCombobox({
       return <span className="animate-pulse italic">Loading folders...</span>
     }
 
-    if (items.length === 0) {
+    if (flatFolders.length === 0) {
       return <span className="text-muted-foreground">No folders available</span>
     }
 
