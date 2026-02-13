@@ -14,10 +14,11 @@ import {
   DialogPanel,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Field, FieldError, FieldLabel } from '@/components/ui/field'
+import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { useEntityMutation } from '@/hooks/use-entity-mutation'
+import { DESCRIPTION_MAX_LENGTH, FOLDER_NAME_MAX_LENGTH } from '@/lib/constants'
 import { type CreateFolderFormData, createFolderSchema } from '@/lib/form-schemas/folders'
 import { createFolder } from '@/server-actions/folders'
 import { FOLDERS_QUERY_KEY } from '@/tanstack-queries/folders'
@@ -90,9 +91,16 @@ export function CreateFolderDialog({ open, onOpenChange, ...props }: CreateFolde
                   <Input
                     {...field}
                     id={field.name}
+                    maxLength={FOLDER_NAME_MAX_LENGTH}
                     aria-invalid={fieldState.invalid}
                     disabled={createFolderMutation.isPending}
                   />
+                  <FieldDescription>
+                    <span className="tabular-nums">
+                      {FOLDER_NAME_MAX_LENGTH - (field.value?.length ?? 0)}
+                    </span>{' '}
+                    characters left
+                  </FieldDescription>
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>
               )}
@@ -107,9 +115,16 @@ export function CreateFolderDialog({ open, onOpenChange, ...props }: CreateFolde
                   <Textarea
                     {...field}
                     id={field.name}
+                    maxLength={DESCRIPTION_MAX_LENGTH}
                     aria-invalid={fieldState.invalid}
                     disabled={createFolderMutation.isPending}
                   />
+                  <FieldDescription>
+                    <span className="tabular-nums">
+                      {DESCRIPTION_MAX_LENGTH - (field.value?.length ?? 0)}
+                    </span>{' '}
+                    characters left
+                  </FieldDescription>
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>
               )}

@@ -1,9 +1,11 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { IconInfoCircle } from '@tabler/icons-react'
 import { useId } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { LoaderIcon } from '@/components/icons'
+import { FoldersCombobox } from '@/components/shared/dropdowns/folders-combobox'
 import { TagsMultiCombobox } from '@/components/shared/dropdowns/tags-multi-combobox'
 import { Button } from '@/components/ui/button'
 import {
@@ -16,13 +18,15 @@ import {
   DialogPanel,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Field, FieldError, FieldLabel } from '@/components/ui/field'
+import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupTextarea } from '@/components/ui/input-group'
 import { Label } from '@/components/ui/label'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Switch } from '@/components/ui/switch'
-import { Textarea } from '@/components/ui/textarea'
 import type { Bookmark } from '@/db/schema/zod/bookmarks'
 import { useEntityMutation } from '@/hooks/use-entity-mutation'
+import { BOOKMARK_NAME_MAX_LENGTH, DESCRIPTION_MAX_LENGTH } from '@/lib/constants'
 import { type UpdateBookmarkFormData, updateBookmarkSchema } from '@/lib/form-schemas/bookmarks'
 import { updateBookmark } from '@/server-actions/bookmarks'
 import { BOOKMARKS_QUERY_KEY } from '@/tanstack-queries/bookmarks'
@@ -119,16 +123,39 @@ export function EditBookmarkDialog({ bookmark, state }: EditBookmarkDialogProps)
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={field.name}>
-                    Name <span className="text-destructive">*</span>
-                  </FieldLabel>
-                  <Input
-                    {...field}
-                    id={field.name}
-                    autoComplete="off"
-                    aria-invalid={fieldState.invalid}
-                    disabled={updateBookmarkMutation.isPending}
-                  />
+                  <FieldLabel htmlFor={field.name}>Name</FieldLabel>
+                  <InputGroup>
+                    <InputGroupInput
+                      {...field}
+                      id={field.name}
+                      autoComplete="off"
+                      aria-invalid={fieldState.invalid}
+                      maxLength={BOOKMARK_NAME_MAX_LENGTH}
+                      disabled={updateBookmarkMutation.isPending}
+                    />
+                    <InputGroupAddon align="inline-end">
+                      <Popover>
+                        <PopoverTrigger
+                          openOnHover
+                          render={
+                            <Button aria-label="Bookmark name field info" size="icon-xs" variant="ghost" />
+                          }
+                        >
+                          <IconInfoCircle />
+                        </PopoverTrigger>
+                        <PopoverContent side="top" tooltipStyle>
+                          <p>Leave it empty to use the title from the website metadata</p>
+                        </PopoverContent>
+                      </Popover>
+                    </InputGroupAddon>
+                  </InputGroup>
+
+                  <FieldDescription>
+                    <span className="tabular-nums">
+                      {BOOKMARK_NAME_MAX_LENGTH - (field.value?.length ?? 0)}
+                    </span>{' '}
+                    characters left
+                  </FieldDescription>
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>
               )}
@@ -140,12 +167,55 @@ export function EditBookmarkDialog({ bookmark, state }: EditBookmarkDialogProps)
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor={field.name}>Description</FieldLabel>
-                  <Textarea
-                    {...field}
+                  <InputGroup>
+                    <InputGroupTextarea
+                      {...field}
+                      id={field.name}
+                      maxLength={DESCRIPTION_MAX_LENGTH}
+                      disabled={updateBookmarkMutation.isPending}
+                      aria-invalid={fieldState.invalid}
+                    />
+                    <InputGroupAddon align="block-end" className="justify-end p-1">
+                      <Popover>
+                        <PopoverTrigger
+                          openOnHover
+                          render={
+                            <Button
+                              size="icon-xs"
+                              variant="ghost"
+                              aria-label="Bookmark description field info"
+                            />
+                          }
+                        >
+                          <IconInfoCircle />
+                        </PopoverTrigger>
+                        <PopoverContent side="top" tooltipStyle>
+                          <p>Leave it empty to use the description from the website metadata</p>
+                        </PopoverContent>
+                      </Popover>
+                    </InputGroupAddon>
+                  </InputGroup>
+                  <FieldDescription>
+                    <span className="tabular-nums">
+                      {DESCRIPTION_MAX_LENGTH - (field.value?.length ?? 0)}
+                    </span>{' '}
+                    characters left
+                  </FieldDescription>
+                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                </Field>
+              )}
+            />
+
+            <Controller
+              name="folderId"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor={field.name}>Folder</FieldLabel>
+                  <FoldersCombobox
                     id={field.name}
-                    aria-invalid={fieldState.invalid}
-                    disabled={updateBookmarkMutation.isPending}
-                    placeholder="Description of the bookmark (optional)"
+                    value={field.value}
+                    onValueChange={(value) => field.onChange(value)}
                   />
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>

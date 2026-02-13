@@ -11,10 +11,10 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core'
 import {
+  BOOKMARK_NAME_MAX_LENGTH,
   DESCRIPTION_MAX_LENGTH,
   FOLDER_NAME_MAX_LENGTH,
   TAG_NAME_MAX_LENGTH,
-  TITLE_MAX_LENGTH,
 } from '@/lib/constants'
 import { user } from './auth'
 
@@ -52,7 +52,7 @@ export const bookmarks = pgTable(
   {
     id: uuid('id').primaryKey().defaultRandom(),
     url: text('url').notNull(),
-    name: varchar('name', { length: TITLE_MAX_LENGTH }).notNull(),
+    name: varchar('name', { length: BOOKMARK_NAME_MAX_LENGTH }).notNull(),
     description: varchar('description', { length: DESCRIPTION_MAX_LENGTH }),
     favicon: text('favicon'),
     image: text('image'),

@@ -96,12 +96,12 @@ export function FoldersCombobox({
     const mappedFolders: FoldersComboboxValue[] = flatFolders.map((folder) => folder.id)
     let foldersToInclude = mappedFolders
 
-    if (includeNullOption) {
-      mappedFolders.unshift(null)
-    }
-
     if (excludeOptions.length > 0) {
       foldersToInclude = mappedFolders.filter((id) => !excludeOptions.includes(id))
+    }
+
+    if (includeNullOption && foldersToInclude.length > 0) {
+      foldersToInclude.unshift(null)
     }
 
     return foldersToInclude
@@ -128,7 +128,7 @@ export function FoldersCombobox({
       return <span className="animate-pulse italic">Loading folders...</span>
     }
 
-    if (flatFolders.length === 0) {
+    if (items.length === 0) {
       return <span className="text-muted-foreground">No folders available</span>
     }
 
@@ -138,7 +138,7 @@ export function FoldersCombobox({
   }
 
   return (
-    <Combobox disabled={flatFolders.length === 0 || disabled} items={items} {...comboboxProps}>
+    <Combobox disabled={items.length === 0 || disabled} items={items} {...comboboxProps}>
       <ComboboxTrigger render={<Button className="w-full justify-between font-normal" variant="outline" />}>
         <ComboboxValue>{renderValue}</ComboboxValue>
         <IconSelector className="-me-1!" />

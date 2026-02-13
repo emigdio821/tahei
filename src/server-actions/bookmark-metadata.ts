@@ -5,7 +5,7 @@ import metascraperDescription from 'metascraper-description'
 import metascraperImage from 'metascraper-image'
 import metascraperFavicon from 'metascraper-logo-favicon'
 import metascraperTitle from 'metascraper-title'
-import { DESCRIPTION_MAX_LENGTH, TITLE_MAX_LENGTH } from '@/lib/constants'
+import { BOOKMARK_NAME_MAX_LENGTH, DESCRIPTION_MAX_LENGTH } from '@/lib/constants'
 import { truncateString } from '@/lib/utils'
 
 export interface BookmarkMetadata {
@@ -60,7 +60,7 @@ export async function getBookmarkMetadata(url: string): Promise<BookmarkMetadata
     const metadata = await scraper({ html, url })
 
     return {
-      title: truncate(metadata.title || url, TITLE_MAX_LENGTH),
+      title: truncate(metadata.title || url, BOOKMARK_NAME_MAX_LENGTH),
       description: truncate(metadata.description || '', DESCRIPTION_MAX_LENGTH),
       image: metadata.image,
       favicon: metadata.logo,
@@ -73,7 +73,7 @@ export async function getBookmarkMetadata(url: string): Promise<BookmarkMetadata
     console.error(`Failed to fetch metadata for ${url}: ${message}`)
 
     return {
-      title: truncate(url, TITLE_MAX_LENGTH),
+      title: truncate(url, BOOKMARK_NAME_MAX_LENGTH),
       description: '',
       image: undefined,
       favicon: undefined,

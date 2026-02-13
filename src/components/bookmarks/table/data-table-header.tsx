@@ -9,6 +9,7 @@ import { toast } from 'sonner'
 import { AlertDialogGeneric } from '@/components/shared/alert-dialog-generic'
 import { Button } from '@/components/ui/button'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import type { Bookmark } from '@/db/schema/zod/bookmarks'
 import { deleteBookmarksBatch } from '@/server-actions/bookmarks'
@@ -20,7 +21,6 @@ interface BookmarksDataTableHeaderProps {
 }
 
 export function BookmarksDataTableHeader({ table }: BookmarksDataTableHeaderProps) {
-  const [isSearchTooltipOpen, setSearchTooltipOpen] = useState(false)
   const [isCreateManualOpen, setIsCreateManualOpen] = useState(false)
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const queryClient = useQueryClient()
@@ -114,25 +114,17 @@ export function BookmarksDataTableHeader({ table }: BookmarksDataTableHeaderProp
           </InputGroupAddon>
 
           <InputGroupAddon align="inline-end">
-            <Tooltip open={isSearchTooltipOpen} onOpenChange={setSearchTooltipOpen}>
-              <TooltipTrigger
-                render={
-                  <Button
-                    size="icon-xs"
-                    variant="ghost"
-                    aria-label="Search by name or description"
-                    className="cursor-default"
-                    onClick={(e) => {
-                      e.preventBaseUIHandler()
-                      setSearchTooltipOpen(true)
-                    }}
-                  >
-                    <IconInfoCircle className="size-4" />
-                  </Button>
-                }
-              />
-              <TooltipContent>Search by name or description</TooltipContent>
-            </Tooltip>
+            <Popover>
+              <PopoverTrigger
+                openOnHover
+                render={<Button aria-label="Password requirements" size="icon-xs" variant="ghost" />}
+              >
+                <IconInfoCircle />
+              </PopoverTrigger>
+              <PopoverContent side="top" tooltipStyle>
+                <p>Search by name or description</p>
+              </PopoverContent>
+            </Popover>
           </InputGroupAddon>
         </InputGroup>
 

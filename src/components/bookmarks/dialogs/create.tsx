@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { IconInfoCircle } from '@tabler/icons-react'
 import type React from 'react'
 import { Activity, useId } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -18,10 +19,12 @@ import {
 } from '@/components/ui/dialog'
 import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupTextarea } from '@/components/ui/input-group'
 import { Label } from '@/components/ui/label'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Switch } from '@/components/ui/switch'
-import { Textarea } from '@/components/ui/textarea'
 import { useEntityMutation } from '@/hooks/use-entity-mutation'
+import { BOOKMARK_NAME_MAX_LENGTH, DESCRIPTION_MAX_LENGTH } from '@/lib/constants'
 import { useBookmarkCreationContext } from '@/lib/contexts/bookmark-creation'
 import { type CreateBookmarkFormData, createBookmarkSchema } from '@/lib/form-schemas/bookmarks'
 import { createBookmark } from '@/server-actions/bookmarks'
@@ -111,15 +114,37 @@ export function CreateBookmarkDialog({ open, onOpenChange, ...props }: CreateMan
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor={field.name}>Name</FieldLabel>
-                  <Input
-                    {...field}
-                    id={field.name}
-                    autoComplete="off"
-                    aria-invalid={fieldState.invalid}
-                    disabled={createBookmarkMutation.isPending}
-                  />
+                  <InputGroup>
+                    <InputGroupInput
+                      {...field}
+                      id={field.name}
+                      autoComplete="off"
+                      aria-invalid={fieldState.invalid}
+                      maxLength={BOOKMARK_NAME_MAX_LENGTH}
+                      disabled={createBookmarkMutation.isPending}
+                    />
+                    <InputGroupAddon align="inline-end">
+                      <Popover>
+                        <PopoverTrigger
+                          openOnHover
+                          render={
+                            <Button aria-label="Bookmark name field info" size="icon-xs" variant="ghost" />
+                          }
+                        >
+                          <IconInfoCircle />
+                        </PopoverTrigger>
+                        <PopoverContent side="top" tooltipStyle>
+                          <p>Leave it empty to use the title from the website metadata</p>
+                        </PopoverContent>
+                      </Popover>
+                    </InputGroupAddon>
+                  </InputGroup>
+
                   <FieldDescription>
-                    Leave it empty to use the title from the website metadata.
+                    <span className="tabular-nums">
+                      {BOOKMARK_NAME_MAX_LENGTH - (field.value?.length ?? 0)}
+                    </span>{' '}
+                    characters left
                   </FieldDescription>
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>
@@ -132,14 +157,39 @@ export function CreateBookmarkDialog({ open, onOpenChange, ...props }: CreateMan
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor={field.name}>Description</FieldLabel>
-                  <Textarea
-                    {...field}
-                    id={field.name}
-                    aria-invalid={fieldState.invalid}
-                    disabled={createBookmarkMutation.isPending}
-                  />
+                  <InputGroup>
+                    <InputGroupTextarea
+                      {...field}
+                      id={field.name}
+                      maxLength={DESCRIPTION_MAX_LENGTH}
+                      disabled={createBookmarkMutation.isPending}
+                      aria-invalid={fieldState.invalid}
+                    />
+                    <InputGroupAddon align="block-end" className="justify-end p-1">
+                      <Popover>
+                        <PopoverTrigger
+                          openOnHover
+                          render={
+                            <Button
+                              size="icon-xs"
+                              variant="ghost"
+                              aria-label="Bookmark description field info"
+                            />
+                          }
+                        >
+                          <IconInfoCircle />
+                        </PopoverTrigger>
+                        <PopoverContent side="top" tooltipStyle>
+                          <p>Leave it empty to use the description from the website metadata</p>
+                        </PopoverContent>
+                      </Popover>
+                    </InputGroupAddon>
+                  </InputGroup>
                   <FieldDescription>
-                    Leave it empty to use the description from the website metadata.
+                    <span className="tabular-nums">
+                      {DESCRIPTION_MAX_LENGTH - (field.value?.length ?? 0)}
+                    </span>{' '}
+                    characters left
                   </FieldDescription>
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>

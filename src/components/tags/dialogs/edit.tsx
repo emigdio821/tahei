@@ -13,10 +13,11 @@ import {
   DialogPanel,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Field, FieldError, FieldLabel } from '@/components/ui/field'
+import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import type { TagWithBookmarkCount } from '@/db/schema/zod/tags'
 import { useEntityMutation } from '@/hooks/use-entity-mutation'
+import { TAG_NAME_MAX_LENGTH } from '@/lib/constants'
 import { type UpdateTagFormData, updateTagSchema } from '@/lib/form-schemas/tags'
 import { updateTag } from '@/server-actions/tags'
 import { TAGS_QUERY_KEY } from '@/tanstack-queries/tags'
@@ -91,9 +92,14 @@ export function EditTagDialog({ open, onOpenChange, tag, ...props }: EditTagDial
                   <Input
                     {...field}
                     id={field.name}
+                    maxLength={TAG_NAME_MAX_LENGTH}
                     aria-invalid={fieldState.invalid}
                     disabled={updateTagMutation.isPending}
                   />
+                  <FieldDescription>
+                    <span className="tabular-nums">{TAG_NAME_MAX_LENGTH - (field.value?.length ?? 0)}</span>{' '}
+                    characters left
+                  </FieldDescription>
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>
               )}
