@@ -1,6 +1,6 @@
 'use client'
 
-import { IconInfoCircle, IconSearch, IconTrash } from '@tabler/icons-react'
+import { IconInfoCircle, IconSearch, IconTag, IconTrash } from '@tabler/icons-react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import type { Table } from '@tanstack/react-table'
 import { parseAsString, useQueryState } from 'nuqs'
@@ -15,6 +15,7 @@ import type { Bookmark } from '@/db/schema/zod/bookmarks'
 import { deleteBookmarksBatch } from '@/server-actions/bookmarks'
 import { BOOKMARKS_QUERY_KEY } from '@/tanstack-queries/bookmarks'
 import { CreateBookmarkDialog } from '../dialogs/create'
+import { UpdateBookmarkTagsDialog } from '../dialogs/update-tags'
 
 interface BookmarksDataTableHeaderProps {
   table: Table<Bookmark>
@@ -23,6 +24,7 @@ interface BookmarksDataTableHeaderProps {
 export function BookmarksDataTableHeader({ table }: BookmarksDataTableHeaderProps) {
   const [isCreateManualOpen, setIsCreateManualOpen] = useState(false)
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [isUpdateTagsDialogOpen, setUpdateTagsDialogOpen] = useState(false)
   const queryClient = useQueryClient()
 
   const [searchQuery, setSearchQuery] = useQueryState('search-bookmarks', parseAsString.withDefault(''))
@@ -90,7 +92,7 @@ export function BookmarksDataTableHeader({ table }: BookmarksDataTableHeaderProp
         description={
           <div>
             <p>
-              Selected bookmarks: <strong>{selectedRowsLength}</strong>.
+              Selected bookmarks: <span className="font-medium">{selectedRowsLength}</span>.
             </p>
             <p>This action cannot be undone.</p>
           </div>
@@ -98,6 +100,11 @@ export function BookmarksDataTableHeader({ table }: BookmarksDataTableHeaderProp
       />
 
       <CreateBookmarkDialog open={isCreateManualOpen} onOpenChange={setIsCreateManualOpen} />
+      <UpdateBookmarkTagsDialog
+        bookmarks={selectedItems}
+        open={isUpdateTagsDialogOpen}
+        onOpenChange={setUpdateTagsDialogOpen}
+      />
 
       <div className="flex flex-col justify-between gap-2 sm:flex-row">
         <InputGroup className="w-full bg-background sm:w-sm">
@@ -130,16 +137,33 @@ export function BookmarksDataTableHeader({ table }: BookmarksDataTableHeaderProp
 
         <div className="flex gap-2">
           {selectedRowsLength > 0 && (
-            <Tooltip>
-              <TooltipTrigger
-                render={
-                  <Button onClick={() => setDeleteDialogOpen(true)} variant="destructive" size="icon">
-                    <IconTrash />
-                  </Button>
-                }
-              />
-              <TooltipContent>Delete selected bookmarks</TooltipContent>
-            </Tooltip>
+            <>
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <Button
+                      onClick={() => setDeleteDialogOpen(true)}
+                      variant="destructive-outline"
+                      size="icon"
+                    >
+                      <IconTrash />
+                    </Button>
+                  }
+                />
+                <TooltipContent>Delete selected bookmarks</TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <Button onClick={() => setUpdateTagsDialogOpen(true)} variant="outline" size="icon">
+                      <IconTag />
+                    </Button>
+                  }
+                />
+                <TooltipContent>Update tags for selected bookmarks</TooltipContent>
+              </Tooltip>
+            </>
           )}
 
           <Button onClick={() => setIsCreateManualOpen(true)}>Create</Button>

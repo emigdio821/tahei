@@ -87,7 +87,7 @@ export function ImportBookmarkDialog({ open, onOpenChange, ...props }: ImportBoo
 
       if (failed === 0) {
         toast.success('Bookmarks imported', {
-          description: `Successfully imported all bookmarks.`,
+          description: 'Successfully imported all bookmarks.',
         })
       } else if (succeeded === 0) {
         toast.error('Import failed', {

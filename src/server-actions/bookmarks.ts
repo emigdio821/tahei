@@ -88,6 +88,55 @@ export async function createBookmark(data: CreateBookmarkFormData): Promise<void
   }
 }
 
+export interface UpdateBookmarkTagsBatchResult {
+  success: boolean
+  bookmarkId: string
+  error?: string
+}
+
+export async function updateBookmarkTagsBatch(
+  bookmarkIds: string[],
+  tagIds: string[],
+): Promise<UpdateBookmarkTagsBatchResult[]> {
+  const session = await getSession()
+
+  if (!session) {
+    throw new Error('Unauthorized')
+  }
+
+  const results = await Promise.allSettled(
+    bookmarkIds.map(async (bookmarkId) => {
+      await db.delete(bookmarkTags).where(eq(bookmarkTags.bookmarkId, bookmarkId))
+
+      if (tagIds.length > 0) {
+        const tagsToInsert = tagIds.map((tagId) => ({
+          bookmarkId,
+          tagId,
+        }))
+
+        await db.insert(bookmarkTags).values(tagsToInsert)
+      }
+
+      return bookmarkId
+    }),
+  )
+
+  return results.map((result, index) => {
+    if (result.status === 'fulfilled') {
+      return {
+        success: true,
+        bookmarkId: result.value,
+      }
+    } else {
+      return {
+        success: false,
+        bookmarkId: bookmarkIds[index],
+        error: result.reason?.message || 'Unknown error',
+      }
+    }
+  })
+}
+
 export async function updateBookmark(id: string, data: UpdateBookmarkFormData): Promise<void> {
   const session = await getSession()
 
@@ -97,9 +146,9 @@ export async function updateBookmark(id: string, data: UpdateBookmarkFormData): 
 
   const { tags, ...bookmark } = data
 
-  if (tags) {
-    await db.delete(bookmarkTags).where(eq(bookmarkTags.bookmarkId, id))
+  await db.delete(bookmarkTags).where(eq(bookmarkTags.bookmarkId, id))
 
+  if (tags && tags.length > 0) {
     const tagsToInsert = tags.map((tagId) => ({
       bookmarkId: id,
       tagId,

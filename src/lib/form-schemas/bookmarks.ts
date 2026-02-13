@@ -56,3 +56,9 @@ export const importBookmarksSchema = z
   })
 
 export type ImportBookmarksFormData = z.infer<typeof importBookmarksSchema>
+
+export const updateBookmarkTagsSchema = z.object({
+  tags: z.array(z.string()).optional(),
+})
+
+export type UpdateBookmarkTagsFormData = z.infer<typeof updateBookmarkTagsSchema>
