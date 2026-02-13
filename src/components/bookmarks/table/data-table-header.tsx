@@ -9,13 +9,6 @@ import { toast } from 'sonner'
 import { AlertDialogGeneric } from '@/components/shared/alert-dialog-generic'
 import { Button } from '@/components/ui/button'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
-import {
-  Progress,
-  ProgressIndicator,
-  ProgressLabel,
-  ProgressTrack,
-  ProgressValue,
-} from '@/components/ui/progress'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import type { Bookmark } from '@/db/schema/zod/bookmarks'
 import { deleteBookmarksBatch } from '@/server-actions/bookmarks'
@@ -30,7 +23,6 @@ export function BookmarksDataTableHeader({ table }: BookmarksDataTableHeaderProp
   const [isSearchTooltipOpen, setSearchTooltipOpen] = useState(false)
   const [isCreateManualOpen, setIsCreateManualOpen] = useState(false)
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [deleteProgress, setDeleteProgress] = useState(0)
   const queryClient = useQueryClient()
 
   const [searchQuery, setSearchQuery] = useQueryState('search-bookmarks', parseAsString.withDefault(''))
@@ -43,19 +35,7 @@ export function BookmarksDataTableHeader({ table }: BookmarksDataTableHeaderProp
 
   const batchDeleteMutation = useMutation({
     mutationFn: async (bookmarkIds: string[]) => {
-      setDeleteProgress(0)
-
-      const CHUNK_SIZE = 50
-      const allResults: Awaited<ReturnType<typeof deleteBookmarksBatch>> = []
-
-      for (let i = 0; i < bookmarkIds.length; i += CHUNK_SIZE) {
-        const chunk = bookmarkIds.slice(i, i + CHUNK_SIZE)
-        const chunkResults = await deleteBookmarksBatch(chunk)
-        allResults.push(...chunkResults)
-        setDeleteProgress((Math.min(i + CHUNK_SIZE, bookmarkIds.length) / bookmarkIds.length) * 100)
-      }
-
-      return allResults
+      return await deleteBookmarksBatch(bookmarkIds)
     },
     onSuccess: (results) => {
       const succeeded = results.filter((r) => r.success).length
@@ -81,19 +61,15 @@ export function BookmarksDataTableHeader({ table }: BookmarksDataTableHeaderProp
         table.resetRowSelection()
         setDeleteDialogOpen(false)
       }
-
-      setDeleteProgress(0)
     },
     onError: (error) => {
       toast.error('Delete failed', {
         description: error instanceof Error ? error.message : 'An error occurred while deleting bookmarks.',
       })
-      setDeleteProgress(0)
     },
   })
 
   async function handleBatchDelete() {
-    setDeleteProgress(0)
     const bookmarkIds = selectedItems.map((item) => item.id)
     await batchDeleteMutation.mutateAsync(bookmarkIds)
   }
@@ -111,19 +87,6 @@ export function BookmarksDataTableHeader({ table }: BookmarksDataTableHeaderProp
         variant="destructive"
         actionLabel="Delete"
         title="Delete bookmarks?"
-        content={
-          batchDeleteMutation.isPending ? (
-            <Progress value={deleteProgress}>
-              <div className="flex items-center justify-between gap-2 text-muted-foreground">
-                <ProgressLabel>Deleting...</ProgressLabel>
-                <ProgressValue />
-              </div>
-              <ProgressTrack>
-                <ProgressIndicator />
-              </ProgressTrack>
-            </Progress>
-          ) : null
-        }
         description={
           <div>
             <p>
