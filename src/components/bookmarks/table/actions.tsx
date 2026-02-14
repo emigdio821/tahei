@@ -88,8 +88,11 @@ export function BookmarksTableActions({ bookmark }: ActionsProps) {
         title="Delete bookmark?"
         description={
           <div>
-            You are about to delete the bookmark: "<span className="font-medium">{bookmark.name}</span>". This
-            action cannot be undone.
+            <p>You are about to delete the bookmark:</p>
+            <p className="flex items-center">
+              "<span className="truncate font-medium">{bookmark.name}</span>"
+            </p>
+            <p>This action cannot be undone.</p>
           </div>
         }
       />

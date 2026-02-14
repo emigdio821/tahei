@@ -64,7 +64,7 @@ export const bookmarksTableColumns: ColumnDef<Bookmark>[] = [
     size: 160,
     cell: ({ row }) => (
       <Button
-        className="min-w-0 text-left"
+        className="line-clamp-1 min-w-0 text-left"
         nativeButton={false}
         variant="link"
         render={
@@ -104,9 +104,11 @@ export const bookmarksTableColumns: ColumnDef<Bookmark>[] = [
 
       if (tags.length === 0) return null
 
+      const sortedTags = [...tags].sort((a, b) => a.tag.name.localeCompare(b.tag.name))
+
       return (
         <div className="flex flex-wrap gap-1">
-          {tags.map(({ tag }) => {
+          {sortedTags.map(({ tag }) => {
             const tagHref: `/tags/${string}` = `/tags/${tag.id}`
 
             if (tagHref === pathname) {
