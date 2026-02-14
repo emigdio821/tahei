@@ -94,10 +94,8 @@ export function NavTags({ ...props }: React.ComponentProps<typeof SidebarGroup>)
                         <span className="cursor-default text-xs">{tag.name}</span>
                         {tag.bookmarkCount > 0 && (
                           <>
-                            <Separator orientation="vertical" />
-                            <span className="tabular-nums">
-                              <div>{tag.bookmarkCount}</div>
-                            </span>
+                            <Separator orientation="vertical" className="bg-sidebar/72" />
+                            <span className="text-sidebar/72 tabular-nums">{tag.bookmarkCount}</span>
                           </>
                         )}
                       </div>
@@ -107,9 +105,7 @@ export function NavTags({ ...props }: React.ComponentProps<typeof SidebarGroup>)
                         {tag.bookmarkCount > 0 && (
                           <>
                             <Separator orientation="vertical" />
-                            <span className="tabular-nums">
-                              <div>{tag.bookmarkCount}</div>
-                            </span>
+                            <span className="text-muted-foreground tabular-nums">{tag.bookmarkCount}</span>
                           </>
                         )}
                       </Link>

@@ -3,13 +3,13 @@ import { toast } from 'sonner'
 
 interface BaseEntityMutationConfig<TData, TVariables, TQueryData = TData> {
   mutationFn: (variables: TVariables) => Promise<TData>
-  invalidateKeys: string[]
+  invalidateKeys: (string | unknown[])[]
   errorTitle?: React.ReactNode
   errorDescription?: React.ReactNode
   onSuccess?: (data: TData) => void
   onError?: (error: Error) => void
   optimisticUpdate?: {
-    queryKey: string[]
+    queryKey: unknown[]
     updateFn: (oldData: TQueryData | undefined, variables: TVariables) => TQueryData
   }
 }
@@ -67,7 +67,8 @@ export function useEntityMutation<TData = unknown, TVariables = unknown, TQueryD
     },
     onSuccess: (data) => {
       invalidateKeys.forEach((key) => {
-        queryClient.invalidateQueries({ queryKey: [key] })
+        const queryKey = Array.isArray(key) ? key : [key]
+        queryClient.invalidateQueries({ queryKey })
       })
 
       if (showSuccessToast) {

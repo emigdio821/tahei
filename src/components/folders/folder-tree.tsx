@@ -40,7 +40,9 @@ export function FolderTree({ folder }: { folder: FolderTreeNode }) {
               }
             />
 
-            {folder.bookmarkCount > 0 && <SidebarMenuBadge>{folder.bookmarkCount}</SidebarMenuBadge>}
+            {folder.bookmarkCount > 0 && (
+              <SidebarMenuBadge className="text-muted-foreground!">{folder.bookmarkCount}</SidebarMenuBadge>
+            )}
           </SidebarMenuItem>
         }
       />
@@ -72,7 +74,9 @@ export function FolderTree({ folder }: { folder: FolderTreeNode }) {
               }
             />
 
-            {folder.bookmarkCount > 0 && <SidebarMenuBadge>{folder.bookmarkCount}</SidebarMenuBadge>}
+            {folder.bookmarkCount > 0 && (
+              <SidebarMenuBadge className="text-muted-foreground!">{folder.bookmarkCount}</SidebarMenuBadge>
+            )}
           </SidebarMenuItem>
         }
       />

@@ -8,6 +8,7 @@ import {
   IconInfoCircle,
   IconTrash,
 } from '@tabler/icons-react'
+import { useParams, usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { BookmarkDetailsDialog } from '@/components/bookmarks/dialogs/details'
 import { EditBookmarkDialog } from '@/components/bookmarks/dialogs/edit'
@@ -27,6 +28,8 @@ import type { Bookmark } from '@/db/schema/zod/bookmarks'
 import { useEntityMutation } from '@/hooks/use-entity-mutation'
 import { deleteBookmark, toggleFavoriteBookmark } from '@/server-actions/bookmarks'
 import { BOOKMARKS_QUERY_KEY } from '@/tanstack-queries/bookmarks'
+import { FOLDERS_QUERY_KEY } from '@/tanstack-queries/folders'
+import { TAGS_QUERY_KEY } from '@/tanstack-queries/tags'
 
 interface ActionsProps {
   bookmark: Bookmark
@@ -37,11 +40,34 @@ export function BookmarksTableActions({ bookmark }: ActionsProps) {
   const [isDetailsDialogOpen, setDetailsDialogOpen] = useState(false)
   const [isEditDialogOpen, setEditDialogOpen] = useState(false)
 
+  const pathname = usePathname()
+  const params = useParams<{ id?: string }>()
+
+  function keysToInvalidate(): (string | unknown[])[] {
+    const keys: (string | unknown[])[] = [BOOKMARKS_QUERY_KEY]
+    const hasTags = bookmark.bookmarkTags && bookmark.bookmarkTags.length > 0
+    const hasFolder = bookmark.folderId
+
+    if (hasTags) {
+      keys.push(TAGS_QUERY_KEY)
+    }
+
+    if (hasFolder) {
+      keys.push([FOLDERS_QUERY_KEY, bookmark.folderId])
+    }
+
+    if (pathname?.startsWith('/tags/') && params?.id) {
+      keys.push([TAGS_QUERY_KEY, params.id])
+    }
+
+    return keys
+  }
+
   const deleteBookmarkMutation = useEntityMutation({
     mutationFn: async (id: string) => {
       return await deleteBookmark(id)
     },
-    invalidateKeys: [BOOKMARKS_QUERY_KEY],
+    invalidateKeys: keysToInvalidate(),
     successTitle: 'Bookmark deleted',
     successDescription: 'The bookmark has been successfully deleted.',
     errorDescription: 'An error occurred while deleting the bookmark, please try again.',
@@ -58,7 +84,7 @@ export function BookmarksTableActions({ bookmark }: ActionsProps) {
     mutationFn: async (data) => {
       return await toggleFavoriteBookmark(data.id, data.isFavorite)
     },
-    invalidateKeys: [BOOKMARKS_QUERY_KEY],
+    invalidateKeys: keysToInvalidate(),
     errorDescription: 'An error occurred while updating the bookmark, please try again.',
     showSuccessToast: false,
     optimisticUpdate: {

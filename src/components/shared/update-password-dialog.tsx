@@ -60,7 +60,7 @@ export function UpdatePasswordDialog({ open, onOpenChange, ...props }: UpdatePas
       onOpenChange(false)
     },
     onError: (error) => {
-      console.log('Update password error:', error)
+      console.error('Update password error:', error)
     },
   })
 

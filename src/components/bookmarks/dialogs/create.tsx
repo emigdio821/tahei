@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { IconInfoCircle } from '@tabler/icons-react'
+import { useParams, usePathname } from 'next/navigation'
 import type React from 'react'
 import { Activity, useId } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -29,6 +30,8 @@ import { useBookmarkCreationContext } from '@/lib/contexts/bookmark-creation'
 import { type CreateBookmarkFormData, createBookmarkSchema } from '@/lib/form-schemas/bookmarks'
 import { createBookmark } from '@/server-actions/bookmarks'
 import { BOOKMARKS_QUERY_KEY } from '@/tanstack-queries/bookmarks'
+import { FOLDERS_QUERY_KEY } from '@/tanstack-queries/folders'
+import { TAGS_QUERY_KEY } from '@/tanstack-queries/tags'
 
 interface CreateManualBookmarkDialogProps extends React.ComponentProps<typeof Dialog> {
   open: boolean
@@ -38,6 +41,8 @@ interface CreateManualBookmarkDialogProps extends React.ComponentProps<typeof Di
 export function CreateBookmarkDialog({ open, onOpenChange, ...props }: CreateManualBookmarkDialogProps) {
   const createBookmarkFormId = useId()
   const context = useBookmarkCreationContext()
+  const pathname = usePathname()
+  const params = useParams<{ id?: string }>()
 
   const form = useForm<CreateBookmarkFormData>({
     shouldUnregister: true,
@@ -52,11 +57,31 @@ export function CreateBookmarkDialog({ open, onOpenChange, ...props }: CreateMan
     },
   })
 
+  function keysToInvalidate(): (string | unknown[])[] {
+    const keys: (string | unknown[])[] = [BOOKMARKS_QUERY_KEY]
+    const tags = form.getValues('tags')
+    const folderId = form.getValues('folderId')
+
+    if (tags && tags.length > 0) {
+      keys.push(TAGS_QUERY_KEY)
+    }
+
+    if (folderId) {
+      keys.push([FOLDERS_QUERY_KEY, folderId])
+    }
+
+    if (pathname?.startsWith('/tags/') && params?.id) {
+      keys.push([TAGS_QUERY_KEY, params.id])
+    }
+
+    return keys
+  }
+
   const createBookmarkMutation = useEntityMutation({
     mutationFn: async (data: CreateBookmarkFormData) => {
       return await createBookmark(data)
     },
-    invalidateKeys: [BOOKMARKS_QUERY_KEY],
+    invalidateKeys: keysToInvalidate(),
     successTitle: 'Bookmark created',
     successDescription: 'The bookmark has been created successfully.',
     errorDescription: 'An error occurred while creating the bookmark, please try again.',

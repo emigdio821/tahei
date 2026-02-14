@@ -30,6 +30,8 @@ import { BOOKMARK_NAME_MAX_LENGTH, DESCRIPTION_MAX_LENGTH } from '@/lib/constant
 import { type UpdateBookmarkFormData, updateBookmarkSchema } from '@/lib/form-schemas/bookmarks'
 import { updateBookmark } from '@/server-actions/bookmarks'
 import { BOOKMARKS_QUERY_KEY } from '@/tanstack-queries/bookmarks'
+import { FOLDERS_QUERY_KEY } from '@/tanstack-queries/folders'
+import { TAGS_QUERY_KEY } from '@/tanstack-queries/tags'
 
 interface EditBookmarkDialogProps {
   bookmark: Bookmark
@@ -55,11 +57,26 @@ export function EditBookmarkDialog({ bookmark, state }: EditBookmarkDialogProps)
     },
   })
 
+  function keysToInvalidate(): (string | unknown[])[] {
+    const keys: (string | unknown[])[] = [BOOKMARKS_QUERY_KEY]
+    const hasTags = bookmark.bookmarkTags && bookmark.bookmarkTags.length > 0
+    const hasFolder = bookmark.folderId
+
+    if (hasTags) {
+      keys.push(TAGS_QUERY_KEY)
+    }
+    if (hasFolder) {
+      keys.push([FOLDERS_QUERY_KEY, bookmark.folderId])
+    }
+
+    return keys
+  }
+
   const updateBookmarkMutation = useEntityMutation({
     mutationFn: async (data: UpdateBookmarkFormData) => {
       return await updateBookmark(bookmark.id, data)
     },
-    invalidateKeys: [BOOKMARKS_QUERY_KEY],
+    invalidateKeys: keysToInvalidate(),
     successTitle: 'Bookmark updated',
     successDescription: 'The bookmark has been successfully updated.',
     errorDescription: 'An error occurred while updating the bookmark, please try again.',
