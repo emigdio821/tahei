@@ -7,11 +7,7 @@ export async function proxy(request: NextRequest) {
     headers: await headers(),
   })
 
-  if (request.nextUrl.pathname === '/login' && session) {
-    return NextResponse.redirect(new URL('/', request.url))
-  }
-
-  if (request.nextUrl.pathname !== '/login' && !session) {
+  if (!session) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
@@ -19,5 +15,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api|og|_next/static|_next/image|favicon.ico|images/*.*|sitemap.xml|robots.txt).*)'],
+  matcher: ['/(authed)/:path*', '/api/:path*'],
 }

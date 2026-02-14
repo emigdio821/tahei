@@ -55,7 +55,7 @@ export const bookmarksTableColumns: ColumnDef<Bookmark>[] = [
     size: 180,
     cell: ({ row }) =>
       row.original.description ? (
-        <p className="line-clamp-3 whitespace-normal">{row.original.description}</p>
+        <p className="line-clamp-2 whitespace-normal">{row.original.description}</p>
       ) : null,
   },
   {

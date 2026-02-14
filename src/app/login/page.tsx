@@ -1,71 +1,16 @@
-'use client'
-
-import { zodResolver } from '@hookform/resolvers/zod'
-import { IconAlertOctagon } from '@tabler/icons-react'
-import { useId, useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
-import { z } from 'zod'
+import { redirect } from 'next/navigation'
 import { Footer } from '@/components/footer'
-import { LoaderIcon, TaheiIcon } from '@/components/icons'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardFooter } from '@/components/ui/card'
-import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { TaheiIcon } from '@/components/icons'
+import { LoginFormCard } from '@/components/login/form-card'
 import { Frame, FrameDescription, FrameHeader, FrameTitle } from '@/components/ui/frame'
-import { Input } from '@/components/ui/input'
-import { InputPassword } from '@/components/ui/input-password'
-import { authClient } from '@/lib/auth/client'
 import { appName } from '@/lib/config/site'
-import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from '@/lib/constants'
+import { getSession } from '@/server-actions/session'
 
-const loginSchema = z.object({
-  email: z.email().min(1, 'Email is required'),
-  password: z
-    .string()
-    .min(PASSWORD_MIN_LENGTH, `Password must be at least ${PASSWORD_MIN_LENGTH} characters`)
-    .max(PASSWORD_MAX_LENGTH, `Password must be less than ${PASSWORD_MAX_LENGTH} characters`),
-})
+export default async function LoginPage() {
+  const session = await getSession()
 
-type LoginFormData = z.infer<typeof loginSchema>
-
-export default function LoginPage() {
-  const loginFormId = useId()
-  const [isLoading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-
-  const form = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-    },
-  })
-
-  async function onSubmit(data: LoginFormData) {
-    setLoading(true)
-    setError('')
-
-    try {
-      const { error } = await authClient.signIn.email({
-        email: data.email,
-        password: data.password,
-        callbackURL: '/',
-      })
-
-      if (error) {
-        setLoading(false)
-        console.error('login error:', error)
-
-        setError(
-          error.status === 401
-            ? 'Invalid credentials, try again.'
-            : 'An unexpected error occurred, please try again later.',
-        )
-      }
-    } catch {
-      setLoading(false)
-      setError('An unexpected error occurred, please try again later.')
-    }
+  if (session) {
+    redirect('/')
   }
 
   return (
@@ -83,72 +28,7 @@ export default function LoginPage() {
             <FrameTitle>Login</FrameTitle>
             <FrameDescription>Enter your credentials to access your account.</FrameDescription>
           </FrameHeader>
-          <Card>
-            <CardContent>
-              <form
-                id={loginFormId}
-                aria-label="Login form"
-                className="flex flex-col gap-4"
-                onSubmit={form.handleSubmit(onSubmit)}
-              >
-                <FieldGroup>
-                  <Controller
-                    name="email"
-                    control={form.control}
-                    render={({ field, fieldState }) => (
-                      <Field data-invalid={fieldState.invalid}>
-                        <FieldLabel htmlFor={field.name}>
-                          Correo <span className="text-destructive">*</span>
-                        </FieldLabel>
-                        <Input
-                          {...field}
-                          id={field.name}
-                          autoComplete="email"
-                          disabled={isLoading}
-                          aria-invalid={fieldState.invalid}
-                        />
-                        {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                      </Field>
-                    )}
-                  />
-
-                  <Controller
-                    name="password"
-                    control={form.control}
-                    render={({ field, fieldState }) => (
-                      <Field data-invalid={fieldState.invalid}>
-                        <FieldLabel htmlFor={field.name}>
-                          Contraseña <span className="text-destructive">*</span>
-                        </FieldLabel>
-                        <InputPassword
-                          {...field}
-                          id={field.name}
-                          aria-invalid={fieldState.invalid}
-                          disabled={isLoading}
-                        />
-                        {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                      </Field>
-                    )}
-                  />
-
-                  {error && (
-                    <Alert variant="error">
-                      <IconAlertOctagon className="size-4" />
-                      <AlertTitle>Something went wrong</AlertTitle>
-                      <AlertDescription>{error}</AlertDescription>
-                    </Alert>
-                  )}
-                </FieldGroup>
-              </form>
-            </CardContent>
-
-            <CardFooter className="pt-4 text-center">
-              <Button type="submit" form={loginFormId} className="w-full" disabled={isLoading}>
-                {isLoading && <LoaderIcon />}
-                Login
-              </Button>
-            </CardFooter>
-          </Card>
+          <LoginFormCard />
         </Frame>
       </div>
 
