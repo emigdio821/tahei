@@ -61,6 +61,7 @@ export const bookmarks = pgTable(
       .notNull()
       .references(() => user.id, { onDelete: 'cascade' }),
     folderId: uuid('folder_id').references(() => folders.id, { onDelete: 'set null' }),
+    lastMetadataSyncedAt: timestamp('last_metadata_synced_at'),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at')
       .defaultNow()

@@ -26,7 +26,7 @@ function truncate(text: string, maxLength: number): string {
   return text.length > maxLength ? truncateString(text, maxLength - 3) : text
 }
 
-export async function getBookmarkMetadata(url: string): Promise<BookmarkMetadata> {
+export async function getBookmarkMetadata(url: string, timeoutMs = 3000): Promise<BookmarkMetadata> {
   try {
     new URL(url)
   } catch {
@@ -39,7 +39,7 @@ export async function getBookmarkMetadata(url: string): Promise<BookmarkMetadata
   }
 
   const controller = new AbortController()
-  const timeoutId = setTimeout(() => controller.abort(), 3000)
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
 
   try {
     const response = await fetch(url, {

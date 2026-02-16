@@ -254,7 +254,7 @@ export async function createBookmarksBatch(
   }
 
   const urls = bookmarksData.map((data) => data.url)
-  const metadataList = await processConcurrently(urls, getBookmarkMetadata, 10)
+  const metadataList = await processConcurrently(urls, (url) => getBookmarkMetadata(url))
 
   const results = await Promise.allSettled(
     bookmarksData.map(async (data, index) => {
@@ -301,6 +301,132 @@ export async function createBookmarksBatch(
         success: false,
         error: result.reason?.message || 'Unknown error',
         url: bookmarksData[index].url,
+      }
+    }
+  })
+}
+
+export async function resyncBookmarkMetadata(
+  bookmarkId: string,
+  options: { assetsOnly: boolean },
+): Promise<void> {
+  const session = await getSession()
+
+  if (!session) {
+    throw new Error('Unauthorized')
+  }
+
+  const bookmark = await db.query.bookmarks.findFirst({
+    where: (bookmark, { eq, and }) => and(eq(bookmark.id, bookmarkId), eq(bookmark.userId, session.user.id)),
+  })
+
+  if (!bookmark) {
+    throw new Error('Bookmark not found')
+  }
+
+  if (bookmark.lastMetadataSyncedAt) {
+    const daysSinceLastSync = Math.floor(
+      (Date.now() - bookmark.lastMetadataSyncedAt.getTime()) / (1000 * 60 * 60 * 24),
+    )
+
+    if (daysSinceLastSync < 30) {
+      throw new Error(`You can resync again in ${30 - daysSinceLastSync} days`)
+    }
+  }
+
+  const metadata = await getBookmarkMetadata(bookmark.url, 8000)
+
+  const updatePayload = options.assetsOnly
+    ? {
+        image: metadata.image,
+        favicon: metadata.favicon,
+        lastMetadataSyncedAt: new Date(),
+      }
+    : {
+        name: metadata.title,
+        description: metadata.description,
+        image: metadata.image,
+        favicon: metadata.favicon,
+        lastMetadataSyncedAt: new Date(),
+      }
+
+  await db.update(bookmarks).set(updatePayload).where(eq(bookmarks.id, bookmarkId))
+}
+
+export interface ResyncBookmarksMetadataBatchResult {
+  success: boolean
+  bookmarkId: string
+  error?: string
+}
+
+export async function resyncBookmarksMetadataBatch(
+  bookmarkIds: string[],
+  options: { assetsOnly: boolean },
+): Promise<ResyncBookmarksMetadataBatchResult[]> {
+  const session = await getSession()
+
+  if (!session) {
+    throw new Error('Unauthorized')
+  }
+
+  const bookmarksToSync = await db.query.bookmarks.findMany({
+    where: (bookmark, { inArray, and, eq }) =>
+      and(inArray(bookmark.id, bookmarkIds), eq(bookmark.userId, session.user.id)),
+  })
+
+  const eligibleBookmarks = bookmarksToSync.filter((bookmark) => {
+    if (!bookmark.lastMetadataSyncedAt) return true
+
+    const daysSinceLastSync = Math.floor(
+      (Date.now() - bookmark.lastMetadataSyncedAt.getTime()) / (1000 * 60 * 60 * 24),
+    )
+
+    return daysSinceLastSync >= 30
+  })
+
+  if (eligibleBookmarks.length === 0) {
+    throw new Error('No bookmarks eligible for resync')
+  }
+
+  const metadataList = await processConcurrently(eligibleBookmarks, (bookmark) =>
+    getBookmarkMetadata(bookmark.url, 8000),
+  )
+
+  const results = await Promise.allSettled(
+    eligibleBookmarks.map(async (bookmark, index) => {
+      const metadata = metadataList[index]
+
+      const updatePayload = options.assetsOnly
+        ? {
+            image: metadata.image,
+            favicon: metadata.favicon,
+            lastMetadataSyncedAt: new Date(),
+          }
+        : {
+            name: metadata.title,
+            description: metadata.description,
+            image: metadata.image,
+            favicon: metadata.favicon,
+            lastMetadataSyncedAt: new Date(),
+          }
+
+      await db.update(bookmarks).set(updatePayload).where(eq(bookmarks.id, bookmark.id))
+
+      return bookmark.id
+    }),
+  )
+
+  return results.map((result, index) => {
+    if (result.status === 'fulfilled') {
+      return {
+        success: true,
+        bookmarkId: result.value,
+      }
+    } else {
+      return {
+        success: false,
+        bookmarkId: eligibleBookmarks[index].id,
+        error: result.reason?.message || 'Unknown error',
       }
     }
   })

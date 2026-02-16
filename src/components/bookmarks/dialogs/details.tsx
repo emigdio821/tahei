@@ -89,7 +89,7 @@ export function BookmarkDetailsDialog({ bookmark, state }: BookmarkDetailsDialog
           </div>
         </DialogPanel>
 
-        <DialogFooter variant="bare" className="block border-t">
+        <DialogFooter variant="bare" className="block border-t p-6!">
           {/* Metadata */}
           <div className="space-y-2">
             <div className="flex justify-between text-xs">
@@ -111,6 +111,12 @@ export function BookmarkDetailsDialog({ bookmark, state }: BookmarkDetailsDialog
               <span>Last updated</span>
               <span className="text-foreground">{formatDate(bookmark.updatedAt)}</span>
             </div>
+            {/* TODO: Implement update metadata functionality */}
+            {/* <div className="flex justify-end text-muted-foreground text-xs">
+              <Button variant="outline" size="xs">
+                Update metadata
+              </Button>
+            </div> */}
           </div>
         </DialogFooter>
 
