@@ -5,7 +5,8 @@ import { db } from '@/db'
 import { bookmarks, bookmarkTags } from '@/db/schema'
 import type { Bookmark, BookmarkInsert } from '@/db/schema/zod/bookmarks'
 import type { CreateBookmarkFormData, UpdateBookmarkFormData } from '@/lib/form-schemas/bookmarks'
-import { getBookmarkMetadata, getBookmarkMetadataBatch } from './bookmark-metadata'
+import { processConcurrently } from '@/lib/utils'
+import { getBookmarkMetadata } from './bookmark-metadata'
 import { getSession } from './session'
 
 export async function getBookmarks(): Promise<Bookmark[]> {
@@ -253,7 +254,7 @@ export async function createBookmarksBatch(
   }
 
   const urls = bookmarksData.map((data) => data.url)
-  const metadataList = await getBookmarkMetadataBatch(urls, 10)
+  const metadataList = await processConcurrently(urls, getBookmarkMetadata, 10)
 
   const results = await Promise.allSettled(
     bookmarksData.map(async (data, index) => {
@@ -271,18 +272,20 @@ export async function createBookmarksBatch(
         description: description || metadata.description,
       }
 
-      const [bookmark] = await db.insert(bookmarks).values(payload).returning()
+      return await db.transaction(async (tx) => {
+        const [bookmark] = await tx.insert(bookmarks).values(payload).returning()
 
-      if (tags && tags.length > 0 && bookmark.id) {
-        const tagsToInsert = tags.map((tagId) => ({
-          bookmarkId: bookmark.id,
-          tagId,
-        }))
+        if (tags && tags.length > 0 && bookmark.id) {
+          const tagsToInsert = tags.map((tagId) => ({
+            bookmarkId: bookmark.id,
+            tagId,
+          }))
 
-        await db.insert(bookmarkTags).values(tagsToInsert)
-      }
+          await tx.insert(bookmarkTags).values(tagsToInsert)
+        }
 
-      return bookmark
+        return bookmark
+      })
     }),
   )
 

@@ -36,3 +36,39 @@ export function truncateString(str: string, size: number) {
 export function hasWhiteSpaces(str: string): boolean {
   return /\s/.test(str)
 }
+
+/**
+ * Process items concurrently with controlled concurrency
+ * @param items - Array of items to process
+ * @param asyncFn - Async function to process each item
+ * @param concurrency - Maximum number of concurrent operations (default: 10)
+ * @returns Array of results in the same order as input items
+ */
+export async function processConcurrently<T, R>(
+  items: T[],
+  asyncFn: (item: T) => Promise<R>,
+  concurrency = 10,
+): Promise<R[]> {
+  const results: R[] = []
+  const executing: Promise<void>[] = []
+
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i]
+    const promise = asyncFn(item).then((result) => {
+      results[i] = result
+    })
+
+    const wrapped = promise.then(() => {
+      executing.splice(executing.indexOf(wrapped), 1)
+    })
+
+    executing.push(wrapped)
+
+    if (executing.length >= concurrency) {
+      await Promise.race(executing)
+    }
+  }
+
+  await Promise.all(executing)
+  return results
+}

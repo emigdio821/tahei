@@ -31,17 +31,17 @@ export async function getBookmarkMetadata(url: string): Promise<BookmarkMetadata
     new URL(url)
   } catch {
     return {
-      title: url,
+      title: truncate(url, BOOKMARK_NAME_MAX_LENGTH),
       description: '',
       image: undefined,
       favicon: undefined,
     }
   }
 
-  try {
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 5000)
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), 3000)
 
+  try {
     const response = await fetch(url, {
       signal: controller.signal,
       headers: {
@@ -49,8 +49,6 @@ export async function getBookmarkMetadata(url: string): Promise<BookmarkMetadata
       },
       redirect: 'follow',
     })
-
-    clearTimeout(timeoutId)
 
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`)
@@ -66,11 +64,7 @@ export async function getBookmarkMetadata(url: string): Promise<BookmarkMetadata
       favicon: metadata.logo,
     }
   } catch (error) {
-    let message = 'unknown error'
-    if (error instanceof Error) {
-      message = error.message
-    }
-    console.error(`Failed to fetch metadata for ${url}: ${message}`)
+    console.error(`Metadata failed for ${url}:`, error)
 
     return {
       title: truncate(url, BOOKMARK_NAME_MAX_LENGTH),
@@ -78,39 +72,7 @@ export async function getBookmarkMetadata(url: string): Promise<BookmarkMetadata
       image: undefined,
       favicon: undefined,
     }
+  } finally {
+    clearTimeout(timeoutId)
   }
-}
-
-/**
- * Batch fetch metadata for multiple URLs with concurrency control
- * @param urls - Array of URLs to fetch metadata for
- * @param concurrency - Maximum number of concurrent requests (default: 10)
- * @returns Array of metadata in the same order as input URLs
- */
-export async function getBookmarkMetadataBatch(
-  urls: string[],
-  concurrency = 10,
-): Promise<BookmarkMetadata[]> {
-  const results: BookmarkMetadata[] = []
-  const executing: Promise<void>[] = []
-
-  for (let i = 0; i < urls.length; i++) {
-    const url = urls[i]
-    const promise = getBookmarkMetadata(url).then((metadata) => {
-      results[i] = metadata
-    })
-
-    const wrapped = promise.then(() => {
-      executing.splice(executing.indexOf(wrapped), 1)
-    })
-
-    executing.push(wrapped)
-
-    if (executing.length >= concurrency) {
-      await Promise.race(executing)
-    }
-  }
-
-  await Promise.all(executing)
-  return results
 }
