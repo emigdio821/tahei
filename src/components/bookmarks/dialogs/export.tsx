@@ -26,6 +26,7 @@ export function ExportBookmarksDialog({ open, onOpenChange }: ExportBookmarksDia
       link.download = `${appName}-bookmarks.txt`
       link.href = url
       link.click()
+      onOpenChange(false)
     } catch (error) {
       console.error('Error exporting bookmarks:', error)
       toast.error('Error', { description: 'Unable to export bookmarks at this time, try again.' })

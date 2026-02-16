@@ -21,7 +21,7 @@ export function DataTablePagination<T>({ table }: DataTablePaginationProps<T>) {
   return (
     <>
       <div className="flex w-full items-center gap-2">
-        <p className="text-muted-foreground text-sm">Mostrando</p>
+        <p className="text-muted-foreground text-sm">Viewing</p>
         <Select
           items={Array.from({ length: table.getPageCount() }, (_, i) => {
             const start = i * table.getState().pagination.pageSize + 1
@@ -53,7 +53,7 @@ export function DataTablePagination<T>({ table }: DataTablePaginationProps<T>) {
           </SelectContent>
         </Select>
         <p className="text-muted-foreground text-sm">
-          de <strong className="font-medium text-foreground">{table.getRowCount()}</strong> resultados
+          of <strong className="font-medium text-foreground">{table.getRowCount()}</strong> results
         </p>
       </div>
 
