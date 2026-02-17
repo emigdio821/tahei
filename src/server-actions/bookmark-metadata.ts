@@ -5,9 +5,14 @@ import metascraperDescription from 'metascraper-description'
 import metascraperImage from 'metascraper-image'
 import metascraperFavicon from 'metascraper-logo-favicon'
 import metascraperTitle from 'metascraper-title'
-import puppeteer, { type Browser } from 'puppeteer'
+import type { Browser } from 'puppeteer'
+import puppeteer from 'puppeteer-extra'
+import StealthPlugin from 'puppeteer-extra-plugin-stealth'
+
 import { BOOKMARK_NAME_MAX_LENGTH, DESCRIPTION_MAX_LENGTH } from '@/lib/constants'
 import { truncateString } from '@/lib/utils'
+
+puppeteer.use(StealthPlugin())
 
 export interface BookmarkMetadata {
   title: string
@@ -65,6 +70,8 @@ export async function getBookmarkMetadata(url: string): Promise<BookmarkMetadata
 
     const html = await page.content()
     const metadata = await scraper({ html, url })
+
+    console.log(`HTML for ${url}:`, html)
 
     return {
       title: truncate(metadata.title || metadata.ogTitle || url, BOOKMARK_NAME_MAX_LENGTH),
