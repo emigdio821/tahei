@@ -72,3 +72,9 @@ export async function processConcurrently<T, R>(
   await Promise.all(executing)
   return results
 }
+
+export function getAvatarFallback(userName: string): string {
+  const fallback = `${userName.split(' ')[0].charAt(0)}${userName.split(' ')[1]?.charAt(0) ?? ''}`
+
+  return fallback
+}

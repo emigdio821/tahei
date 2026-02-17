@@ -1,7 +1,7 @@
 import { toast } from 'sonner'
 import { AlertDialogGeneric } from '@/components/shared/alert-dialog-generic'
 import { appName } from '@/lib/config/site'
-import { exportBookmarkUrls } from '@/server-actions/bookmarks'
+import { getAllBookmarkUrls } from '@/server-actions/bookmarks'
 
 interface ExportBookmarksDialogProps {
   open: boolean
@@ -11,7 +11,7 @@ interface ExportBookmarksDialogProps {
 export function ExportBookmarksDialog({ open, onOpenChange }: ExportBookmarksDialogProps) {
   async function handleExportBookmarks() {
     try {
-      const bookmarks = await exportBookmarkUrls()
+      const bookmarks = await getAllBookmarkUrls()
 
       if (!bookmarks || bookmarks.length === 0) {
         toast.warning('There are no bookmarks to export.')

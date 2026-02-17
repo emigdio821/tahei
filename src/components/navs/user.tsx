@@ -1,52 +1,28 @@
 'use client'
 
-import {
-  IconBookmark,
-  IconFileExport,
-  IconFileImport,
-  IconHexagonAsterisk,
-  IconLogout,
-  IconMoon,
-  IconRefresh,
-  IconSelector,
-  IconSun,
-} from '@tabler/icons-react'
+import { IconLogout, IconRefresh, IconSelector, IconSettings } from '@tabler/icons-react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useTheme } from 'next-themes'
-import { useState } from 'react'
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/menu'
 import { authClient } from '@/lib/auth/client'
+import { getAvatarFallback } from '@/lib/utils'
 import { loggedUserQueryOptions } from '@/tanstack-queries/logged-user'
-import { ExportBookmarksDialog } from '../bookmarks/dialogs/export'
-import { ImportBookmarkDialog } from '../bookmarks/dialogs/import'
-import { UpdatePasswordDialog } from '../shared/update-password-dialog'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
-import { Button } from '../ui/button'
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '../ui/sidebar'
 import { Skeleton } from '../ui/skeleton'
-import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
 
 export function NavUser() {
   const router = useRouter()
   const queryClient = useQueryClient()
-  const { theme, setTheme } = useTheme()
-  const [isExportDialogOpen, setExportDialogOpen] = useState(false)
-  const [isImportDialogOpen, setImportDialogOpen] = useState(false)
-  const [isUpdatePassDialogOpen, setUpdatePassDialogOpen] = useState(false)
 
   const { data: user, isLoading, error, refetch } = useQuery(loggedUserQueryOptions())
 
@@ -64,16 +40,16 @@ export function NavUser() {
     })
   }
 
-  function getAvatarFallback() {
-    if (!user) return null
-
-    const userName = user.name
-    const fallback = `${userName.split(' ')[0].charAt(0)}${userName.split(' ')[1]?.charAt(0) ?? ''}`
-
-    return fallback
-  }
-
-  if (isLoading) return <Skeleton className="h-12 rounded-lg" />
+  if (isLoading)
+    return (
+      <div className="flex h-12 items-center gap-2 p-2">
+        <Skeleton className="size-8 rounded-full" />
+        <div className="flex-1 space-y-1">
+          <Skeleton className="h-4 w-2/4" />
+          <Skeleton className="h-2 w-3/4" />
+        </div>
+      </div>
+    )
 
   if (error || !user)
     return (
@@ -86,114 +62,56 @@ export function NavUser() {
     )
 
   return (
-    <>
-      <ExportBookmarksDialog open={isExportDialogOpen} onOpenChange={setExportDialogOpen} />
-      <ImportBookmarkDialog open={isImportDialogOpen} onOpenChange={setImportDialogOpen} />
-      <UpdatePasswordDialog open={isUpdatePassDialogOpen} onOpenChange={setUpdatePassDialogOpen} />
-
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              render={
-                <SidebarMenuButton
-                  size="lg"
-                  className="data-popup-open:bg-sidebar-accent data-popup-open:text-sidebar-accent-foreground"
-                >
-                  <div className="flex min-w-0 flex-1 items-center gap-2">
-                    <Avatar>
-                      <AvatarImage src={user.image || ''} alt={user.name} />
-                      <AvatarFallback>{getAvatarFallback()}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="truncate font-medium">{user.name.split(' ')[0]}</p>
-                      <p className="truncate text-muted-foreground text-xs">{user.email}</p>
-                    </div>
+    <SidebarMenu>
+      <SidebarMenuItem>
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={
+              <SidebarMenuButton
+                size="lg"
+                className="data-popup-open:bg-sidebar-accent data-popup-open:text-sidebar-accent-foreground"
+              >
+                <div className="flex min-w-0 flex-1 items-center gap-2">
+                  <Avatar>
+                    <AvatarImage src={user.image || ''} alt={user.name} />
+                    <AvatarFallback>{getAvatarFallback(user.name)}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="truncate font-medium">{user.name.split(' ')[0]}</p>
+                    <p className="truncate text-muted-foreground text-xs">{user.email}</p>
                   </div>
-                  <IconSelector className="ml-auto size-4 text-muted-foreground" />
-                </SidebarMenuButton>
-              }
-            />
-            <DropdownMenuContent className="w-(--anchor-width)" align="center">
-              <DropdownMenuGroup>
-                <DropdownMenuLabel className="flex items-center justify-between gap-2 whitespace-normal">
-                  <span className="line-clamp-2">{user.name}</span>
-                  <Tooltip>
-                    <TooltipTrigger
-                      render={
-                        <Button
-                          size="icon-xs"
-                          variant="ghost"
-                          className="-me-1.5"
-                          aria-label="Update password"
-                          onClick={() => setUpdatePassDialogOpen(true)}
-                        >
-                          <IconHexagonAsterisk />
-                        </Button>
-                      }
-                    />
-                    <TooltipContent>Update password</TooltipContent>
-                  </Tooltip>
-                </DropdownMenuLabel>
+                </div>
+                <IconSelector className="ml-auto size-4 text-muted-foreground" />
+              </SidebarMenuButton>
+            }
+          />
+          <DropdownMenuContent className="w-(--anchor-width)" align="center">
+            <DropdownMenuGroup>
+              <DropdownMenuLabel>
+                <span className="line-clamp-2">{user.name}</span>
+              </DropdownMenuLabel>
 
-                <DropdownMenuSub>
-                  <DropdownMenuSubTrigger>
-                    <IconMoon className="hidden size-4 dark:block" />
-                    <IconSun className="size-4 dark:hidden" />
-                    <span>Appearance</span>
-                  </DropdownMenuSubTrigger>
-                  <DropdownMenuPortal>
-                    <DropdownMenuSubContent>
-                      <DropdownMenuCheckboxItem checked={theme === 'light'} onClick={() => setTheme('light')}>
-                        Light
-                      </DropdownMenuCheckboxItem>
-                      <DropdownMenuCheckboxItem checked={theme === 'dark'} onClick={() => setTheme('dark')}>
-                        Dark
-                      </DropdownMenuCheckboxItem>
-                      <DropdownMenuCheckboxItem
-                        checked={theme === 'system'}
-                        onClick={() => setTheme('system')}
-                      >
-                        System
-                      </DropdownMenuCheckboxItem>
-                    </DropdownMenuSubContent>
-                  </DropdownMenuPortal>
-                </DropdownMenuSub>
-              </DropdownMenuGroup>
+              <DropdownMenuItem
+                render={
+                  <Link href="/settings">
+                    <IconSettings className="size-4" />
+                    Settings
+                  </Link>
+                }
+              />
+            </DropdownMenuGroup>
 
-              <DropdownMenuGroup>
-                <DropdownMenuSub>
-                  <DropdownMenuSubTrigger>
-                    <IconBookmark />
-                    <span>Bookmarks</span>
-                  </DropdownMenuSubTrigger>
-                  <DropdownMenuPortal>
-                    <DropdownMenuSubContent>
-                      <DropdownMenuItem onClick={() => setImportDialogOpen(true)}>
-                        <IconFileImport />
-                        Import
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setExportDialogOpen(true)}>
-                        <IconFileExport />
-                        Export
-                      </DropdownMenuItem>
-                    </DropdownMenuSubContent>
-                  </DropdownMenuPortal>
-                </DropdownMenuSub>
-              </DropdownMenuGroup>
+            <DropdownMenuSeparator />
 
-              <DropdownMenuSeparator />
-
-              <DropdownMenuGroup>
-                <DropdownMenuItem onClick={handleLogOut}>
-                  <IconLogout className="size-4" />
-                  Logout
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </SidebarMenuItem>
-      </SidebarMenu>
-    </>
+            <DropdownMenuGroup>
+              <DropdownMenuItem onClick={handleLogOut}>
+                <IconLogout className="size-4" />
+                Logout
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </SidebarMenuItem>
+    </SidebarMenu>
   )
 }

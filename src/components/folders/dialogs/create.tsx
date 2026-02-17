@@ -135,7 +135,11 @@ export function CreateFolderDialog({ open, onOpenChange, ...props }: CreateFolde
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor={field.name}>Parent folder</FieldLabel>
-                  <FoldersCombobox value={field.value} onValueChange={(value) => field.onChange(value)} />
+                  <FoldersCombobox
+                    id={field.name}
+                    value={field.value}
+                    onValueChange={(value) => field.onChange(value)}
+                  />
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>
               )}

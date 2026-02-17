@@ -1,8 +1,6 @@
 'use client'
 
 import {
-  IconCloudDown,
-  IconCloudOff,
   IconDotsVertical,
   IconEdit,
   IconHeart,
@@ -10,10 +8,8 @@ import {
   IconInfoCircle,
   IconTrash,
 } from '@tabler/icons-react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useParams, usePathname } from 'next/navigation'
 import { useState } from 'react'
-import { toast } from 'sonner'
 import { BookmarkDetailsDialog } from '@/components/bookmarks/dialogs/details'
 import { EditBookmarkDialog } from '@/components/bookmarks/dialogs/edit'
 import { AlertDialogGeneric } from '@/components/shared/alert-dialog-generic'
@@ -24,19 +20,13 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/menu'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import type { Bookmark } from '@/db/schema/zod/bookmarks'
 import { useEntityMutation } from '@/hooks/use-entity-mutation'
-import { formatDate } from '@/lib/utils'
-import { deleteBookmark, resyncBookmarkMetadata, toggleFavoriteBookmark } from '@/server-actions/bookmarks'
+import { deleteBookmark, toggleFavoriteBookmark } from '@/server-actions/bookmarks'
 import { BOOKMARKS_QUERY_KEY } from '@/tanstack-queries/bookmarks'
 import { FOLDERS_QUERY_KEY } from '@/tanstack-queries/folders'
 import { TAGS_QUERY_KEY } from '@/tanstack-queries/tags'
@@ -49,8 +39,6 @@ export function BookmarksTableActions({ bookmark }: ActionsProps) {
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [isDetailsDialogOpen, setDetailsDialogOpen] = useState(false)
   const [isEditDialogOpen, setEditDialogOpen] = useState(false)
-
-  const queryClient = useQueryClient()
 
   const pathname = usePathname()
   const params = useParams<{ id?: string }>()
@@ -86,37 +74,6 @@ export function BookmarksTableActions({ bookmark }: ActionsProps) {
       setDeleteDialogOpen(false)
     },
   })
-
-  const updateMetadataMutation = useMutation({
-    mutationFn: async (options: { assetsOnly: boolean }) => {
-      return await resyncBookmarkMetadata(bookmark.id, options)
-    },
-  })
-
-  function handleUpdateMetadata(options: { assetsOnly: boolean }) {
-    const promise = updateMetadataMutation.mutateAsync(options)
-
-    toast.promise(promise, {
-      loading: 'Updating metadata...',
-      success: () => {
-        queryClient.invalidateQueries({ queryKey: [BOOKMARKS_QUERY_KEY] })
-        return {
-          message: 'Success',
-          description: 'Bookmark metadata has been updated.',
-        }
-      },
-      error: (error) => {
-        const errorMessage =
-          error instanceof Error ? error.message : 'An error occurred while updating metadata.'
-        console.error('Bookmark metadata update failed', error)
-
-        return {
-          message: 'Error',
-          description: errorMessage,
-        }
-      },
-    })
-  }
 
   const toggleFavoriteBookmarkMutation = useEntityMutation<
     void,
@@ -176,23 +133,6 @@ export function BookmarksTableActions({ bookmark }: ActionsProps) {
       />
 
       <div className="flex justify-end">
-        {bookmark.lastMetadataSyncedAt && (
-          <Popover>
-            <PopoverTrigger
-              openOnHover
-              render={
-                <Button size="icon" variant="ghost" aria-label="Update metadata info">
-                  <IconCloudOff className="size-4" />
-                </Button>
-              }
-            />
-            <PopoverContent side="top" tooltipStyle>
-              <p>Next metadata sync:</p>
-              <p>{formatDate(bookmark.lastMetadataSyncedAt)}</p>
-            </PopoverContent>
-          </Popover>
-        )}
-
         <Tooltip>
           <TooltipTrigger
             render={
@@ -243,32 +183,6 @@ export function BookmarksTableActions({ bookmark }: ActionsProps) {
                 <IconEdit className="size-4" />
                 Edit
               </DropdownMenuItem>
-
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger>
-                  <IconCloudDown />
-                  Metadata
-                </DropdownMenuSubTrigger>
-                <DropdownMenuPortal>
-                  <DropdownMenuSubContent>
-                    <DropdownMenuLabel>You can update metadata once per month</DropdownMenuLabel>
-                    <DropdownMenuItem onClick={() => handleUpdateMetadata({ assetsOnly: false })}>
-                      <div>
-                        <p>Full</p>
-                        <p className="text-muted-foreground">
-                          Update all. This will overwrite existing data.
-                        </p>
-                      </div>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleUpdateMetadata({ assetsOnly: true })}>
-                      <div>
-                        <p>Assets only</p>
-                        <p className="text-muted-foreground">Update only the favicon and preview image.</p>
-                      </div>
-                    </DropdownMenuItem>
-                  </DropdownMenuSubContent>
-                </DropdownMenuPortal>
-              </DropdownMenuSub>
 
               <DropdownMenuSeparator />
 

@@ -221,21 +221,38 @@ export async function toggleFavoriteBookmark(id: string, isFavorite: boolean): P
     .where(and(eq(bookmarks.id, id), eq(bookmarks.userId, session.user.id)))
 }
 
-export async function exportBookmarkUrls(): Promise<{ url: string }[]> {
+export async function getAllBookmarkUrls(): Promise<{ url: string }[]> {
   const session = await getSession()
 
   if (!session) {
     throw new Error('Unauthorized')
   }
 
-  const bookmarksToExport = await db
+  const bookmarksUrls = await db
     .select({
       url: bookmarks.url,
     })
     .from(bookmarks)
     .where(eq(bookmarks.userId, session.user.id))
 
-  return bookmarksToExport || []
+  return bookmarksUrls || []
+}
+
+export async function getAllBookmarkIds(): Promise<{ id: string }[]> {
+  const session = await getSession()
+
+  if (!session) {
+    throw new Error('Unauthorized')
+  }
+
+  const bookmarkIds = await db
+    .select({
+      id: bookmarks.id,
+    })
+    .from(bookmarks)
+    .where(eq(bookmarks.userId, session.user.id))
+
+  return bookmarkIds || []
 }
 
 export interface CreateBookmarksBatchResult {
@@ -375,16 +392,18 @@ export async function resyncBookmarksMetadataBatch(
       and(inArray(bookmark.id, bookmarkIds), eq(bookmark.userId, session.user.id)),
   })
 
-  const eligibleBookmarks = bookmarksToSync.filter((bookmark) => {
-    if (!bookmark.lastMetadataSyncedAt) return true
+  // const eligibleBookmarks = bookmarksToSync.filter((bookmark) => {
+  //   if (!bookmark.lastMetadataSyncedAt) return true
 
-    const monthsSinceLastSync = differenceInMonths(new Date(), bookmark.lastMetadataSyncedAt)
-    return monthsSinceLastSync >= 1
-  })
+  //   const monthsSinceLastSync = differenceInMonths(new Date(), bookmark.lastMetadataSyncedAt)
+  //   return monthsSinceLastSync >= 1
+  // })
 
-  if (eligibleBookmarks.length === 0) {
-    throw new Error('No bookmarks eligible for resync')
-  }
+  // if (eligibleBookmarks.length === 0) {
+  //   throw new Error('No bookmarks eligible for resync')
+  // }
+
+  const eligibleBookmarks = bookmarksToSync
 
   const metadataList = await processConcurrently(eligibleBookmarks, (bookmark) =>
     getBookmarkMetadata(bookmark.url),

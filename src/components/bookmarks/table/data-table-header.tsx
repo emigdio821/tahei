@@ -1,27 +1,18 @@
 'use client'
 
-import { IconCloudDown, IconInfoCircle, IconSearch, IconTag, IconTrash } from '@tabler/icons-react'
+import { IconInfoCircle, IconSearch, IconTag, IconTrash } from '@tabler/icons-react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import type { Table } from '@tanstack/react-table'
-import { differenceInMonths } from 'date-fns'
 import { parseAsString, useQueryState } from 'nuqs'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { AlertDialogGeneric } from '@/components/shared/alert-dialog-generic'
 import { Button } from '@/components/ui/button'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from '@/components/ui/menu'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import type { Bookmark } from '@/db/schema/zod/bookmarks'
-import { deleteBookmarksBatch, resyncBookmarksMetadataBatch } from '@/server-actions/bookmarks'
+import { deleteBookmarksBatch } from '@/server-actions/bookmarks'
 import { BOOKMARKS_QUERY_KEY } from '@/tanstack-queries/bookmarks'
 import { CreateBookmarkDialog } from '../dialogs/create'
 import { UpdateBookmarkTagsDialog } from '../dialogs/update-tags'
@@ -43,14 +34,6 @@ export function BookmarksDataTableHeader({ table }: BookmarksDataTableHeaderProp
   const selectedRowsLength = selectedRows.length
 
   const selectedItems = selectedRows.map((row) => row.original)
-
-  const eligibleBookmarks = selectedItems.filter((bookmark) => {
-    if (!bookmark.lastMetadataSyncedAt) return true
-    const monthsSinceLastSync = differenceInMonths(new Date(), bookmark.lastMetadataSyncedAt)
-    return monthsSinceLastSync >= 1
-  })
-
-  const areElegibleForMetadataUpdate = eligibleBookmarks.length > 0
 
   const batchDeleteMutation = useMutation({
     mutationFn: async (bookmarkIds: string[]) => {
@@ -87,62 +70,6 @@ export function BookmarksDataTableHeader({ table }: BookmarksDataTableHeaderProp
       })
     },
   })
-
-  const batchUpdateMetadataMutation = useMutation({
-    mutationFn: async (options: { assetsOnly: boolean }) => {
-      const bookmarkIds = selectedItems.map((item) => item.id)
-      return await resyncBookmarksMetadataBatch(bookmarkIds, options)
-    },
-  })
-
-  async function handleBatchMetadataUpdate(options: { assetsOnly: boolean }) {
-    const promise = batchUpdateMetadataMutation.mutateAsync(options)
-
-    toast.promise(promise, {
-      loading: 'Updating metadata...',
-      description: (
-        <div>
-          <p>
-            Eligible bookmarks: <span className="font-medium">{eligibleBookmarks.length}</span>.
-          </p>
-        </div>
-      ),
-      success: (results) => {
-        const succeeded = results.filter((r) => r.success).length
-        const failed = results.filter((r) => !r.success).length
-
-        queryClient.invalidateQueries({ queryKey: [BOOKMARKS_QUERY_KEY] })
-
-        if (failed === 0) {
-          return {
-            message: 'Success',
-            description: 'The metadata for the selected bookmarks has been updated.',
-          }
-        } else if (succeeded === 0) {
-          return {
-            message: 'Error',
-            description:
-              'Failed to update bookmarks metadata. Check if they are eligible for metadata update and try again.',
-          }
-        } else {
-          return {
-            message: 'Partial update',
-            description: `${succeeded} updated, ${failed} failed.`,
-          }
-        }
-      },
-      error: (error) => {
-        const errorMessage =
-          error instanceof Error ? error.message : 'An error occurred while updating metadata.'
-        console.error('Batch metadata update failed', error)
-
-        return {
-          message: 'Error',
-          description: errorMessage,
-        }
-      },
-    })
-  }
 
   async function handleBatchDelete() {
     const bookmarkIds = selectedItems.map((item) => item.id)
@@ -224,49 +151,6 @@ export function BookmarksDataTableHeader({ table }: BookmarksDataTableHeaderProp
                   }
                 />
                 <TooltipContent>Delete selected bookmarks</TooltipContent>
-              </Tooltip>
-
-              <Tooltip>
-                <DropdownMenu>
-                  <TooltipTrigger
-                    render={
-                      <DropdownMenuTrigger
-                        render={
-                          <Button
-                            size="icon"
-                            variant="outline"
-                            disabled={batchUpdateMetadataMutation.isPending || !areElegibleForMetadataUpdate}
-                          >
-                            <IconCloudDown />
-                          </Button>
-                        }
-                      />
-                    }
-                  />
-
-                  <DropdownMenuContent align="end" className="max-w-sm">
-                    <DropdownMenuGroup>
-                      <DropdownMenuLabel>You can update metadata once per month</DropdownMenuLabel>
-                      <DropdownMenuItem onClick={() => handleBatchMetadataUpdate({ assetsOnly: false })}>
-                        <div>
-                          <p className="text-sm">Full</p>
-                          <p className="text-muted-foreground text-sm">
-                            Update all. This will overwrite existing data.
-                          </p>
-                        </div>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleBatchMetadataUpdate({ assetsOnly: true })}>
-                        <div>
-                          <p className="text-sm">Assets only</p>
-                          <p className="text-muted-foreground text-sm">
-                            Update only the favicon and preview image.
-                          </p>
-                        </div>
-                      </DropdownMenuItem>
-                    </DropdownMenuGroup>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                <TooltipContent>Update metadata for selected bookmarks</TooltipContent>
               </Tooltip>
 
               <Tooltip>
