@@ -335,7 +335,7 @@ export async function resyncBookmarkMetadata(
     }
   }
 
-  const metadata = await getBookmarkMetadata(bookmark.url, 8000)
+  const metadata = await getBookmarkMetadata(bookmark.url)
 
   const updatePayload = options.assetsOnly
     ? {
@@ -387,7 +387,7 @@ export async function resyncBookmarksMetadataBatch(
   }
 
   const metadataList = await processConcurrently(eligibleBookmarks, (bookmark) =>
-    getBookmarkMetadata(bookmark.url, 8000),
+    getBookmarkMetadata(bookmark.url),
   )
 
   const results = await Promise.allSettled(
