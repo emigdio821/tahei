@@ -5,7 +5,6 @@ import { db } from '@/db'
 import { bookmarks, bookmarkTags } from '@/db/schema'
 import type { Bookmark, BookmarkInsert } from '@/db/schema/zod/bookmarks'
 import type { CreateBookmarkFormData, UpdateBookmarkFormData } from '@/lib/form-schemas/bookmarks'
-import { processConcurrently } from '@/lib/utils'
 import { getBookmarkMetadata } from './bookmark-metadata'
 import { getSession } from './session'
 
@@ -270,12 +269,9 @@ export async function createBookmarksBatch(
     throw new Error('Unauthorized')
   }
 
-  const urls = bookmarksData.map((data) => data.url)
-  const metadataList = await processConcurrently(urls, (url) => getBookmarkMetadata(url))
-
   const results = await Promise.allSettled(
-    bookmarksData.map(async (data, index) => {
-      const metadata = metadataList[index]
+    bookmarksData.map(async (data) => {
+      const metadata = await getBookmarkMetadata(data.url)
       const { name, url, folderId, description, isFavorite, tags } = data
 
       const payload: BookmarkInsert = {
@@ -379,13 +375,9 @@ export async function resyncBookmarksMetadataBatch(
       and(inArray(bookmark.id, bookmarkIds), eq(bookmark.userId, session.user.id)),
   })
 
-  const metadataList = await processConcurrently(bookmarksToSync, (bookmark) =>
-    getBookmarkMetadata(bookmark.url),
-  )
-
   const results = await Promise.allSettled(
-    bookmarksToSync.map(async (bookmark, index) => {
-      const metadata = metadataList[index]
+    bookmarksToSync.map(async (bookmark) => {
+      const metadata = await getBookmarkMetadata(bookmark.url)
 
       const updatePayload = options.assetsOnly
         ? {

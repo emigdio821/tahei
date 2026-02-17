@@ -55,8 +55,6 @@ export async function getBookmarkMetadata(url: string): Promise<BookmarkMetadata
     const html = await response.text()
     const metadata = await scraper({ html, url })
 
-    console.log(`Metadata for ${url}:`, metadata)
-
     return {
       title: truncate(metadata.title || metadata.ogTitle || url, BOOKMARK_NAME_MAX_LENGTH),
       description: truncate(metadata.description || '', DESCRIPTION_MAX_LENGTH),
