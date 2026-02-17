@@ -40,27 +40,7 @@ export async function getBookmarkMetadata(url: string): Promise<BookmarkMetadata
   }
 
   try {
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
-        Accept:
-          'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.9',
-        'Accept-Encoding': 'gzip, deflate, br',
-        'Cache-Control': 'no-cache',
-        Pragma: 'no-cache',
-        'Sec-Ch-Ua': '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
-        'Sec-Ch-Ua-Mobile': '?0',
-        'Sec-Ch-Ua-Platform': '"Windows"',
-        'Sec-Fetch-Dest': 'document',
-        'Sec-Fetch-Mode': 'navigate',
-        'Sec-Fetch-Site': 'none',
-        'Sec-Fetch-User': '?1',
-        'Upgrade-Insecure-Requests': '1',
-      },
-      // signal: AbortSignal.timeout(15000),
-    })
+    const response = await fetch(url)
 
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`)
@@ -69,7 +49,7 @@ export async function getBookmarkMetadata(url: string): Promise<BookmarkMetadata
     const html = await response.text()
     const metadata = await scraper({ html, url })
 
-    console.log(`HTML for ${url}:`, html)
+    console.log(`Metadata for ${url}:`, metadata)
 
     return {
       title: truncate(metadata.title || metadata.ogTitle || url, BOOKMARK_NAME_MAX_LENGTH),
