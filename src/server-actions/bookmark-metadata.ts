@@ -40,7 +40,13 @@ export async function getBookmarkMetadata(url: string): Promise<BookmarkMetadata
   }
 
   try {
-    const response = await fetch(url)
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36',
+      },
+      cache: 'no-store',
+    })
 
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`)
