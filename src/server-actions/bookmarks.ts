@@ -1,6 +1,5 @@
 'use server'
 
-import { addMonths, differenceInDays, differenceInMonths } from 'date-fns'
 import { and, eq, inArray } from 'drizzle-orm'
 import { db } from '@/db'
 import { bookmarks, bookmarkTags } from '@/db/schema'
@@ -342,30 +341,18 @@ export async function resyncBookmarkMetadata(
     throw new Error('Bookmark not found')
   }
 
-  if (bookmark.lastMetadataSyncedAt) {
-    const monthsSinceLastSync = differenceInMonths(new Date(), bookmark.lastMetadataSyncedAt)
-
-    if (monthsSinceLastSync < 1) {
-      const nextEligibleDate = addMonths(bookmark.lastMetadataSyncedAt, 1)
-      const daysRemaining = differenceInDays(nextEligibleDate, new Date())
-      throw new Error(`You can resync again in ${daysRemaining} days`)
-    }
-  }
-
   const metadata = await getBookmarkMetadata(bookmark.url)
 
   const updatePayload = options.assetsOnly
     ? {
         image: metadata.image,
         favicon: metadata.favicon,
-        lastMetadataSyncedAt: new Date(),
       }
     : {
         name: metadata.title,
         description: metadata.description,
         image: metadata.image,
         favicon: metadata.favicon,
-        lastMetadataSyncedAt: new Date(),
       }
 
   await db.update(bookmarks).set(updatePayload).where(eq(bookmarks.id, bookmarkId))
@@ -392,39 +379,24 @@ export async function resyncBookmarksMetadataBatch(
       and(inArray(bookmark.id, bookmarkIds), eq(bookmark.userId, session.user.id)),
   })
 
-  // const eligibleBookmarks = bookmarksToSync.filter((bookmark) => {
-  //   if (!bookmark.lastMetadataSyncedAt) return true
-
-  //   const monthsSinceLastSync = differenceInMonths(new Date(), bookmark.lastMetadataSyncedAt)
-  //   return monthsSinceLastSync >= 1
-  // })
-
-  // if (eligibleBookmarks.length === 0) {
-  //   throw new Error('No bookmarks eligible for resync')
-  // }
-
-  const eligibleBookmarks = bookmarksToSync
-
-  const metadataList = await processConcurrently(eligibleBookmarks, (bookmark) =>
+  const metadataList = await processConcurrently(bookmarksToSync, (bookmark) =>
     getBookmarkMetadata(bookmark.url),
   )
 
   const results = await Promise.allSettled(
-    eligibleBookmarks.map(async (bookmark, index) => {
+    bookmarksToSync.map(async (bookmark, index) => {
       const metadata = metadataList[index]
 
       const updatePayload = options.assetsOnly
         ? {
             image: metadata.image,
             favicon: metadata.favicon,
-            lastMetadataSyncedAt: new Date(),
           }
         : {
             name: metadata.title,
             description: metadata.description,
             image: metadata.image,
             favicon: metadata.favicon,
-            lastMetadataSyncedAt: new Date(),
           }
 
       await db.update(bookmarks).set(updatePayload).where(eq(bookmarks.id, bookmark.id))
@@ -442,7 +414,7 @@ export async function resyncBookmarksMetadataBatch(
     } else {
       return {
         success: false,
-        bookmarkId: eligibleBookmarks[index].id,
+        bookmarkId: bookmarksToSync[index].id,
         error: result.reason?.message || 'Unknown error',
       }
     }
