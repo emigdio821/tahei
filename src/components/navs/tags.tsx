@@ -86,7 +86,6 @@ export function NavTags({ ...props }: React.ComponentProps<typeof SidebarGroup>)
               trigger={
                 <Badge
                   key={tag.id}
-                  className="gap-0.5"
                   variant={isActive ? 'default' : 'outline'}
                   render={
                     isActive ? (
@@ -95,7 +94,9 @@ export function NavTags({ ...props }: React.ComponentProps<typeof SidebarGroup>)
                         {tag.bookmarkCount > 0 && (
                           <>
                             <Separator orientation="vertical" className="bg-sidebar/72" />
-                            <span className="text-sidebar/72 tabular-nums">{tag.bookmarkCount}</span>
+                            <span className="text-sidebar/72 text-xs tabular-nums dark:text-sidebar-foreground/72">
+                              {tag.bookmarkCount}
+                            </span>
                           </>
                         )}
                       </div>
@@ -105,7 +106,9 @@ export function NavTags({ ...props }: React.ComponentProps<typeof SidebarGroup>)
                         {tag.bookmarkCount > 0 && (
                           <>
                             <Separator orientation="vertical" />
-                            <span className="text-muted-foreground tabular-nums">{tag.bookmarkCount}</span>
+                            <span className="text-muted-foreground text-xs tabular-nums">
+                              {tag.bookmarkCount}
+                            </span>
                           </>
                         )}
                       </Link>

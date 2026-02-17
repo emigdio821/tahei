@@ -61,8 +61,9 @@ export function EditBookmarkDialog({ bookmark, state }: EditBookmarkDialogProps)
     const keys: (string | unknown[])[] = [BOOKMARKS_QUERY_KEY]
     const hasTags = bookmark.bookmarkTags && bookmark.bookmarkTags.length > 0
     const hasFolder = bookmark.folderId
+    const formTags = form.getValues('tags') || []
 
-    if (hasTags) {
+    if (hasTags || formTags.length > 0) {
       keys.push(TAGS_QUERY_KEY)
     }
     if (hasFolder) {
