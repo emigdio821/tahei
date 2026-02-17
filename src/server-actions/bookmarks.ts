@@ -5,6 +5,7 @@ import { db } from '@/db'
 import { bookmarks, bookmarkTags } from '@/db/schema'
 import type { Bookmark, BookmarkInsert } from '@/db/schema/zod/bookmarks'
 import type { CreateBookmarkFormData, UpdateBookmarkFormData } from '@/lib/form-schemas/bookmarks'
+import { processConcurrently } from '@/lib/utils'
 import { getBookmarkMetadata } from './bookmark-metadata'
 import { getSession } from './session'
 
@@ -269,38 +270,36 @@ export async function createBookmarksBatch(
     throw new Error('Unauthorized')
   }
 
-  const results = await Promise.allSettled(
-    bookmarksData.map(async (data) => {
-      const metadata = await getBookmarkMetadata(data.url)
-      const { name, url, folderId, description, isFavorite, tags } = data
+  const results = await processConcurrently(bookmarksData, async (data) => {
+    const metadata = await getBookmarkMetadata(data.url)
+    const { name, url, folderId, description, isFavorite, tags } = data
 
-      const payload: BookmarkInsert = {
-        url,
-        image: metadata.image,
-        favicon: metadata.favicon,
-        folderId,
-        isFavorite,
-        userId: session.user.id,
-        name: name || metadata.title || 'bookmark',
-        description: description || metadata.description,
+    const payload: BookmarkInsert = {
+      url,
+      image: metadata.image,
+      favicon: metadata.favicon,
+      folderId,
+      isFavorite,
+      userId: session.user.id,
+      name: name || metadata.title || 'bookmark',
+      description: description || metadata.description,
+    }
+
+    return await db.transaction(async (tx) => {
+      const [bookmark] = await tx.insert(bookmarks).values(payload).returning()
+
+      if (tags && tags.length > 0 && bookmark.id) {
+        const tagsToInsert = tags.map((tagId) => ({
+          bookmarkId: bookmark.id,
+          tagId,
+        }))
+
+        await tx.insert(bookmarkTags).values(tagsToInsert)
       }
 
-      return await db.transaction(async (tx) => {
-        const [bookmark] = await tx.insert(bookmarks).values(payload).returning()
-
-        if (tags && tags.length > 0 && bookmark.id) {
-          const tagsToInsert = tags.map((tagId) => ({
-            bookmarkId: bookmark.id,
-            tagId,
-          }))
-
-          await tx.insert(bookmarkTags).values(tagsToInsert)
-        }
-
-        return bookmark
-      })
-    }),
-  )
+      return bookmark
+    })
+  })
 
   return results.map((result, index) => {
     if (result.status === 'fulfilled') {
@@ -375,27 +374,25 @@ export async function resyncBookmarksMetadataBatch(
       and(inArray(bookmark.id, bookmarkIds), eq(bookmark.userId, session.user.id)),
   })
 
-  const results = await Promise.allSettled(
-    bookmarksToSync.map(async (bookmark) => {
-      const metadata = await getBookmarkMetadata(bookmark.url)
+  const results = await processConcurrently(bookmarksToSync, async (bookmark) => {
+    const metadata = await getBookmarkMetadata(bookmark.url)
 
-      const updatePayload = options.assetsOnly
-        ? {
-            image: metadata.image,
-            favicon: metadata.favicon,
-          }
-        : {
-            name: metadata.title,
-            description: metadata.description,
-            image: metadata.image,
-            favicon: metadata.favicon,
-          }
+    const updatePayload = options.assetsOnly
+      ? {
+          image: metadata.image,
+          favicon: metadata.favicon,
+        }
+      : {
+          name: metadata.title,
+          description: metadata.description,
+          image: metadata.image,
+          favicon: metadata.favicon,
+        }
 
-      await db.update(bookmarks).set(updatePayload).where(eq(bookmarks.id, bookmark.id))
+    await db.update(bookmarks).set(updatePayload).where(eq(bookmarks.id, bookmark.id))
 
-      return bookmark.id
-    }),
-  )
+    return bookmark.id
+  })
 
   return results.map((result, index) => {
     if (result.status === 'fulfilled') {
