@@ -59,7 +59,7 @@ export async function getBookmarkMetadata(url: string): Promise<BookmarkMetadata
         'Sec-Fetch-User': '?1',
         'Upgrade-Insecure-Requests': '1',
       },
-      signal: AbortSignal.timeout(15000),
+      // signal: AbortSignal.timeout(15000),
     })
 
     if (!response.ok) {
