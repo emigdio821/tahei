@@ -39,9 +39,6 @@ export async function getBookmarkMetadata(url: string): Promise<BookmarkMetadata
     }
   }
 
-  const controller = new AbortController()
-  const timeoutId = setTimeout(() => controller.abort(), 5000)
-
   try {
     const response = await fetch(url, {
       headers: {
@@ -49,7 +46,7 @@ export async function getBookmarkMetadata(url: string): Promise<BookmarkMetadata
           'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36',
       },
       cache: 'no-store',
-      signal: controller.signal,
+      signal: AbortSignal.timeout(5000),
     })
 
     if (!response.ok) {
@@ -74,7 +71,5 @@ export async function getBookmarkMetadata(url: string): Promise<BookmarkMetadata
       image: undefined,
       favicon: undefined,
     }
-  } finally {
-    clearTimeout(timeoutId)
   }
 }
