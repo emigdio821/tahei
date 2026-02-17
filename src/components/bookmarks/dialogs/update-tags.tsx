@@ -58,11 +58,11 @@ export function UpdateBookmarkTagsDialog({
       queryClient.invalidateQueries({ queryKey: [BOOKMARKS_QUERY_KEY] })
 
       if (failed === 0) {
-        toast.success('Bookmark tags updated', {
-          description: 'Successfully updated bookmark tags.',
+        toast.success('Success', {
+          description: 'Bookmark tags have been updated.',
         })
       } else if (succeeded === 0) {
-        toast.error('Update tags failed', {
+        toast.error('Error', {
           description: 'Failed to update bookmark tags. Please try again.',
         })
       } else {
@@ -76,7 +76,7 @@ export function UpdateBookmarkTagsDialog({
       }
     },
     onError: (error) => {
-      toast.error('Update tags failed', {
+      toast.error('Error', {
         description:
           error instanceof Error ? error.message : 'An error occurred while updating bookmark tags.',
       })

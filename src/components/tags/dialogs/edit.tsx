@@ -44,8 +44,7 @@ export function EditTagDialog({ open, onOpenChange, tag, ...props }: EditTagDial
       return await updateTag(data)
     },
     invalidateKeys: [TAGS_QUERY_KEY],
-    successTitle: 'Tag updated',
-    successDescription: 'The tag has been updated successfully.',
+    successDescription: 'The tag has been updated.',
     errorDescription: 'An error occurred while updating the tag, please try again.',
     onSuccess: () => {
       onOpenChange(false)

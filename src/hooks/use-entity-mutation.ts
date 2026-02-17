@@ -17,8 +17,8 @@ interface BaseEntityMutationConfig<TData, TVariables, TQueryData = TData> {
 interface EntityMutationConfigWithToast<TData, TVariables, TQueryData = TData>
   extends BaseEntityMutationConfig<TData, TVariables, TQueryData> {
   showSuccessToast?: true
-  successTitle: React.ReactNode
-  successDescription: React.ReactNode
+  successTitle?: React.ReactNode
+  successDescription?: React.ReactNode
 }
 
 interface EntityMutationConfigWithoutToast<TData, TVariables, TQueryData = TData>
@@ -39,7 +39,7 @@ type MutationContext<TQueryData> = {
 export function useEntityMutation<TData = unknown, TVariables = unknown, TQueryData = TData>({
   mutationFn,
   invalidateKeys,
-  successTitle,
+  successTitle = 'Success',
   successDescription,
   errorTitle = 'Error',
   errorDescription = 'Something went wrong, please try again.',

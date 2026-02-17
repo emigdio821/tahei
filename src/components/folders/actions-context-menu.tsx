@@ -30,8 +30,7 @@ export function FolderActionsCtxMenu({ folder, trigger }: ActionsProps) {
       return await deleteFolder(id)
     },
     invalidateKeys: [FOLDERS_QUERY_KEY],
-    successTitle: 'Folder deleted',
-    successDescription: 'The folder has been successfully deleted.',
+    successDescription: 'The folder has been deleted.',
     errorDescription: 'An error occurred while deleting the folder, please try again.',
     onSuccess: () => {
       setDeleteDialogOpen(false)

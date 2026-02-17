@@ -82,8 +82,7 @@ export function CreateBookmarkDialog({ open, onOpenChange, ...props }: CreateMan
       return await createBookmark(data)
     },
     invalidateKeys: keysToInvalidate(),
-    successTitle: 'Bookmark created',
-    successDescription: 'The bookmark has been created successfully.',
+    successDescription: 'The bookmark has been created.',
     errorDescription: 'An error occurred while creating the bookmark, please try again.',
     onSuccess: () => {
       onOpenChange(false)

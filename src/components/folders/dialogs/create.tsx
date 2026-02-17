@@ -46,8 +46,7 @@ export function CreateFolderDialog({ open, onOpenChange, ...props }: CreateFolde
       return await createFolder(data)
     },
     invalidateKeys: [FOLDERS_QUERY_KEY],
-    successTitle: 'Folder created',
-    successDescription: 'The folder has been created successfully.',
+    successDescription: 'The folder has been created.',
     errorDescription: 'An error occurred while creating the folder, please try again.',
     onSuccess: () => {
       onOpenChange(false)

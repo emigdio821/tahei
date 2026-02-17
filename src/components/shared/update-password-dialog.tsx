@@ -52,8 +52,7 @@ export function UpdatePasswordDialog({ open, onOpenChange, ...props }: UpdatePas
       })
     },
     invalidateKeys: [],
-    successTitle: 'Password updated',
-    successDescription: 'Your password has been successfully updated.',
+    successDescription: 'Your password has been updated.',
     errorDescription:
       'An error occurred while updating your password, please try again or check if you entered the correct current password.',
     onSuccess: () => {

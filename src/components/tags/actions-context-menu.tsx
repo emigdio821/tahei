@@ -29,8 +29,7 @@ export function TagsActionsCtxMenu({ tag, trigger }: TagsActionsCtxMenuProps) {
       return await deleteTag(id)
     },
     invalidateKeys: [TAGS_QUERY_KEY],
-    successTitle: 'Tag deleted',
-    successDescription: 'The tag has been successfully deleted.',
+    successDescription: 'The tag has been deleted.',
     errorDescription: 'An error occurred while deleting the tag, please try again.',
     onSuccess: () => {
       setDeleteDialogOpen(false)

@@ -18,9 +18,11 @@ interface DataTablePaginationProps<T> {
 export const DEFAULT_TABLE_PAGE_SIZE = 10
 
 export function DataTablePagination<T>({ table }: DataTablePaginationProps<T>) {
+  const selectedItems = table.getSelectedRowModel().rows.length
+
   return (
     <>
-      <div className="flex w-full items-center gap-2">
+      <div className="md:justify-baseline flex w-full items-center justify-start gap-2">
         <p className="text-muted-foreground text-sm">Viewing</p>
         <Select
           items={Array.from({ length: table.getPageCount() }, (_, i) => {
@@ -57,26 +59,33 @@ export function DataTablePagination<T>({ table }: DataTablePaginationProps<T>) {
         </p>
       </div>
 
-      <div className="flex w-full items-center justify-end gap-1">
-        <Button
-          size="icon-sm"
-          variant="outline"
-          onClick={() => table.previousPage()}
-          aria-label="Ir a la página anterior"
-          disabled={!table.getCanPreviousPage()}
-        >
-          <IconChevronLeft className="size-4" />
-        </Button>
+      <div className="flex w-full items-center justify-end gap-2">
+        {selectedItems > 0 && (
+          <p className="text-sm">
+            {selectedItems} <span className="text-muted-foreground">selected</span>
+          </p>
+        )}
+        <div className="flex items-center gap-1">
+          <Button
+            size="icon-sm"
+            variant="outline"
+            onClick={() => table.previousPage()}
+            aria-label="Ir a la página anterior"
+            disabled={!table.getCanPreviousPage()}
+          >
+            <IconChevronLeft className="size-4" />
+          </Button>
 
-        <Button
-          size="icon-sm"
-          variant="outline"
-          onClick={() => table.nextPage()}
-          aria-label="Ir a la página siguiente"
-          disabled={!table.getCanNextPage()}
-        >
-          <IconChevronRight className="size-4" />
-        </Button>
+          <Button
+            size="icon-sm"
+            variant="outline"
+            onClick={() => table.nextPage()}
+            aria-label="Ir a la página siguiente"
+            disabled={!table.getCanNextPage()}
+          >
+            <IconChevronRight className="size-4" />
+          </Button>
+        </div>
       </div>
     </>
   )

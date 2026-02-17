@@ -47,8 +47,7 @@ export function EditFolderDialog({ open, onOpenChange, folder, ...props }: EditF
       return await updateFolder(data)
     },
     invalidateKeys: [FOLDERS_QUERY_KEY],
-    successTitle: 'Folder updated',
-    successDescription: 'The folder has been updated successfully.',
+    successDescription: 'The folder has been updated.',
     errorDescription: 'An error occurred while updating the folder, please try again.',
     onSuccess: () => {
       onOpenChange(false)

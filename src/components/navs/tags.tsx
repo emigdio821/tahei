@@ -24,7 +24,7 @@ export function NavTags({ ...props }: React.ComponentProps<typeof SidebarGroup>)
   function renderTags() {
     if (error) {
       return (
-        <Empty className="gap-2 rounded-xl bg-muted/50 p-2 md:p-2">
+        <Empty className="gap-2 rounded-xl bg-muted/72 p-2 md:p-2">
           <EmptyHeader>
             <EmptyTitle className="text-sm">Error</EmptyTitle>
             <EmptyDescription className="text-xs">
@@ -53,7 +53,7 @@ export function NavTags({ ...props }: React.ComponentProps<typeof SidebarGroup>)
         <>
           <CreateTagDialog open={isCreateDialogOpen} onOpenChange={setCreateDialogOpen} />
 
-          <Empty className="gap-2 rounded-xl bg-muted/50 p-2 md:p-2">
+          <Empty className="gap-2 rounded-xl bg-muted/72 p-2 md:p-2">
             <EmptyHeader>
               <EmptyTitle className="text-sm">Empty</EmptyTitle>
               <EmptyDescription className="text-xs">There are no tags yet.</EmptyDescription>

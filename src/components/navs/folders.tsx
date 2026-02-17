@@ -18,7 +18,7 @@ export function NavFolders({ ...props }: React.ComponentProps<typeof SidebarGrou
   function renderFolders() {
     if (error) {
       return (
-        <Empty className="gap-2 rounded-xl bg-muted/50 p-2 md:p-2">
+        <Empty className="gap-2 rounded-xl bg-muted/72 p-2 md:p-2">
           <EmptyHeader>
             <EmptyTitle className="text-sm">Error</EmptyTitle>
             <EmptyDescription className="text-xs">
@@ -48,7 +48,7 @@ export function NavFolders({ ...props }: React.ComponentProps<typeof SidebarGrou
           <CreateFolderDialog open={isCreateDialogOpen} onOpenChange={setCreateDialogOpen} />
 
           <div className="p-2">
-            <Empty className="gap-2 rounded-xl bg-muted/50 p-2 md:p-2">
+            <Empty className="gap-2 rounded-xl bg-muted/72 p-2 md:p-2">
               <EmptyHeader>
                 <EmptyTitle className="text-sm">Empty</EmptyTitle>
                 <EmptyDescription className="text-xs">There are no folders yet.</EmptyDescription>

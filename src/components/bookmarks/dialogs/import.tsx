@@ -86,12 +86,12 @@ export function ImportBookmarkDialog({ open, onOpenChange, ...props }: ImportBoo
       queryClient.invalidateQueries({ queryKey: [BOOKMARKS_QUERY_KEY] })
 
       if (failed === 0) {
-        toast.success('Bookmarks imported', {
-          description: 'Successfully imported all bookmarks.',
+        toast.success('Success', {
+          description: 'All bookmarks has been imported.',
         })
       } else if (succeeded === 0) {
-        toast.error('Import failed', {
-          description: 'Failed to import any bookmarks. Please check the URLs and try again.',
+        toast.error('Error', {
+          description: 'Failed to import bookmarks. Please check the URLs and try again.',
         })
       } else {
         toast.warning('Partial import', {
@@ -104,7 +104,7 @@ export function ImportBookmarkDialog({ open, onOpenChange, ...props }: ImportBoo
       }
     },
     onError: (error) => {
-      toast.error('Import failed', {
+      toast.error('Error', {
         description: error instanceof Error ? error.message : 'An error occurred while importing bookmarks.',
       })
     },

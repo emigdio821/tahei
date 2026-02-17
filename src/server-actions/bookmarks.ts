@@ -1,5 +1,6 @@
 'use server'
 
+import { addMonths, differenceInDays, differenceInMonths } from 'date-fns'
 import { and, eq, inArray } from 'drizzle-orm'
 import { db } from '@/db'
 import { bookmarks, bookmarkTags } from '@/db/schema'
@@ -325,12 +326,12 @@ export async function resyncBookmarkMetadata(
   }
 
   if (bookmark.lastMetadataSyncedAt) {
-    const daysSinceLastSync = Math.floor(
-      (Date.now() - bookmark.lastMetadataSyncedAt.getTime()) / (1000 * 60 * 60 * 24),
-    )
+    const monthsSinceLastSync = differenceInMonths(new Date(), bookmark.lastMetadataSyncedAt)
 
-    if (daysSinceLastSync < 30) {
-      throw new Error(`You can resync again in ${30 - daysSinceLastSync} days`)
+    if (monthsSinceLastSync < 1) {
+      const nextEligibleDate = addMonths(bookmark.lastMetadataSyncedAt, 1)
+      const daysRemaining = differenceInDays(nextEligibleDate, new Date())
+      throw new Error(`You can resync again in ${daysRemaining} days`)
     }
   }
 
@@ -377,11 +378,8 @@ export async function resyncBookmarksMetadataBatch(
   const eligibleBookmarks = bookmarksToSync.filter((bookmark) => {
     if (!bookmark.lastMetadataSyncedAt) return true
 
-    const daysSinceLastSync = Math.floor(
-      (Date.now() - bookmark.lastMetadataSyncedAt.getTime()) / (1000 * 60 * 60 * 24),
-    )
-
-    return daysSinceLastSync >= 30
+    const monthsSinceLastSync = differenceInMonths(new Date(), bookmark.lastMetadataSyncedAt)
+    return monthsSinceLastSync >= 1
   })
 
   if (eligibleBookmarks.length === 0) {

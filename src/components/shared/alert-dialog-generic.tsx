@@ -11,6 +11,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { Button, type ButtonProps } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import { LoaderIcon } from '../icons'
 
 interface AlertDialogGenericProps extends React.ComponentProps<typeof AlertDialog> {
@@ -22,9 +23,10 @@ interface AlertDialogGenericProps extends React.ComponentProps<typeof AlertDialo
   content?: React.ReactNode
   open: boolean
   onOpenChange: (open: boolean) => void
+  contentProps?: React.ComponentProps<typeof AlertDialogContent>
 }
 
-export function AlertDialogGeneric(props: AlertDialogGenericProps) {
+export function AlertDialogGeneric({ contentProps, ...props }: AlertDialogGenericProps) {
   const { action, title, description, actionLabel, variant, content, open, onOpenChange } = props
   const [isExecutingAction, setExecutingAction] = useState(false)
 
@@ -53,7 +55,7 @@ export function AlertDialogGeneric(props: AlertDialogGenericProps) {
         onOpenChange(isOpen)
       }}
     >
-      <AlertDialogContent className="sm:max-w-sm">
+      <AlertDialogContent className={cn('sm:max-w-sm', contentProps?.className)} {...contentProps}>
         <AlertDialogHeader>
           <AlertDialogTitle>{title || 'Proceed?'}</AlertDialogTitle>
           <AlertDialogDescription>{description || 'This action cannot be undone.'}</AlertDialogDescription>

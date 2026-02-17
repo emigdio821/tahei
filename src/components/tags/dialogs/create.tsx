@@ -42,8 +42,7 @@ export function CreateTagDialog({ open, onOpenChange, ...props }: CreateTagDialo
       return await createTag(name)
     },
     invalidateKeys: [TAGS_QUERY_KEY],
-    successTitle: 'Tag created',
-    successDescription: 'The tag has been created successfully.',
+    successDescription: 'The tag has been created.',
     errorDescription: 'An error occurred while creating the tag, please try again.',
     onSuccess: () => {
       onOpenChange(false)

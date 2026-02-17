@@ -1,6 +1,7 @@
 'use client'
 
 import { IconExternalLink, IconFolder, IconTag } from '@tabler/icons-react'
+import { addMonths } from 'date-fns'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { BlurImage } from '@/components/shared/blur-img'
@@ -111,12 +112,14 @@ export function BookmarkDetailsDialog({ bookmark, state }: BookmarkDetailsDialog
               <span>Last updated</span>
               <span className="text-foreground">{formatDate(bookmark.updatedAt)}</span>
             </div>
-            {/* TODO: Implement update metadata functionality */}
-            {/* <div className="flex justify-end text-muted-foreground text-xs">
-              <Button variant="outline" size="xs">
-                Update metadata
-              </Button>
-            </div> */}
+            {bookmark.lastMetadataSyncedAt && (
+              <div className="flex justify-between text-muted-foreground text-xs">
+                <span>Next metadata sync</span>
+                <span className="text-foreground">
+                  {formatDate(addMonths(new Date(bookmark.lastMetadataSyncedAt), 1))}
+                </span>
+              </div>
+            )}
           </div>
         </DialogFooter>
 

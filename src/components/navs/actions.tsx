@@ -20,15 +20,30 @@ export function NavActions({ ...props }: React.ComponentProps<typeof SidebarMenu
 
       <SidebarMenu {...props}>
         <SidebarMenuItem>
-          <SidebarMenuButton size="sm" onClick={() => setOpenCreateBookmarkDialog(true)}>
+          <SidebarMenuButton
+            size="sm"
+            onClick={() => {
+              setOpenCreateBookmarkDialog(true)
+            }}
+          >
             <IconBookmarkPlus />
             Create bookmark
           </SidebarMenuButton>
-          <SidebarMenuButton size="sm" onClick={() => setOpenCreateFolderDialog(true)}>
+          <SidebarMenuButton
+            size="sm"
+            onClick={() => {
+              setOpenCreateFolderDialog(true)
+            }}
+          >
             <IconFolderPlus />
             Create folder
           </SidebarMenuButton>
-          <SidebarMenuButton size="sm" onClick={() => setOpenCreateTagDialog(true)}>
+          <SidebarMenuButton
+            size="sm"
+            onClick={() => {
+              setOpenCreateTagDialog(true)
+            }}
+          >
             <IconTagPlus />
             Create tag
           </SidebarMenuButton>

@@ -77,8 +77,7 @@ export function EditBookmarkDialog({ bookmark, state }: EditBookmarkDialogProps)
       return await updateBookmark(bookmark.id, data)
     },
     invalidateKeys: keysToInvalidate(),
-    successTitle: 'Bookmark updated',
-    successDescription: 'The bookmark has been successfully updated.',
+    successDescription: 'The bookmark has been updated.',
     errorDescription: 'An error occurred while updating the bookmark, please try again.',
     onSuccess: () => {
       onOpenChange(false)
