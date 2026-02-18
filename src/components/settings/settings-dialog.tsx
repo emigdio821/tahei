@@ -20,7 +20,7 @@ interface SettingsDialogProps extends React.ComponentProps<typeof Dialog> {
 export function SettingsDialog({ open, onOpenChange, ...props }: SettingsDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange} {...props}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>Settings</DialogTitle>
         </DialogHeader>

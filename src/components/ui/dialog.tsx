@@ -3,7 +3,6 @@
 import { Dialog as DialogPrimitive } from '@base-ui/react/dialog'
 import { IconX } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
-// import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
 
 const DialogCreateHandle = DialogPrimitive.createHandle
@@ -24,7 +23,7 @@ function DialogBackdrop({ className, ...props }: DialogPrimitive.Backdrop.Props)
   return (
     <DialogPrimitive.Backdrop
       className={cn(
-        'fixed inset-0 z-50 bg-black/32 transition-all duration-200 data-ending-style:opacity-0 data-starting-style:opacity-0',
+        'fixed inset-0 z-50 bg-black/32 backdrop-blur-xs transition-all duration-200 data-ending-style:opacity-0 data-starting-style:opacity-0',
         className,
       )}
       data-slot="dialog-backdrop"
@@ -48,10 +47,12 @@ function DialogPopup({
   children,
   showCloseButton = true,
   bottomStickOnMobile = true,
+  closeProps,
   ...props
 }: DialogPrimitive.Popup.Props & {
   showCloseButton?: boolean
   bottomStickOnMobile?: boolean
+  closeProps?: DialogPrimitive.Close.Props
 }) {
   return (
     <DialogPortal>
@@ -75,6 +76,7 @@ function DialogPopup({
               aria-label="Close"
               className="absolute end-2 top-2"
               render={<Button size="icon" variant="ghost" />}
+              {...closeProps}
             >
               <IconX />
             </DialogPrimitive.Close>
@@ -146,23 +148,13 @@ function DialogPanel({
 }: React.ComponentProps<'div'> & { scrollFade?: boolean }) {
   return (
     <div
-      data-slot="dialog-panel"
       className={cn(
         'overflow-y-auto p-6 in-[[data-slot=dialog-popup]:has([data-slot=dialog-header])]:pt-1 in-[[data-slot=dialog-popup]:has([data-slot=dialog-footer]:not(.border-t))]:pb-1',
         className,
       )}
+      data-slot="dialog-panel"
       {...props}
     />
-    // <ScrollArea scrollFade={scrollFade}>
-    //   <div
-    //     className={cn(
-    //       'p-6 in-[[data-slot=dialog-popup]:has([data-slot=dialog-header])]:pt-1 in-[[data-slot=dialog-popup]:has([data-slot=dialog-footer]:not(.border-t))]:pb-1',
-    //       className,
-    //     )}
-    //     data-slot="dialog-panel"
-    //     {...props}
-    //   />
-    // </ScrollArea>
   )
 }
 

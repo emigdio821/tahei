@@ -3,7 +3,6 @@
 import { Dialog as SheetPrimitive } from '@base-ui/react/dialog'
 import { IconX } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
 
 const Sheet = SheetPrimitive.Root
@@ -22,7 +21,7 @@ function SheetBackdrop({ className, ...props }: SheetPrimitive.Backdrop.Props) {
   return (
     <SheetPrimitive.Backdrop
       className={cn(
-        'fixed inset-0 z-50 bg-black/32 transition-all duration-200 data-ending-style:opacity-0 data-starting-style:opacity-0',
+        'fixed inset-0 z-50 bg-black/32 backdrop-blur-xs transition-all duration-200 data-ending-style:opacity-0 data-starting-style:opacity-0',
         className,
       )}
       data-slot="sheet-backdrop"
@@ -62,11 +61,13 @@ function SheetPopup({
   showCloseButton = true,
   side = 'right',
   variant = 'default',
+  closeProps,
   ...props
 }: SheetPrimitive.Popup.Props & {
   showCloseButton?: boolean
   side?: 'right' | 'left' | 'top' | 'bottom'
   variant?: 'default' | 'inset'
+  closeProps?: SheetPrimitive.Close.Props
 }) {
   return (
     <SheetPortal>
@@ -95,6 +96,7 @@ function SheetPopup({
               aria-label="Close"
               className="absolute end-2 top-2"
               render={<Button size="icon" variant="ghost" />}
+              {...closeProps}
             >
               <IconX />
             </SheetPrimitive.Close>
@@ -165,16 +167,14 @@ function SheetPanel({
   ...props
 }: React.ComponentProps<'div'> & { scrollFade?: boolean }) {
   return (
-    <ScrollArea scrollFade={scrollFade}>
-      <div
-        className={cn(
-          'p-6 in-[[data-slot=sheet-popup]:has([data-slot=sheet-header])]:pt-1 in-[[data-slot=sheet-popup]:has([data-slot=sheet-footer]:not(.border-t))]:pb-1',
-          className,
-        )}
-        data-slot="sheet-panel"
-        {...props}
-      />
-    </ScrollArea>
+    <div
+      className={cn(
+        'overflow-y-auto p-6 in-[[data-slot=sheet-popup]:has([data-slot=sheet-header])]:pt-1 in-[[data-slot=sheet-popup]:has([data-slot=sheet-footer]:not(.border-t))]:pb-1',
+        className,
+      )}
+      data-slot="sheet-panel"
+      {...props}
+    />
   )
 }
 
