@@ -1,7 +1,9 @@
 'use client'
 
 import { IconBookmark, IconFolder, IconInfoCircle, IconSearch, IconTag } from '@tabler/icons-react'
+import { useQuery } from '@tanstack/react-query'
 import { parseAsString, useQueryState } from 'nuqs'
+import { bookmarksQueryOptions } from '@/tanstack-queries/bookmarks'
 import { Button } from '../ui/button'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '../ui/input-group'
 import {
@@ -14,6 +16,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 
 export function HeaderActions() {
+  const { data: bookmarks = [] } = useQuery(bookmarksQueryOptions())
   const [searchQuery, setSearchQuery] = useQueryState('search', parseAsString.withDefault(''))
 
   return (
@@ -24,7 +27,7 @@ export function HeaderActions() {
           value={searchQuery}
           aria-label="Search"
           placeholder="Search"
-          // disabled={tableRowsLength === 0}
+          disabled={bookmarks.length === 0}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
         <InputGroupAddon>
