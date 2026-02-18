@@ -5,15 +5,16 @@ import { parseAsBoolean, parseAsNativeArrayOf, parseAsString, useQueryStates } f
 import { TSQueryGenericError } from '@/components/shared/errors/query-generic'
 import { TableGenericSkeleton } from '@/components/shared/skeletons/table-generic'
 import { DataTable } from '@/components/shared/table/data-table'
+import { normalizeString } from '@/lib/utils'
 import { bookmarksQueryOptions } from '@/tanstack-queries/bookmarks'
 import { bookmarksTableColumns } from './columns'
-import { BookmarksDataTableHeader } from './data-table-header'
 
 interface BookmarksGlobalFilters {
   showFavorites: boolean
   showAll: boolean
   folder?: string
   tag?: string[]
+  search?: string
 }
 
 export function BookmarksDataTable() {
@@ -24,6 +25,7 @@ export function BookmarksDataTable() {
     showFavorites: parseAsBoolean.withDefault(false),
     folder: parseAsString.withDefault(''),
     tag: parseAsNativeArrayOf(parseAsString).withDefault([]),
+    search: parseAsString.withDefault(''),
   })
 
   if (error) {
@@ -36,14 +38,13 @@ export function BookmarksDataTable() {
   }
 
   if (isLoading) {
-    return <TableGenericSkeleton />
+    return <TableGenericSkeleton withHeader={false} />
   }
 
   return (
     <DataTable
       data={bookmarks}
       columns={bookmarksTableColumns}
-      header={(table) => <BookmarksDataTableHeader table={table} />}
       tableOptions={{
         enableGlobalFilter: true,
         state: { globalFilter: filters },
@@ -62,6 +63,19 @@ export function BookmarksDataTable() {
           if (filterValue.tag && filterValue.tag.length > 0) {
             const hasAllTags = filterValue.tag.every((tagId) => bookmarkTags.some((bt) => bt.tagId === tagId))
             if (!hasAllTags) {
+              return false
+            }
+          }
+
+          if (filterValue.search) {
+            const normalizedName = normalizeString(bookmark.name).toLowerCase()
+            const normalizedDescription = normalizeString(bookmark.description || '').toLowerCase()
+            const normalizedSearch = normalizeString(filterValue.search).toLowerCase()
+
+            if (
+              !normalizedName.includes(normalizedSearch) &&
+              !normalizedDescription.includes(normalizedSearch)
+            ) {
               return false
             }
           }

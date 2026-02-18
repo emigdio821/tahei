@@ -1,14 +1,13 @@
 'use client'
 
 import type { ColumnDef } from '@tanstack/react-table'
-import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { DataTableSortableHeader } from '@/components/shared/table/sortable-header'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import type { Bookmark } from '@/db/schema/zod/bookmarks'
-import { normalizeString, simplifiedURL } from '@/lib/utils'
+import { simplifiedURL } from '@/lib/utils'
 import { BookmarksTableActions } from './actions'
 import { BookmarkNameCell } from './bookmark-name-cell'
 
@@ -41,13 +40,6 @@ export const bookmarksTableColumns: ColumnDef<Bookmark>[] = [
     size: 180,
     cell: ({ row }) => <BookmarkNameCell bookmark={row.original} />,
     header: ({ column }) => <DataTableSortableHeader column={column} title="Name" />,
-    filterFn: (row, _, value: string) => {
-      const normalizedName = normalizeString(row.original.name).toLowerCase()
-      const normalizedDescription = normalizeString(row.original.description || '').toLowerCase()
-      const normalizedValue = normalizeString(value).toLowerCase()
-
-      return normalizedName.includes(normalizedValue) || normalizedDescription.includes(normalizedValue)
-    },
   },
   {
     accessorKey: 'description',
@@ -91,7 +83,7 @@ export const bookmarksTableColumns: ColumnDef<Bookmark>[] = [
         return <Badge variant="outline">{folder.name}</Badge>
       }
 
-      return <Badge variant="outline" render={<Link href={folderHref}>{folder.name}</Link>} />
+      return <Badge variant="outline">{folder.name}</Badge>
     },
   },
   {
@@ -120,11 +112,9 @@ export const bookmarksTableColumns: ColumnDef<Bookmark>[] = [
             }
 
             return (
-              <Badge
-                key={tag.id}
-                variant="outline"
-                render={<Link href={`/tags/${tag.id}`}>{tag.name}</Link>}
-              />
+              <Badge key={tag.id} variant="outline">
+                {tag.name}
+              </Badge>
             )
           })}
         </div>
