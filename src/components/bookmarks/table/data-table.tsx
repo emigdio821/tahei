@@ -7,6 +7,7 @@ import { TableGenericSkeleton } from '@/components/shared/skeletons/table-generi
 import { DataTable } from '@/components/shared/table/data-table'
 import { normalizeString } from '@/lib/utils'
 import { bookmarksQueryOptions } from '@/tanstack-queries/bookmarks'
+import { BookmarksActionBar } from './action-bar'
 import { bookmarksTableColumns } from './columns'
 
 interface BookmarksGlobalFilters {
@@ -44,6 +45,7 @@ export function BookmarksDataTable() {
   return (
     <DataTable
       data={bookmarks}
+      footer={(table) => <BookmarksActionBar table={table} />}
       columns={bookmarksTableColumns}
       tableOptions={{
         enableGlobalFilter: true,

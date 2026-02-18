@@ -94,7 +94,7 @@ export function UpdateBookmarkTagsDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange} {...props}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Update bookmark tags</DialogTitle>
           {bookmarks.length > 1 && (

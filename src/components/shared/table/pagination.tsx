@@ -18,8 +18,6 @@ interface DataTablePaginationProps<T> {
 export const DEFAULT_TABLE_PAGE_SIZE = 10
 
 export function DataTablePagination<T>({ table }: DataTablePaginationProps<T>) {
-  const selectedItems = table.getSelectedRowModel().rows.length
-
   return (
     <>
       <div className="md:justify-baseline flex w-full items-center justify-start gap-2">
@@ -60,11 +58,6 @@ export function DataTablePagination<T>({ table }: DataTablePaginationProps<T>) {
       </div>
 
       <div className="flex w-full items-center justify-end gap-2">
-        {selectedItems > 0 && (
-          <p className="text-sm">
-            {selectedItems} <span className="text-muted-foreground">selected</span>
-          </p>
-        )}
         <div className="flex items-center gap-1">
           <Button
             size="icon-sm"

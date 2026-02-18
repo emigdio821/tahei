@@ -30,6 +30,7 @@ interface DataTableProps<TData, TValue> {
   tableId?: string
   columns: ColumnDef<TData, TValue>[]
   header?: (table: TableType<TData>) => React.ReactNode
+  footer?: (table: TableType<TData>) => React.ReactNode
   caption?: React.ReactNode
   pageSize?: number
   tableOptions?: Partial<TableOptions<TData>>
@@ -40,6 +41,7 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
     data,
     tableId,
     header,
+    footer,
     caption,
     columns,
     pageSize: tablePageSize = DEFAULT_TABLE_PAGE_SIZE,
@@ -116,6 +118,7 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
       <Frame className="w-full">
         <Table>
           {caption && <TableCaption>{caption}</TableCaption>}
+
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -163,6 +166,8 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
             )}
           </TableBody>
         </Table>
+
+        {footer?.(table)}
       </Frame>
 
       {rowLength > DEFAULT_TABLE_PAGE_SIZE && (
