@@ -1,12 +1,16 @@
 'use client'
 
 import { IconBookmark, IconHeart } from '@tabler/icons-react'
+import { useQuery } from '@tanstack/react-query'
 import { parseAsBoolean, useQueryStates } from 'nuqs'
 import { appName } from '@/lib/config/site'
+import { cn } from '@/lib/utils'
+import { bookmarksQueryOptions } from '@/tanstack-queries/bookmarks'
 import { TaheiIcon } from '../icons'
 import {
   SidebarGroupContent,
   SidebarMenu,
+  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
@@ -19,6 +23,11 @@ export function HeaderNav({ ...props }: React.ComponentProps<typeof SidebarGroup
     showAll: parseAsBoolean.withDefault(true),
     showFavorites: parseAsBoolean.withDefault(false),
   })
+
+  const { data: bookmarks = [] } = useQuery(bookmarksQueryOptions())
+
+  const totalBookmarks = bookmarks.length
+  const favoritesCount = bookmarks.filter((bookmark) => bookmark.isFavorite === true).length
 
   return (
     <SidebarGroupContent className="flex flex-col gap-2" {...props}>
@@ -40,6 +49,7 @@ export function HeaderNav({ ...props }: React.ComponentProps<typeof SidebarGroup
 
         <SidebarMenuItem>
           <SidebarMenuButton
+            className={cn(totalBookmarks > 0 && 'pe-10')}
             isActive={filters.showAll === true}
             onClick={() => {
               setFilters({
@@ -50,12 +60,17 @@ export function HeaderNav({ ...props }: React.ComponentProps<typeof SidebarGroup
             }}
           >
             <IconBookmark className="size-4" />
-            <span>All bookmarks</span>
+            <span className="truncate">All bookmarks</span>
           </SidebarMenuButton>
+
+          {totalBookmarks > 0 && (
+            <SidebarMenuBadge className="text-muted-foreground!">{totalBookmarks}</SidebarMenuBadge>
+          )}
         </SidebarMenuItem>
 
         <SidebarMenuItem>
           <SidebarMenuButton
+            className={cn(favoritesCount > 0 && 'pe-10')}
             isActive={filters.showFavorites === true}
             onClick={() => {
               setFilters({
@@ -66,8 +81,12 @@ export function HeaderNav({ ...props }: React.ComponentProps<typeof SidebarGroup
             }}
           >
             <IconHeart className="size-4" />
-            <span>Favorites</span>
+            <span className="truncate">Favorites</span>
           </SidebarMenuButton>
+
+          {favoritesCount > 0 && (
+            <SidebarMenuBadge className="text-muted-foreground!">{favoritesCount}</SidebarMenuBadge>
+          )}
         </SidebarMenuItem>
       </SidebarMenu>
     </SidebarGroupContent>

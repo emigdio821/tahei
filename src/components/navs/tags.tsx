@@ -3,6 +3,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { parseAsNativeArrayOf, parseAsString, useQueryState } from 'nuqs'
 import { useState } from 'react'
+import { cn } from '@/lib/utils'
 import { tagsQueryOptions } from '@/tanstack-queries/tags'
 import { TagsActionsCtxMenu } from '../tags/actions-context-menu'
 import { CreateTagDialog } from '../tags/dialogs/create'
@@ -107,8 +108,13 @@ export function NavTags({ ...props }: React.ComponentProps<typeof SidebarGroup>)
                       <span className="text-xs">{tag.name}</span>
                       {tag.bookmarkCount > 0 && (
                         <>
-                          <Separator orientation="vertical" />
-                          <span className="text-muted-foreground text-xs tabular-nums">
+                          <Separator orientation="vertical" className={cn(isActive && 'bg-sidebar/80')} />
+                          <span
+                            className={cn(
+                              'text-xs tabular-nums',
+                              isActive ? 'text-primary-foreground/80' : 'text-muted-foreground',
+                            )}
+                          >
                             {tag.bookmarkCount}
                           </span>
                         </>

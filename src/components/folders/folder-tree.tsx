@@ -2,6 +2,7 @@
 
 import { IconChevronRight, IconFolder } from '@tabler/icons-react'
 import { parseAsString, useQueryState } from 'nuqs'
+import { cn } from '@/lib/utils'
 import type { FolderTreeNode } from '@/server-actions/folders'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/collapsible'
 import {
@@ -20,6 +21,8 @@ export function FolderTree({ folder }: { folder: FolderTreeNode }) {
 
   const [selectedFolder, setSelectedFolder] = useQueryState('folder', parseAsString.withDefault(''))
 
+  const hasFolders = folder.bookmarkCount > 0
+
   if (!hasChildren) {
     return (
       <FolderActionsCtxMenu
@@ -27,6 +30,7 @@ export function FolderTree({ folder }: { folder: FolderTreeNode }) {
         trigger={
           <SidebarMenuItem>
             <SidebarMenuButton
+              className={cn(hasFolders && 'pe-10')}
               isActive={selectedFolder === folder.id}
               onClick={() => {
                 if (isMobile) setOpenMobile(false)
@@ -37,7 +41,7 @@ export function FolderTree({ folder }: { folder: FolderTreeNode }) {
               <span className="truncate">{folder.name}</span>
             </SidebarMenuButton>
 
-            {folder.bookmarkCount > 0 && (
+            {hasFolders && (
               <SidebarMenuBadge className="text-muted-foreground!">{folder.bookmarkCount}</SidebarMenuBadge>
             )}
           </SidebarMenuItem>
