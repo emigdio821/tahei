@@ -1,6 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { IconInfoCircle } from '@tabler/icons-react'
-import { useParams, usePathname } from 'next/navigation'
 import type React from 'react'
 import { Activity, useId } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -41,8 +40,6 @@ interface CreateManualBookmarkDialogProps extends React.ComponentProps<typeof Di
 export function CreateBookmarkDialog({ open, onOpenChange, ...props }: CreateManualBookmarkDialogProps) {
   const createBookmarkFormId = useId()
   const context = useBookmarkCreationContext()
-  const pathname = usePathname()
-  const params = useParams<{ id?: string }>()
 
   const form = useForm<CreateBookmarkFormData>({
     shouldUnregister: true,
@@ -59,19 +56,16 @@ export function CreateBookmarkDialog({ open, onOpenChange, ...props }: CreateMan
 
   function keysToInvalidate(): (string | unknown[])[] {
     const keys: (string | unknown[])[] = [BOOKMARKS_QUERY_KEY]
-    const tags = form.getValues('tags')
-    const folderId = form.getValues('folderId')
+    const formTags = form.getValues('tags') || []
+    const formFolder = form.getValues('folderId')
 
-    if (tags && tags.length > 0) {
+    if (formTags.length > 0) {
       keys.push(TAGS_QUERY_KEY)
     }
 
-    if (folderId) {
-      keys.push([FOLDERS_QUERY_KEY, folderId])
-    }
-
-    if (pathname?.startsWith('/tags/') && params?.id) {
-      keys.push([TAGS_QUERY_KEY, params.id])
+    if (formFolder) {
+      keys.push(FOLDERS_QUERY_KEY)
+      keys.push([FOLDERS_QUERY_KEY, formFolder])
     }
 
     return keys

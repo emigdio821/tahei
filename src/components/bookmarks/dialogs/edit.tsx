@@ -60,14 +60,24 @@ export function EditBookmarkDialog({ bookmark, state }: EditBookmarkDialogProps)
   function keysToInvalidate(): (string | unknown[])[] {
     const keys: (string | unknown[])[] = [BOOKMARKS_QUERY_KEY]
     const hasTags = bookmark.bookmarkTags && bookmark.bookmarkTags.length > 0
-    const hasFolder = bookmark.folderId
+    const bookmarkFolderId = bookmark.folderId
     const formTags = form.getValues('tags') || []
+    const formFolder = form.getValues('folderId')
 
     if (hasTags || formTags.length > 0) {
       keys.push(TAGS_QUERY_KEY)
     }
-    if (hasFolder) {
-      keys.push([FOLDERS_QUERY_KEY, bookmark.folderId])
+
+    if (formFolder !== bookmark.folderId) {
+      keys.push(FOLDERS_QUERY_KEY)
+    }
+
+    if (bookmarkFolderId) {
+      keys.push([FOLDERS_QUERY_KEY, bookmarkFolderId])
+    }
+
+    if (formFolder && formFolder !== bookmark.folderId) {
+      keys.push([FOLDERS_QUERY_KEY, formFolder])
     }
 
     return keys
