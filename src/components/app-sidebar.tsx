@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from '@/components/ui/sidebar'
 import { NavFolders } from './navs/folders'
 import { HeaderNav } from './navs/header'
@@ -9,11 +10,17 @@ export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sideb
   return (
     <Sidebar {...props}>
       <SidebarHeader>
-        <HeaderNav />
+        <Suspense>
+          <HeaderNav />
+        </Suspense>
       </SidebarHeader>
       <SidebarContent>
-        <NavFolders />
-        <NavTags />
+        <Suspense>
+          <NavFolders />
+        </Suspense>
+        <Suspense>
+          <NavTags />
+        </Suspense>
       </SidebarContent>
       <SidebarFooter>
         <NavSettings />

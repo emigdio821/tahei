@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { Separator } from '@/components/ui/separator'
 import { HeaderActions } from './navs/header-actions'
 import { SidebarTrigger } from './ui/sidebar'
@@ -10,7 +11,9 @@ export function AppHeader() {
         <Separator orientation="vertical" className="h-4" />
         <h1 className="font-medium text-base">Bookmarks</h1>
         <div className="ml-auto">
-          <HeaderActions />
+          <Suspense>
+            <HeaderActions />
+          </Suspense>
         </div>
       </div>
     </header>
