@@ -36,7 +36,7 @@ export function BookmarksSettings() {
       const ids = await getAllBookmarkIds()
       const bookmarkIds = ids.map((bookmark) => bookmark.id)
 
-      const CHUNK_SIZE = 2
+      const CHUNK_SIZE = 4
       const allResults = []
 
       for (let i = 0; i < bookmarkIds.length; i += CHUNK_SIZE) {

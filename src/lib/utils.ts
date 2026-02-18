@@ -41,13 +41,13 @@ export function hasWhiteSpaces(str: string): boolean {
  * Process items concurrently with controlled concurrency and error handling
  * @param items - Array of items to process
  * @param asyncFn - Async function to process each item
- * @param concurrency - Maximum number of concurrent operations (default: 10)
+ * @param concurrency - Maximum number of concurrent operations (default: 4)
  * @returns Array of PromiseSettledResult in the same order as input items
  */
 export async function processConcurrently<T, R>(
   items: T[],
   asyncFn: (item: T) => Promise<R>,
-  concurrency = 10,
+  concurrency = 4,
 ): Promise<PromiseSettledResult<R>[]> {
   const results: PromiseSettledResult<R>[] = []
   const executing: Promise<void>[] = []

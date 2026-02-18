@@ -67,7 +67,7 @@ export function ImportBookmarkDialog({ open, onOpenChange, ...props }: ImportBoo
         folderId: data.folderId,
       }))
 
-      const CHUNK_SIZE = 2
+      const CHUNK_SIZE = 4
       const allResults: CreateBookmarksBatchResult[] = []
 
       for (let i = 0; i < bookmarksData.length; i += CHUNK_SIZE) {
