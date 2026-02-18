@@ -1,7 +1,6 @@
 'use client'
 
 import { IconExternalLink, IconFolder, IconTag } from '@tabler/icons-react'
-import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { BlurImage } from '@/components/shared/blur-img'
 import { CopyButton } from '@/components/shared/copy-btn'
@@ -50,11 +49,7 @@ export function BookmarkDetailsDialog({ bookmark, state }: BookmarkDetailsDialog
               {bookmark.folder && folderHref && (
                 <div className="flex items-center gap-2">
                   <IconFolder className="size-4 text-muted-foreground" />
-                  {folderHref === pathname ? (
-                    <Badge variant="outline">{bookmark.folder.name}</Badge>
-                  ) : (
-                    <Badge variant="outline" render={<Link href={folderHref}>{bookmark.folder.name}</Link>} />
-                  )}
+                  <Badge variant="outline">{bookmark.folder.name}</Badge>
                 </div>
               )}
 
@@ -70,11 +65,9 @@ export function BookmarkDetailsDialog({ bookmark, state }: BookmarkDetailsDialog
                         {bt.tag.name}
                       </Badge>
                     ) : (
-                      <Badge
-                        key={bt.tag.id}
-                        variant="outline"
-                        render={<Link href={tagHref}>{bt.tag.name}</Link>}
-                      />
+                      <Badge key={bt.tag.id} variant="outline">
+                        {bt.tag.name}
+                      </Badge>
                     )
                   })}
                 </div>
