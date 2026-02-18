@@ -32,14 +32,14 @@ export function BookmarkNameCell({ bookmark }: BookmarkNameCellProps) {
           <IconWorld className="size-4 text-muted-foreground" />
         )}
 
-        <span
+        <p
           className={cn(
-            'min-w-0 overflow-hidden',
+            'min-w-0 overflow-hidden leading-normal',
             hasWhiteSpaces(bookmark.name) ? 'line-clamp-2 whitespace-normal' : 'truncate',
           )}
         >
           {bookmark.name}
-        </span>
+        </p>
       </Button>
     </>
   )
