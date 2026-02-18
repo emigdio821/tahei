@@ -9,14 +9,8 @@ import { ExportBookmarksDialog } from '../bookmarks/dialogs/export'
 import { ImportBookmarkDialog } from '../bookmarks/dialogs/import'
 import { AlertDialogGeneric } from '../shared/alert-dialog-generic'
 import { Button } from '../ui/button'
-import {
-  Card,
-  CardContent,
-  CardFrame,
-  CardFrameDescription,
-  CardFrameHeader,
-  CardFrameTitle,
-} from '../ui/card'
+import { Card, CardContent } from '../ui/card'
+import { Frame, FrameDescription, FrameHeader, FrameTitle } from '../ui/frame'
 import { Label } from '../ui/label'
 import { Switch } from '../ui/switch'
 
@@ -145,21 +139,33 @@ export function BookmarksSettings() {
       <ExportBookmarksDialog open={isExportDialogOpen} onOpenChange={setExportDialogOpen} />
       <ImportBookmarkDialog open={isImportDialogOpen} onOpenChange={setImportDialogOpen} />
 
-      <CardFrame className="w-full">
-        <CardFrameHeader>
-          <CardFrameTitle>Bookmarks</CardFrameTitle>
-          <CardFrameDescription>Import, export and update bookmarks metadata.</CardFrameDescription>
-        </CardFrameHeader>
+      <Frame>
+        <FrameHeader>
+          <FrameTitle>Bookmarks</FrameTitle>
+          <FrameDescription>Import, export, and update bookmarks metadata.</FrameDescription>
+        </FrameHeader>
         <Card>
           <CardContent>
             <div className="flex flex-col items-center gap-2 sm:flex-row">
-              <Button className="w-full sm:w-auto" onClick={() => setImportDialogOpen(true)}>
+              <Button
+                size="sm"
+                variant="outline"
+                className="w-full sm:w-auto"
+                onClick={() => setImportDialogOpen(true)}
+              >
                 Import
               </Button>
-              <Button className="w-full sm:w-auto" onClick={() => setExportDialogOpen(true)}>
+              <Button
+                size="sm"
+                variant="outline"
+                className="w-full sm:w-auto"
+                onClick={() => setExportDialogOpen(true)}
+              >
                 Export
               </Button>
               <Button
+                size="sm"
+                variant="outline"
                 className="w-full sm:w-auto"
                 disabled={updateMetadataMutation.isPending}
                 onClick={() => setUpdateMetadataDialogOpen(true)}
@@ -169,7 +175,7 @@ export function BookmarksSettings() {
             </div>
           </CardContent>
         </Card>
-      </CardFrame>
+      </Frame>
     </>
   )
 }

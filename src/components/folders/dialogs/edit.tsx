@@ -16,9 +16,8 @@ import {
 } from '@/components/ui/dialog'
 import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { useEntityMutation } from '@/hooks/use-entity-mutation'
-import { DESCRIPTION_MAX_LENGTH, FOLDER_NAME_MAX_LENGTH } from '@/lib/constants'
+import { FOLDER_NAME_MAX_LENGTH } from '@/lib/constants'
 import { type UpdateFolderFormData, updateFolderSchema } from '@/lib/form-schemas/folders'
 import { type FolderTreeNode, updateFolder } from '@/server-actions/folders'
 import { FOLDERS_QUERY_KEY } from '@/tanstack-queries/folders'
@@ -37,7 +36,6 @@ export function EditFolderDialog({ open, onOpenChange, folder, ...props }: EditF
     values: {
       id: folder.id,
       name: folder.name,
-      description: folder.description || '',
       parentFolderId: folder.parentFolderId,
     },
   })
@@ -70,7 +68,7 @@ export function EditFolderDialog({ open, onOpenChange, folder, ...props }: EditF
       }}
       {...props}
     >
-      <DialogContent>
+      <DialogContent className="max-w-sm">
         <DialogHeader>
           <DialogTitle>Edit folder</DialogTitle>
           <DialogDescription>Enter the folder information.</DialogDescription>
@@ -101,30 +99,6 @@ export function EditFolderDialog({ open, onOpenChange, folder, ...props }: EditF
                   <FieldDescription>
                     <span className="tabular-nums">
                       {FOLDER_NAME_MAX_LENGTH - (field.value?.length ?? 0)}
-                    </span>{' '}
-                    characters left
-                  </FieldDescription>
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-
-            <Controller
-              name="description"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={field.name}>Description</FieldLabel>
-                  <Textarea
-                    {...field}
-                    id={field.name}
-                    maxLength={DESCRIPTION_MAX_LENGTH}
-                    aria-invalid={fieldState.invalid}
-                    disabled={updateFolderMutation.isPending}
-                  />
-                  <FieldDescription>
-                    <span className="tabular-nums">
-                      {DESCRIPTION_MAX_LENGTH - (field.value?.length ?? 0)}
                     </span>{' '}
                     characters left
                   </FieldDescription>

@@ -43,6 +43,7 @@ export function DataTableSortableHeader<TData, TValue>({
         <DropdownMenuContent align="start" className="max-w-42">
           <DropdownMenuGroup>
             <MenuCheckboxItem
+              checked={isAscSorted}
               onClick={() => {
                 if (isAscSorted) {
                   column.clearSorting()
@@ -54,6 +55,7 @@ export function DataTableSortableHeader<TData, TValue>({
               Ascendant
             </MenuCheckboxItem>
             <MenuCheckboxItem
+              checked={isDescSorted}
               onClick={() => {
                 if (isDescSorted) {
                   column.clearSorting()

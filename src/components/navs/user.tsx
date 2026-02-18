@@ -1,8 +1,7 @@
 'use client'
 
-import { IconLogout, IconRefresh, IconSelector, IconSettings } from '@tabler/icons-react'
+import { IconLogout, IconRefresh, IconSelector } from '@tabler/icons-react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
   DropdownMenu,
@@ -10,7 +9,6 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/menu'
 import { authClient } from '@/lib/auth/client'
@@ -91,19 +89,6 @@ export function NavUser() {
                 <span className="line-clamp-2">{user.name}</span>
               </DropdownMenuLabel>
 
-              <DropdownMenuItem
-                render={
-                  <Link href="/settings">
-                    <IconSettings className="size-4" />
-                    Settings
-                  </Link>
-                }
-              />
-            </DropdownMenuGroup>
-
-            <DropdownMenuSeparator />
-
-            <DropdownMenuGroup>
               <DropdownMenuItem onClick={handleLogOut}>
                 <IconLogout className="size-4" />
                 Logout

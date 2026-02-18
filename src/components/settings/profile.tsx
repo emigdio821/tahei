@@ -8,15 +8,8 @@ import { loggedUserQueryOptions } from '@/tanstack-queries/logged-user'
 import { UpdatePasswordDialog } from '../shared/update-password-dialog'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import { Button } from '../ui/button'
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardFrame,
-  CardFrameDescription,
-  CardFrameHeader,
-  CardFrameTitle,
-} from '../ui/card'
+import { Card, CardContent, CardFooter } from '../ui/card'
+import { Frame, FrameDescription, FrameHeader, FrameTitle } from '../ui/frame'
 import { Skeleton } from '../ui/skeleton'
 
 export function ProfileSettings() {
@@ -37,7 +30,7 @@ export function ProfileSettings() {
     } else if (error || !user) {
       return (
         <div className="flex h-12 items-center gap-2">
-          <Button onClick={() => refetch()} size="lg">
+          <Button variant="outline" onClick={() => refetch()} size="lg">
             Refetch profile
             <IconRefresh className="ml-auto size-4" />
           </Button>
@@ -63,20 +56,25 @@ export function ProfileSettings() {
     <>
       <UpdatePasswordDialog open={isUpdatePassDialogOpen} onOpenChange={setUpdatePassDialogOpen} />
 
-      <CardFrame className="w-full">
-        <CardFrameHeader>
-          <CardFrameTitle>Profile</CardFrameTitle>
-          <CardFrameDescription>Update your profile information.</CardFrameDescription>
-        </CardFrameHeader>
+      <Frame>
+        <FrameHeader>
+          <FrameTitle>Profile</FrameTitle>
+          <FrameDescription>Update your profile information.</FrameDescription>
+        </FrameHeader>
         <Card>
           <CardContent>{renderProfile()}</CardContent>
           <CardFooter>
-            <Button className="w-full sm:w-auto" onClick={() => setUpdatePassDialogOpen(true)}>
+            <Button
+              size="sm"
+              variant="outline"
+              className="mt-2 w-full sm:w-auto"
+              onClick={() => setUpdatePassDialogOpen(true)}
+            >
               Update password
             </Button>
           </CardFooter>
         </Card>
-      </CardFrame>
+      </Frame>
     </>
   )
 }

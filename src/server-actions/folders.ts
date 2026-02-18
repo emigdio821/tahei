@@ -54,7 +54,6 @@ export async function getFolders() {
     .select({
       id: folders.id,
       name: folders.name,
-      description: folders.description,
       userId: folders.userId,
       parentFolderId: folders.parentFolderId,
       createdAt: folders.createdAt,
@@ -79,7 +78,6 @@ export async function createFolder(data: CreateFolderFormData) {
 
   await db.insert(folders).values({
     name: data.name,
-    description: data.description,
     parentFolderId: data.parentFolderId,
     userId: session.user.id,
   })
@@ -96,7 +94,6 @@ export async function updateFolder(data: UpdateFolderFormData) {
     .update(folders)
     .set({
       name: data.name,
-      description: data.description,
       parentFolderId: data.parentFolderId,
     })
     .where(and(eq(folders.id, data.id), eq(folders.userId, session.user.id)))

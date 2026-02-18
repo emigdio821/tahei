@@ -2,14 +2,8 @@
 
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
-import {
-  Card,
-  CardContent,
-  CardFrame,
-  CardFrameDescription,
-  CardFrameHeader,
-  CardFrameTitle,
-} from '../ui/card'
+import { Card, CardContent } from '../ui/card'
+import { Frame, FrameDescription, FrameHeader, FrameTitle } from '../ui/frame'
 import { Label } from '../ui/label'
 import { Radio, RadioGroup } from '../ui/radio-group'
 
@@ -24,14 +18,14 @@ export function AppThemeSettings() {
   }, [theme])
 
   return (
-    <CardFrame className="w-full">
-      <CardFrameHeader>
-        <CardFrameTitle>Theme</CardFrameTitle>
-        <CardFrameDescription>Select the application theme.</CardFrameDescription>
-      </CardFrameHeader>
+    <Frame>
+      <FrameHeader>
+        <FrameTitle>Theme</FrameTitle>
+        <FrameDescription>Select the application theme.</FrameDescription>
+      </FrameHeader>
       <Card>
         <CardContent>
-          <RadioGroup value={currentTheme} className="mt-2 sm:flex-row" onValueChange={setTheme}>
+          <RadioGroup value={currentTheme} onValueChange={setTheme}>
             <Label className="flex items-start gap-2 rounded-lg border p-3 hover:bg-accent/50 has-data-checked:border-primary/48 has-data-checked:bg-accent/50">
               <Radio value="light" />
               <div className="flex flex-col gap-1">
@@ -56,6 +50,6 @@ export function AppThemeSettings() {
           </RadioGroup>
         </CardContent>
       </Card>
-    </CardFrame>
+    </Frame>
   )
 }

@@ -25,7 +25,6 @@ export const folders = pgTable(
   {
     id: uuid('id').primaryKey().defaultRandom(),
     name: varchar('name', { length: FOLDER_NAME_MAX_LENGTH }).notNull(),
-    description: varchar('description', { length: DESCRIPTION_MAX_LENGTH }),
     userId: text('user_id')
       .notNull()
       .references(() => user.id, { onDelete: 'cascade' }),

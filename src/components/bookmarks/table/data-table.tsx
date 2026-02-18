@@ -42,7 +42,6 @@ export function BookmarksDataTable() {
   return (
     <DataTable
       data={bookmarks}
-      tableId="bookmarks"
       columns={bookmarksTableColumns}
       header={(table) => <BookmarksDataTableHeader table={table} />}
       tableOptions={{

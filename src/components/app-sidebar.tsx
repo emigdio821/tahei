@@ -1,7 +1,7 @@
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from '@/components/ui/sidebar'
-import { NavActions } from './navs/actions'
 import { NavFolders } from './navs/folders'
 import { HeaderNav } from './navs/header'
+import { NavSettings } from './navs/settings'
 import { NavTags } from './navs/tags'
 import { NavUser } from './navs/user'
 
@@ -16,7 +16,7 @@ export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sideb
         <NavTags />
       </SidebarContent>
       <SidebarFooter>
-        <NavActions />
+        <NavSettings />
         <NavUser />
       </SidebarFooter>
     </Sidebar>
