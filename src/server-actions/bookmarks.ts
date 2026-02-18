@@ -302,7 +302,7 @@ export async function createBookmarksBatch(
         return bookmark
       })
     },
-    5,
+    2,
   )
 
   return results.map((result, index) => {
@@ -399,7 +399,7 @@ export async function resyncBookmarksMetadataBatch(
 
       return bookmark.id
     },
-    5,
+    2,
   )
 
   return results.map((result, index) => {

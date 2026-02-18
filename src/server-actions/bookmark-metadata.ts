@@ -46,7 +46,7 @@ export async function getBookmarkMetadata(url: string): Promise<BookmarkMetadata
           'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36',
       },
       cache: 'no-store',
-      signal: AbortSignal.timeout(5000),
+      signal: AbortSignal.timeout(4000),
     })
 
     if (!response.ok) {

@@ -29,54 +29,74 @@ export function BookmarksSettings() {
   const [isUpdateMetadataDialogOpen, setUpdateMetadataDialogOpen] = useState(false)
 
   const updateMetadataMutation = useMutation({
-    mutationFn: async (options: { assetsOnly: boolean }) => {
+    mutationFn: async (options: {
+      assetsOnly: boolean
+      onProgress?: (current: number, total: number) => void
+    }) => {
       const ids = await getAllBookmarkIds()
       const bookmarkIds = ids.map((bookmark) => bookmark.id)
 
-      return await resyncBookmarksMetadataBatch(bookmarkIds, options)
+      const CHUNK_SIZE = 2
+      const allResults = []
+
+      for (let i = 0; i < bookmarkIds.length; i += CHUNK_SIZE) {
+        const chunk = bookmarkIds.slice(i, i + CHUNK_SIZE)
+        const chunkResults = await resyncBookmarksMetadataBatch(chunk, options)
+        allResults.push(...chunkResults)
+
+        options.onProgress?.(Math.min(i + CHUNK_SIZE, bookmarkIds.length), bookmarkIds.length)
+      }
+
+      return allResults
     },
   })
 
   async function handleUpdateMetadata(options: { assetsOnly: boolean }) {
-    const promise = updateMetadataMutation.mutateAsync(options)
-
-    toast.promise(promise, {
-      loading: 'Updating metadata...',
-      description: 'It may take a while depending on the number of bookmarks you have.',
-      success: (results) => {
-        const succeeded = results.filter((r) => r.success).length
-        const failed = results.filter((r) => !r.success).length
-
-        queryClient.invalidateQueries({ queryKey: [BOOKMARKS_QUERY_KEY] })
-
-        if (failed === 0) {
-          return {
-            message: 'Success',
-            description: 'All bookmarks metadata updated successfully.',
-          }
-        } else if (succeeded === 0) {
-          return {
-            message: 'Error',
-            description: 'Failed to update bookmarks metadata. Please try again later.',
-          }
-        } else {
-          return {
-            message: 'Partial update',
-            description: `${succeeded} updated, ${failed} failed.`,
-          }
-        }
-      },
-      error: (error) => {
-        const errorMessage =
-          error instanceof Error ? error.message : 'An error occurred while updating metadata.'
-        console.error('Batch metadata update failed', error)
-
-        return {
-          message: 'Error',
-          description: errorMessage,
-        }
-      },
+    const toastId = toast.loading('Updating metadata...', {
+      description: 'Preparing to update bookmarks...',
     })
+
+    try {
+      const results = await updateMetadataMutation.mutateAsync({
+        ...options,
+        onProgress: (current, total) => {
+          toast.loading('Updating metadata...', {
+            id: toastId,
+            description: `Processing ${current} of ${total} bookmarks...`,
+          })
+        },
+      })
+      const succeeded = results.filter((r) => r.success).length
+      const failed = results.filter((r) => !r.success).length
+
+      queryClient.invalidateQueries({ queryKey: [BOOKMARKS_QUERY_KEY] })
+
+      if (failed === 0) {
+        toast.success('Success', {
+          id: toastId,
+          description: 'All bookmarks metadata updated successfully.',
+        })
+      } else if (succeeded === 0) {
+        toast.error('Error', {
+          id: toastId,
+          description: 'Failed to update bookmarks metadata. Please try again later.',
+        })
+      } else {
+        toast.success('Partial update', {
+          id: toastId,
+          description: `${succeeded} updated, ${failed} failed.`,
+        })
+      }
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'An error occurred while updating metadata.'
+      console.error('Batch metadata update failed', error)
+
+      toast.error('Error', {
+        id: toastId,
+        description: errorMessage,
+      })
+    }
   }
 
   return (
