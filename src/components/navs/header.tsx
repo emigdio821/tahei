@@ -1,8 +1,7 @@
 'use client'
 
 import { IconBookmark, IconHeart } from '@tabler/icons-react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { parseAsBoolean, useQueryStates } from 'nuqs'
 import { appName } from '@/lib/config/site'
 import { TaheiIcon } from '../icons'
 import {
@@ -14,8 +13,12 @@ import {
 } from '../ui/sidebar'
 
 export function HeaderNav({ ...props }: React.ComponentProps<typeof SidebarGroupContent>) {
-  const pathname = usePathname()
-  const { setOpenMobile } = useSidebar()
+  const { setOpenMobile, isMobile } = useSidebar()
+
+  const [filters, setFilters] = useQueryStates({
+    showAll: parseAsBoolean.withDefault(true),
+    showFavorites: parseAsBoolean.withDefault(false),
+  })
 
   return (
     <SidebarGroupContent className="flex flex-col gap-2" {...props}>
@@ -37,28 +40,34 @@ export function HeaderNav({ ...props }: React.ComponentProps<typeof SidebarGroup
 
         <SidebarMenuItem>
           <SidebarMenuButton
-            onClick={() => setOpenMobile(false)}
-            isActive={pathname === '/'}
-            render={
-              <Link href="/">
-                <IconBookmark className="size-4" />
-                <span>Bookmarks</span>
-              </Link>
-            }
-          />
+            isActive={filters.showAll === true}
+            onClick={() => {
+              setFilters({
+                showAll: true,
+                showFavorites: false,
+              })
+              if (isMobile) setOpenMobile(false)
+            }}
+          >
+            <IconBookmark className="size-4" />
+            <span>All bookmarks</span>
+          </SidebarMenuButton>
         </SidebarMenuItem>
 
         <SidebarMenuItem>
           <SidebarMenuButton
-            onClick={() => setOpenMobile(false)}
-            isActive={pathname === '/favorites'}
-            render={
-              <Link href="/favorites">
-                <IconHeart className="size-4" />
-                <span>Favorites</span>
-              </Link>
-            }
-          />
+            isActive={filters.showFavorites === true}
+            onClick={() => {
+              setFilters({
+                showAll: false,
+                showFavorites: true,
+              })
+              if (isMobile) setOpenMobile(false)
+            }}
+          >
+            <IconHeart className="size-4" />
+            <span>Favorites</span>
+          </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>
     </SidebarGroupContent>

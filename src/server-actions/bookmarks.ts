@@ -32,30 +32,6 @@ export async function getBookmarks(): Promise<Bookmark[]> {
   return bookmarks
 }
 
-export async function getFavoriteBookmarks(): Promise<Bookmark[]> {
-  const session = await getSession()
-
-  if (!session) {
-    throw new Error('Unauthorized')
-  }
-
-  const bookmarks = await db.query.bookmarks.findMany({
-    with: {
-      bookmarkTags: {
-        with: {
-          tag: true,
-        },
-      },
-      folder: true,
-    },
-    where: (bookmark, { eq, and }) =>
-      and(eq(bookmark.userId, session.user.id), eq(bookmark.isFavorite, true)),
-    orderBy: (bookmark, { desc }) => desc(bookmark.updatedAt),
-  })
-
-  return bookmarks
-}
-
 export async function createBookmark(data: CreateBookmarkFormData): Promise<void> {
   const session = await getSession()
 

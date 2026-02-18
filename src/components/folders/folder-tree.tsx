@@ -1,8 +1,7 @@
 'use client'
 
 import { IconChevronRight, IconFolder } from '@tabler/icons-react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { parseAsString, useQueryState } from 'nuqs'
 import type { FolderTreeNode } from '@/server-actions/folders'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/collapsible'
 import {
@@ -16,12 +15,10 @@ import {
 import { FolderActionsCtxMenu } from './actions-context-menu'
 
 export function FolderTree({ folder }: { folder: FolderTreeNode }) {
-  const pathname = usePathname()
-  const { setOpenMobile } = useSidebar()
+  const { setOpenMobile, isMobile } = useSidebar()
   const hasChildren = folder.subfolders.length > 0
 
-  const href: `/folders/${string}` = `/folders/${folder.id}`
-  const isActive = pathname === href
+  const [selectedFolder, setSelectedFolder] = useQueryState('folder', parseAsString.withDefault(''))
 
   if (!hasChildren) {
     return (
@@ -30,15 +27,15 @@ export function FolderTree({ folder }: { folder: FolderTreeNode }) {
         trigger={
           <SidebarMenuItem>
             <SidebarMenuButton
-              isActive={isActive}
-              onClick={() => setOpenMobile(false)}
-              render={
-                <Link href={href}>
-                  <IconFolder />
-                  <span className="truncate">{folder.name}</span>
-                </Link>
-              }
-            />
+              isActive={selectedFolder === folder.id}
+              onClick={() => {
+                if (isMobile) setOpenMobile(false)
+                setSelectedFolder((prev) => (prev === folder.id ? '' : folder.id))
+              }}
+            >
+              <IconFolder />
+              <span className="truncate">{folder.name}</span>
+            </SidebarMenuButton>
 
             {folder.bookmarkCount > 0 && (
               <SidebarMenuBadge className="text-muted-foreground!">{folder.bookmarkCount}</SidebarMenuBadge>
@@ -64,15 +61,15 @@ export function FolderTree({ folder }: { folder: FolderTreeNode }) {
             />
 
             <SidebarMenuButton
-              isActive={isActive}
-              onClick={() => setOpenMobile(false)}
+              isActive={selectedFolder === folder.id}
+              onClick={() => {
+                if (isMobile) setOpenMobile(false)
+                setSelectedFolder((prev) => (prev === folder.id ? '' : folder.id))
+              }}
               className="truncate ps-7"
-              render={
-                <Link href={href}>
-                  <span className="truncate">{folder.name}</span>
-                </Link>
-              }
-            />
+            >
+              <span className="truncate">{folder.name}</span>
+            </SidebarMenuButton>
 
             {folder.bookmarkCount > 0 && (
               <SidebarMenuBadge className="text-muted-foreground!">{folder.bookmarkCount}</SidebarMenuBadge>

@@ -1,8 +1,7 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { parseAsNativeArrayOf, parseAsString, useQueryState } from 'nuqs'
 import { useState } from 'react'
 import { tagsQueryOptions } from '@/tanstack-queries/tags'
 import { TagsActionsCtxMenu } from '../tags/actions-context-menu'
@@ -15,11 +14,15 @@ import { SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, useS
 import { Skeleton } from '../ui/skeleton'
 
 export function NavTags({ ...props }: React.ComponentProps<typeof SidebarGroup>) {
-  const pathname = usePathname()
-  const { setOpenMobile } = useSidebar()
+  const { setOpenMobile, isMobile } = useSidebar()
   const [isCreateDialogOpen, setCreateDialogOpen] = useState(false)
 
   const { data: tags = [], isLoading, error, refetch } = useQuery(tagsQueryOptions())
+
+  const [selectedTags, setSelectedTags] = useQueryState(
+    'tag',
+    parseAsNativeArrayOf(parseAsString).withDefault([]),
+  )
 
   function renderTags() {
     if (error) {
@@ -76,8 +79,7 @@ export function NavTags({ ...props }: React.ComponentProps<typeof SidebarGroup>)
     const tagsToRender = (
       <>
         {tags.map((tag) => {
-          const href: `/tags/${string}` = `/tags/${tag.id}`
-          const isActive = pathname === href
+          const isActive = selectedTags.includes(tag.id)
 
           return (
             <TagsActionsCtxMenu
@@ -88,31 +90,30 @@ export function NavTags({ ...props }: React.ComponentProps<typeof SidebarGroup>)
                   key={tag.id}
                   variant={isActive ? 'default' : 'outline'}
                   render={
-                    isActive ? (
-                      <div>
-                        <span className="cursor-default text-xs">{tag.name}</span>
-                        {tag.bookmarkCount > 0 && (
-                          <>
-                            <Separator orientation="vertical" className="bg-sidebar/72" />
-                            <span className="text-sidebar/72 text-xs tabular-nums dark:text-sidebar-foreground/72">
-                              {tag.bookmarkCount}
-                            </span>
-                          </>
-                        )}
-                      </div>
-                    ) : (
-                      <Link className="text-xs" onClick={() => setOpenMobile(false)} href={href}>
-                        <span className="text-xs">{tag.name}</span>
-                        {tag.bookmarkCount > 0 && (
-                          <>
-                            <Separator orientation="vertical" />
-                            <span className="text-muted-foreground text-xs tabular-nums">
-                              {tag.bookmarkCount}
-                            </span>
-                          </>
-                        )}
-                      </Link>
-                    )
+                    <button
+                      type="button"
+                      className="text-xs"
+                      onClick={() => {
+                        if (isMobile) setOpenMobile(false)
+                        setSelectedTags((prev) => {
+                          if (prev.includes(tag.id)) {
+                            return prev.filter((id) => id !== tag.id)
+                          } else {
+                            return [...prev, tag.id]
+                          }
+                        })
+                      }}
+                    >
+                      <span className="text-xs">{tag.name}</span>
+                      {tag.bookmarkCount > 0 && (
+                        <>
+                          <Separator orientation="vertical" />
+                          <span className="text-muted-foreground text-xs tabular-nums">
+                            {tag.bookmarkCount}
+                          </span>
+                        </>
+                      )}
+                    </button>
                   }
                 />
               }

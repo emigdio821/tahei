@@ -54,6 +54,8 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 
+  const { state: externalState, initialState: externalInitialState, ...restTableOptions } = tableOptions || {}
+
   const paginationParsers = {
     pageIndex: parseAsIndex.withDefault(0),
     pageSize: parseAsInteger.withDefault(tablePageSize),
@@ -86,14 +88,16 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
         pageIndex,
         pageSize,
       },
+      ...externalState,
     },
     initialState: {
       pagination: {
         pageIndex,
         pageSize,
       },
+      ...externalInitialState,
     },
-    ...tableOptions,
+    ...restTableOptions,
   })
 
   const rowLength = table.getFilteredRowModel().rows.length
@@ -153,7 +157,7 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
             ) : (
               <TableRow>
                 <TableCell className="h-24 text-center" colSpan={columns.length}>
-                  Sin resultados.
+                  No results.
                 </TableCell>
               </TableRow>
             )}
