@@ -62,3 +62,9 @@ export const updateBookmarkTagsSchema = z.object({
 })
 
 export type UpdateBookmarkTagsFormData = z.infer<typeof updateBookmarkTagsSchema>
+
+export const moveBookmarksToFolderSchema = z.object({
+  folderId: z.uuid().nullable(),
+})
+
+export type MoveBookmarksToFolderFormData = z.infer<typeof moveBookmarksToFolderSchema>

@@ -385,3 +385,89 @@ export async function resyncBookmarksMetadataBatch(
     }
   })
 }
+
+export interface MoveBookmarksToFolderBatchResult {
+  success: boolean
+  bookmarkId: string
+  error?: string
+}
+
+export async function moveBookmarksToFolderBatch(
+  bookmarkIds: string[],
+  folderId: string | null,
+): Promise<MoveBookmarksToFolderBatchResult[]> {
+  const session = await getSession()
+
+  if (!session) {
+    throw new Error('Unauthorized')
+  }
+
+  const results = await Promise.allSettled(
+    bookmarkIds.map(async (bookmarkId) => {
+      await db
+        .update(bookmarks)
+        .set({ folderId })
+        .where(and(eq(bookmarks.id, bookmarkId), eq(bookmarks.userId, session.user.id)))
+
+      return bookmarkId
+    }),
+  )
+
+  return results.map((result, index) => {
+    if (result.status === 'fulfilled') {
+      return {
+        success: true,
+        bookmarkId: result.value,
+      }
+    } else {
+      return {
+        success: false,
+        bookmarkId: bookmarkIds[index],
+        error: result.reason?.message || 'Unknown error',
+      }
+    }
+  })
+}
+
+export interface ToggleFavoriteBookmarksBatchResult {
+  success: boolean
+  bookmarkId: string
+  error?: string
+}
+
+export async function toggleFavoriteBookmarksBatch(
+  bookmarkIds: string[],
+  isFavorite: boolean,
+): Promise<ToggleFavoriteBookmarksBatchResult[]> {
+  const session = await getSession()
+
+  if (!session) {
+    throw new Error('Unauthorized')
+  }
+
+  const results = await Promise.allSettled(
+    bookmarkIds.map(async (bookmarkId) => {
+      await db
+        .update(bookmarks)
+        .set({ isFavorite })
+        .where(and(eq(bookmarks.id, bookmarkId), eq(bookmarks.userId, session.user.id)))
+
+      return bookmarkId
+    }),
+  )
+
+  return results.map((result, index) => {
+    if (result.status === 'fulfilled') {
+      return {
+        success: true,
+        bookmarkId: result.value,
+      }
+    } else {
+      return {
+        success: false,
+        bookmarkId: bookmarkIds[index],
+        error: result.reason?.message || 'Unknown error',
+      }
+    }
+  })
+}
