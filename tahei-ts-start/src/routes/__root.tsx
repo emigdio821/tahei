@@ -2,33 +2,35 @@ import type { QueryClient } from '@tanstack/react-query'
 import { createRootRouteWithContext, HeadContent, Scripts } from '@tanstack/react-router'
 import { Providers } from '@/components/providers'
 import { TSDevtools } from '@/components/tanstack/devtools'
+import { LINK_ICONS } from '@/lib/config'
+import { createSEOMeta } from '@/lib/seo'
 import appCss from '../styles.css?url'
+import { DefaultErrorBoundary } from '@/components/errors/default-boundary'
+import NotFound from '@/components/errors/not-found'
 
-interface MyRouterContext {
+interface RouteContext {
   queryClient: QueryClient
 }
 
-export const Route = createRootRouteWithContext<MyRouterContext>()({
+export const Route = createRootRouteWithContext<RouteContext>()({
   head: () => ({
-    meta: [
-      {
-        charSet: 'utf-8',
-      },
-      {
-        name: 'viewport',
-        content: 'width=device-width, initial-scale=1',
-      },
-      {
-        title: 'TanStack Start Starter',
-      },
-    ],
+    meta: createSEOMeta(),
     links: [
+      ...LINK_ICONS,
       {
         rel: 'stylesheet',
         href: appCss,
       },
     ],
   }),
+  errorComponent: (props) => {
+    return (
+      <RootDocument>
+        <DefaultErrorBoundary {...props} />
+      </RootDocument>
+    )
+  },
+  notFoundComponent: () => <NotFound />,
   shellComponent: RootDocument,
 })
 
