@@ -15,10 +15,7 @@ export function BookmarkNameCell({ bookmark }: BookmarkNameCellProps) {
 
   return (
     <>
-      <BookmarkDetailsDialog
-        bookmark={bookmark}
-        state={{ isOpen: isSheetOpen, onOpenChange: setIsSheetOpen }}
-      />
+      <BookmarkDetailsDialog bookmark={bookmark} open={isSheetOpen} onOpenChange={setIsSheetOpen} />
 
       <Button variant="plain" className="min-w-0 max-w-full text-left" onClick={() => setIsSheetOpen(true)}>
         {bookmark.favicon ? (

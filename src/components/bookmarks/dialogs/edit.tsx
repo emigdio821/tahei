@@ -33,17 +33,14 @@ import { BOOKMARKS_QUERY_KEY } from '@/tanstack-queries/bookmarks'
 import { FOLDERS_QUERY_KEY } from '@/tanstack-queries/folders'
 import { TAGS_QUERY_KEY } from '@/tanstack-queries/tags'
 
-interface EditBookmarkDialogProps {
+interface EditBookmarkDialogProps extends React.ComponentPropsWithoutRef<typeof Dialog> {
   bookmark: Bookmark
-  state: {
-    isOpen: boolean
-    onOpenChange: (open: boolean) => void
-  }
+  open: boolean
+  onOpenChange: (open: boolean) => void
 }
 
-export function EditBookmarkDialog({ bookmark, state }: EditBookmarkDialogProps) {
+export function EditBookmarkDialog({ bookmark, open, onOpenChange, ...props }: EditBookmarkDialogProps) {
   const editBookmarkFormId = useId()
-  const { isOpen, onOpenChange } = state
 
   const form = useForm<UpdateBookmarkFormData>({
     resolver: zodResolver(updateBookmarkSchema),
@@ -106,11 +103,12 @@ export function EditBookmarkDialog({ bookmark, state }: EditBookmarkDialogProps)
 
   return (
     <Dialog
-      open={isOpen}
+      open={open}
       onOpenChange={handleOpenChange}
       onOpenChangeComplete={(isOpen) => {
         if (!isOpen) form.reset()
       }}
+      {...props}
     >
       <DialogContent>
         <DialogHeader>

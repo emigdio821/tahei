@@ -122,14 +122,12 @@ export function BookmarksTableActions({ bookmark }: ActionsProps) {
         }
       />
 
-      <EditBookmarkDialog
-        bookmark={bookmark}
-        state={{ isOpen: isEditDialogOpen, onOpenChange: setEditDialogOpen }}
-      />
+      <EditBookmarkDialog bookmark={bookmark} open={isEditDialogOpen} onOpenChange={setEditDialogOpen} />
 
       <BookmarkDetailsDialog
         bookmark={bookmark}
-        state={{ isOpen: isDetailsDialogOpen, onOpenChange: setDetailsDialogOpen }}
+        open={isDetailsDialogOpen}
+        onOpenChange={setDetailsDialogOpen}
       />
 
       <div className="flex justify-end">

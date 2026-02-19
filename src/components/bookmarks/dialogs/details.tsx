@@ -19,22 +19,24 @@ import {
 import type { Bookmark } from '@/db/schema/zod/bookmarks'
 import { cn, formatDate, hasWhiteSpaces, simplifiedURL } from '@/lib/utils'
 
-interface BookmarkDetailsDialogProps {
+interface BookmarkDetailsDialogProps extends React.ComponentProps<typeof Dialog> {
   bookmark: Bookmark
-  state: {
-    isOpen: boolean
-    onOpenChange: (open: boolean) => void
-  }
+  open: boolean
+  onOpenChange: (open: boolean) => void
 }
 
-export function BookmarkDetailsDialog({ bookmark, state }: BookmarkDetailsDialogProps) {
-  const { isOpen, onOpenChange } = state
+export function BookmarkDetailsDialog({
+  bookmark,
+  open,
+  onOpenChange,
+  ...props
+}: BookmarkDetailsDialogProps) {
   const pathname = usePathname()
 
   const folderHref: `/folders/${string}` | null = bookmark.folder ? `/folders/${bookmark.folder.id}` : null
 
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange} {...props}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle className={cn(hasWhiteSpaces(bookmark.name) ? 'line-clamp-2' : 'truncate')}>
