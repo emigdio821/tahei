@@ -1,6 +1,7 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
+import { Suspense } from 'react'
 import { Separator } from '@/components/ui/separator'
 import { HeaderActions } from './navs/header-actions'
 import { SidebarTrigger } from './ui/sidebar'
@@ -19,7 +20,9 @@ export function AppHeader() {
 
         {!isSettingsPage && (
           <div className="ml-auto">
-            <HeaderActions />
+            <Suspense>
+              <HeaderActions />
+            </Suspense>
           </div>
         )}
       </div>
