@@ -17,7 +17,7 @@ export function DefaultErrorBoundary({ error }: ErrorComponentProps) {
         <EmptyMedia variant="icon">
           <IconBug />
         </EmptyMedia>
-        <EmptyTitle className="font-extrabold text-4xl">Error</EmptyTitle>
+        <EmptyTitle>Error</EmptyTitle>
         <EmptyDescription>
           <code className="wrap-break-word block max-h-96 w-full overflow-auto rounded-md bg-muted p-2 font-mono text-xs">
            {error.message}
