@@ -166,9 +166,9 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
             )}
           </TableBody>
         </Table>
-
-        {footer?.(table)}
       </Frame>
+
+      {footer?.(table)}
 
       {rowLength > DEFAULT_TABLE_PAGE_SIZE && (
         <div className="flex flex-col items-center justify-between gap-2 sm:flex-row">

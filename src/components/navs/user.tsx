@@ -1,7 +1,8 @@
 'use client'
 
-import { IconLogout, IconRefresh, IconSelector } from '@tabler/icons-react'
+import { IconLogout, IconRefresh, IconSelector, IconSettings } from '@tabler/icons-react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
   DropdownMenu,
@@ -88,6 +89,15 @@ export function NavUser() {
               <DropdownMenuLabel>
                 <span className="line-clamp-2">{user.name}</span>
               </DropdownMenuLabel>
+
+              <DropdownMenuItem
+                render={
+                  <Link href="/settings">
+                    <IconSettings className="size-4" />
+                    Settings
+                  </Link>
+                }
+              />
 
               <DropdownMenuItem onClick={handleLogOut}>
                 <IconLogout className="size-4" />

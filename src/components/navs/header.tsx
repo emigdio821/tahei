@@ -2,6 +2,7 @@
 
 import { IconBookmark, IconHeart } from '@tabler/icons-react'
 import { useQuery } from '@tanstack/react-query'
+import Link from 'next/link'
 import { parseAsBoolean, useQueryStates } from 'nuqs'
 import { appName } from '@/lib/config/site'
 import { cn } from '@/lib/utils'
@@ -33,18 +34,23 @@ export function HeaderNav({ ...props }: React.ComponentProps<typeof SidebarGroup
     <SidebarGroupContent className="flex flex-col gap-2" {...props}>
       <SidebarMenu>
         <SidebarMenuItem>
-          <div className="flex items-center gap-2 rounded-lg p-2">
-            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary">
-              <TaheiIcon className="size-4 text-sidebar-primary-foreground" />
-            </div>
+          <SidebarMenuButton
+            size="lg"
+            render={
+              <Link href="/">
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary">
+                  <TaheiIcon className="size-4 text-sidebar-primary-foreground" />
+                </div>
 
-            <div className="grid flex-1 text-left text-sm leading-none">
-              <span className="truncate font-heading font-semibold text-sidebar-accent-foreground text-sm leading-none">
-                {appName}
-              </span>
-              <span className="truncate text-sidebar-foreground text-xs">Bookmark manager</span>
-            </div>
-          </div>
+                <div className="grid flex-1 text-left text-sm leading-none">
+                  <span className="truncate font-heading font-semibold text-sidebar-accent-foreground text-sm leading-none">
+                    {appName}
+                  </span>
+                  <span className="truncate text-sidebar-foreground text-xs">Bookmark manager</span>
+                </div>
+              </Link>
+            }
+          />
         </SidebarMenuItem>
 
         <SidebarMenuItem>

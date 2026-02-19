@@ -1,6 +1,6 @@
 'use client'
 
-import { IconTag, IconTrash, IconX } from '@tabler/icons-react'
+import { IconFolder, IconHeart, IconTag, IconTrash, IconX } from '@tabler/icons-react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import type { Table } from '@tanstack/react-table'
 import { useState } from 'react'
@@ -95,12 +95,12 @@ export function BookmarksActionBar({ table }: BookmarksActionBarProps) {
         bookmarks={selectedRows.map((row) => row.original)}
       />
 
-      <div className="flex w-full items-center justify-center gap-2 p-2">
+      <div className="flex w-full items-center justify-center gap-2">
         <p className="mr-auto text-sm">
           {selectedCount} <span className="text-muted-foreground">selected</span>
         </p>
 
-        {/* <Button size="sm" variant="outline" onClick={() => console.log('Add to favorites')}>
+        <Button size="sm" variant="outline" onClick={() => console.log('Add to favorites')}>
           <IconHeart className="size-4" />
           Favorite
         </Button>
@@ -108,7 +108,7 @@ export function BookmarksActionBar({ table }: BookmarksActionBarProps) {
         <Button size="sm" variant="outline" onClick={() => console.log('Move to folder')}>
           <IconFolder className="size-4" />
           Move
-        </Button> */}
+        </Button>
 
         <Button size="sm" variant="outline" onClick={() => setUpdateTagsDialogOpen(true)}>
           <IconTag className="size-4" />
@@ -125,7 +125,7 @@ export function BookmarksActionBar({ table }: BookmarksActionBarProps) {
             render={
               <Button
                 size="icon-sm"
-                variant="ghost"
+                variant="outline"
                 aria-label="Clear selection"
                 onClick={() => table.resetRowSelection()}
               >
