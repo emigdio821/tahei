@@ -1,10 +1,8 @@
-'use client'
-
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { getAllBookmarkIds, resyncBookmarksMetadataBatch } from '@/server-actions/bookmarks'
-import { BOOKMARKS_QUERY_KEY } from '@/tanstack-queries/bookmarks'
+import { getAllBookmarkIds, resyncBookmarksMetadataBatch } from '@/api/server-functions/bookmarks'
+import { BOOKMARKS_QUERY_KEY } from '@/api/tanstack-queries/bookmarks'
 import { ExportBookmarksDialog } from '../bookmarks/dialogs/export'
 import { ImportBookmarkDialog } from '../bookmarks/dialogs/import'
 import { AlertDialogGeneric } from '../shared/alert-dialog-generic'
@@ -35,7 +33,12 @@ export function BookmarksSettings() {
 
       for (let i = 0; i < bookmarkIds.length; i += CHUNK_SIZE) {
         const chunk = bookmarkIds.slice(i, i + CHUNK_SIZE)
-        const chunkResults = await resyncBookmarksMetadataBatch(chunk, options)
+        const chunkResults = await resyncBookmarksMetadataBatch({
+          data: {
+            bookmarkIds: chunk,
+            options,
+          },
+        })
         allResults.push(...chunkResults)
 
         options.onProgress?.(Math.min(i + CHUNK_SIZE, bookmarkIds.length), bookmarkIds.length)

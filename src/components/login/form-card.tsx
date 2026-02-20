@@ -1,5 +1,3 @@
-'use client'
-
 import { zodResolver } from '@hookform/resolvers/zod'
 import { IconAlertOctagon } from '@tabler/icons-react'
 import { useId, useState } from 'react'

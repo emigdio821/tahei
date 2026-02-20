@@ -1,9 +1,8 @@
-'use client'
-
 import { IconReload, IconSearch, IconSelector } from '@tabler/icons-react'
 import { useQuery } from '@tanstack/react-query'
 import type React from 'react'
 import { useMemo } from 'react'
+import { tagsQueryOptions } from '@/api/tanstack-queries/tags'
 import { Button } from '@/components/ui/button'
 import {
   Combobox,
@@ -15,7 +14,6 @@ import {
   ComboboxTrigger,
   ComboboxValue,
 } from '@/components/ui/combobox'
-import { tagsQueryOptions } from '@/tanstack-queries/tags'
 
 export type TagsComboboxValue = string[] | null
 

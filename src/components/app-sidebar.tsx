@@ -5,7 +5,7 @@ import { HeaderNav } from './navs/header'
 import { NavTags } from './navs/tags'
 import { NavUser } from './navs/user'
 
-export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar {...props}>
       <SidebarHeader>

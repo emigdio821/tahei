@@ -1,12 +1,10 @@
-'use client'
-
 import { IconBookmark, IconHeart } from '@tabler/icons-react'
 import { useQuery } from '@tanstack/react-query'
-import Link from 'next/link'
+import { Link } from '@tanstack/react-router'
 import { parseAsBoolean, useQueryStates } from 'nuqs'
-import { appName } from '@/lib/config/site'
+import { bookmarksQueryOptions } from '@/api/tanstack-queries/bookmarks'
+import { appName } from '@/lib/config'
 import { cn } from '@/lib/utils'
-import { bookmarksQueryOptions } from '@/tanstack-queries/bookmarks'
 import { TaheiIcon } from '../icons'
 import {
   SidebarGroupContent,
@@ -37,7 +35,7 @@ export function HeaderNav({ ...props }: React.ComponentProps<typeof SidebarGroup
           <SidebarMenuButton
             size="lg"
             render={
-              <Link href="/">
+              <Link to="/">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary">
                   <TaheiIcon className="size-4 text-sidebar-primary-foreground" />
                 </div>

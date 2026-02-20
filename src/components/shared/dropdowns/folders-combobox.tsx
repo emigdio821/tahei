@@ -1,9 +1,9 @@
-'use client'
-
 import { IconChevronRight, IconReload, IconSearch, IconSelector } from '@tabler/icons-react'
 import { useQuery } from '@tanstack/react-query'
 import type React from 'react'
 import { useMemo } from 'react'
+import type { FolderTreeNode } from '@/api/server-functions/folders'
+import { foldersQueryOptions } from '@/api/tanstack-queries/folders'
 import { Button } from '@/components/ui/button'
 import {
   Combobox,
@@ -15,8 +15,6 @@ import {
   ComboboxTrigger,
   ComboboxValue,
 } from '@/components/ui/combobox'
-import type { FolderTreeNode } from '@/server-actions/folders'
-import { foldersQueryOptions } from '@/tanstack-queries/folders'
 
 const NULL_OPTION_LABEL = 'Select folder'
 

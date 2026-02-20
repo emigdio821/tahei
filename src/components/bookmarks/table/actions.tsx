@@ -1,5 +1,3 @@
-'use client'
-
 import {
   IconDotsVertical,
   IconEdit,
@@ -8,8 +6,11 @@ import {
   IconInfoCircle,
   IconTrash,
 } from '@tabler/icons-react'
-import { useParams, usePathname } from 'next/navigation'
 import { useState } from 'react'
+import { deleteBookmark, toggleFavoriteBookmark } from '@/api/server-functions/bookmarks'
+import { BOOKMARKS_QUERY_KEY } from '@/api/tanstack-queries/bookmarks'
+import { FOLDERS_QUERY_KEY } from '@/api/tanstack-queries/folders'
+import { TAGS_QUERY_KEY } from '@/api/tanstack-queries/tags'
 import { BookmarkDetailsDialog } from '@/components/bookmarks/dialogs/details'
 import { EditBookmarkDialog } from '@/components/bookmarks/dialogs/edit'
 import { AlertDialogGeneric } from '@/components/shared/alert-dialog-generic'
@@ -26,10 +27,6 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import type { Bookmark } from '@/db/schema/zod/bookmarks'
 import { useEntityMutation } from '@/hooks/use-entity-mutation'
-import { deleteBookmark, toggleFavoriteBookmark } from '@/server-actions/bookmarks'
-import { BOOKMARKS_QUERY_KEY } from '@/tanstack-queries/bookmarks'
-import { FOLDERS_QUERY_KEY } from '@/tanstack-queries/folders'
-import { TAGS_QUERY_KEY } from '@/tanstack-queries/tags'
 
 interface ActionsProps {
   bookmark: Bookmark
@@ -39,9 +36,6 @@ export function BookmarksTableActions({ bookmark }: ActionsProps) {
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [isDetailsDialogOpen, setDetailsDialogOpen] = useState(false)
   const [isEditDialogOpen, setEditDialogOpen] = useState(false)
-
-  const pathname = usePathname()
-  const params = useParams<{ id?: string }>()
 
   function keysToInvalidate(): (string | unknown[])[] {
     const keys: (string | unknown[])[] = [BOOKMARKS_QUERY_KEY]
@@ -56,16 +50,12 @@ export function BookmarksTableActions({ bookmark }: ActionsProps) {
       keys.push([FOLDERS_QUERY_KEY, bookmark.folderId])
     }
 
-    if (pathname?.startsWith('/tags/') && params?.id) {
-      keys.push([TAGS_QUERY_KEY, params.id])
-    }
-
     return keys
   }
 
   const deleteBookmarkMutation = useEntityMutation({
     mutationFn: async (id: string) => {
-      return await deleteBookmark(id)
+      return await deleteBookmark({ data: id })
     },
     invalidateKeys: keysToInvalidate(),
     successDescription: 'The bookmark has been deleted.',
@@ -81,7 +71,12 @@ export function BookmarksTableActions({ bookmark }: ActionsProps) {
     Bookmark[]
   >({
     mutationFn: async (data) => {
-      return await toggleFavoriteBookmark(data.id, data.isFavorite)
+      return await toggleFavoriteBookmark({
+        data: {
+          id: data.id,
+          isFavorite: data.isFavorite,
+        },
+      })
     },
     invalidateKeys: keysToInvalidate(),
     errorDescription: 'An error occurred while updating the bookmark, please try again.',

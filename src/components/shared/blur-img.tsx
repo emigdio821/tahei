@@ -1,17 +1,14 @@
-'use client'
-
 import { IconPhotoOff } from '@tabler/icons-react'
-import type { ImageProps } from 'next/image'
-import Image from 'next/image'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
 
-interface BlurImageProps extends Omit<ImageProps, 'onLoad' | 'onError'> {
+interface BlurImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   alt: string
   fallback?: React.ReactNode
+  fill?: boolean
 }
 
-export function BlurImage({ alt, fallback, className, sizes, fill, ...props }: BlurImageProps) {
+export function BlurImage({ alt, fallback, className, fill, ...props }: BlurImageProps) {
   const [isLoading, setLoading] = useState(true)
   const [error, setError] = useState(false)
 
@@ -29,12 +26,11 @@ export function BlurImage({ alt, fallback, className, sizes, fill, ...props }: B
   }
 
   return (
-    <Image
+    <img
       alt={alt}
-      fill={fill}
-      sizes={sizes || (fill ? '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw' : undefined)}
       className={cn(
         'rounded-[inherit] object-cover transition-all duration-700 ease-in-out',
+        fill && 'absolute inset-0 size-full',
         isLoading ? 'scale-105 blur-sm' : 'scale-100 blur-0',
         className,
       )}

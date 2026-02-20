@@ -1,5 +1,4 @@
 /** biome-ignore-all lint/a11y/useSemanticElements: not applicable */
-'use client'
 
 import { cva, type VariantProps } from 'class-variance-authority'
 import { Input, type InputProps } from '@/components/ui/input'

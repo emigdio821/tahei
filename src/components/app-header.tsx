@@ -1,13 +1,10 @@
-'use client'
-
-import { usePathname } from 'next/navigation'
-import { Suspense } from 'react'
+import { useLocation } from '@tanstack/react-router'
 import { Separator } from '@/components/ui/separator'
 import { HeaderActions } from './navs/header-actions'
 import { SidebarTrigger } from './ui/sidebar'
 
 export function AppHeader() {
-  const pathname = usePathname()
+  const pathname = useLocation().pathname
   const isSettingsPage = pathname === '/settings'
   const title = isSettingsPage ? 'Settings' : 'Bookmarks'
 
@@ -20,9 +17,7 @@ export function AppHeader() {
 
         {!isSettingsPage && (
           <div className="ml-auto">
-            <Suspense>
-              <HeaderActions />
-            </Suspense>
+            <HeaderActions />
           </div>
         )}
       </div>

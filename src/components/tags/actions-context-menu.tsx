@@ -1,9 +1,9 @@
 import { IconEdit, IconTrash } from '@tabler/icons-react'
 import { useState } from 'react'
+import { deleteTag } from '@/api/server-functions/tags'
+import { TAGS_QUERY_KEY } from '@/api/tanstack-queries/tags'
 import type { TagWithBookmarkCount } from '@/db/schema/zod/tags'
 import { useEntityMutation } from '@/hooks/use-entity-mutation'
-import { deleteTag } from '@/server-actions/tags'
-import { TAGS_QUERY_KEY } from '@/tanstack-queries/tags'
 import { AlertDialogGeneric } from '../shared/alert-dialog-generic'
 import {
   ContextMenu,
@@ -26,7 +26,7 @@ export function TagsActionsCtxMenu({ tag, trigger }: TagsActionsCtxMenuProps) {
 
   const deleteTagMutation = useEntityMutation({
     mutationFn: async (id: string) => {
-      return await deleteTag(id)
+      return await deleteTag({ data: id })
     },
     invalidateKeys: [TAGS_QUERY_KEY],
     successDescription: 'The tag has been deleted.',

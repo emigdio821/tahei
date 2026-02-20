@@ -1,10 +1,8 @@
-'use client'
-
 import { IconRefresh } from '@tabler/icons-react'
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
+import { loggedUserQueryOptions } from '@/api/tanstack-queries/logged-user'
 import { getAvatarFallback } from '@/lib/utils'
-import { loggedUserQueryOptions } from '@/tanstack-queries/logged-user'
 import { UpdatePasswordDialog } from '../shared/update-password-dialog'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import { Button } from '../ui/button'

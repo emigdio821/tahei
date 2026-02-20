@@ -81,7 +81,6 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    autoResetPageIndex: false,
     state: {
       sorting,
       rowSelection,

@@ -19,7 +19,7 @@
   "tailwind": {
     "baseColor": "neutral",
     "config": "",
-    "css": "src/styles/globals.css",
+    "css": "src/styles.css",
     "cssVariables": true,
     "prefix": ""
   },

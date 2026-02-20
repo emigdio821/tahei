@@ -1,6 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useId } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { type FolderTreeNode, updateFolder } from '@/api/server-functions/folders'
+import { FOLDERS_QUERY_KEY } from '@/api/tanstack-queries/folders'
 import { LoaderIcon } from '@/components/icons'
 import { FoldersCombobox } from '@/components/shared/dropdowns/folders-combobox'
 import { Button } from '@/components/ui/button'
@@ -19,8 +21,6 @@ import { Input } from '@/components/ui/input'
 import { useEntityMutation } from '@/hooks/use-entity-mutation'
 import { FOLDER_NAME_MAX_LENGTH } from '@/lib/constants'
 import { type UpdateFolderFormData, updateFolderSchema } from '@/lib/form-schemas/folders'
-import { type FolderTreeNode, updateFolder } from '@/server-actions/folders'
-import { FOLDERS_QUERY_KEY } from '@/tanstack-queries/folders'
 
 interface EditFolderDialogProps extends React.ComponentProps<typeof Dialog> {
   folder: FolderTreeNode
@@ -42,7 +42,7 @@ export function EditFolderDialog({ open, onOpenChange, folder, ...props }: EditF
 
   const updateFolderMutation = useEntityMutation({
     mutationFn: async (data: UpdateFolderFormData) => {
-      return await updateFolder(data)
+      return await updateFolder({ data })
     },
     invalidateKeys: [FOLDERS_QUERY_KEY],
     successDescription: 'The folder has been updated.',

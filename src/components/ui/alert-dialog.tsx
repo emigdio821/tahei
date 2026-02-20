@@ -1,5 +1,3 @@
-'use client'
-
 import { AlertDialog as AlertDialogPrimitive } from '@base-ui/react/alert-dialog'
 import { cn } from '@/lib/utils'
 
@@ -17,7 +15,7 @@ function AlertDialogBackdrop({ className, ...props }: AlertDialogPrimitive.Backd
   return (
     <AlertDialogPrimitive.Backdrop
       className={cn(
-        'fixed inset-0 z-50 bg-black/32 transition-all duration-200 ease-out data-ending-style:opacity-0 data-starting-style:opacity-0',
+        'fixed inset-0 z-50 bg-black/32 backdrop-blur-sm transition-all duration-200 ease-out data-ending-style:opacity-0 data-starting-style:opacity-0',
         className,
       )}
       data-slot="alert-dialog-backdrop"
@@ -108,7 +106,6 @@ function AlertDialogTitle({ className, ...props }: AlertDialogPrimitive.Title.Pr
 function AlertDialogDescription({ className, ...props }: AlertDialogPrimitive.Description.Props) {
   return (
     <AlertDialogPrimitive.Description
-      render={<div />}
       className={cn('text-muted-foreground text-sm', className)}
       data-slot="alert-dialog-description"
       {...props}

@@ -1,18 +1,16 @@
-'use client'
-
 import { mergeProps } from '@base-ui/react/merge-props'
 import { useRender } from '@base-ui/react/use-render'
 import { IconLayoutSidebar } from '@tabler/icons-react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import * as React from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
+import { Sheet, SheetDescription, SheetHeader, SheetPopup, SheetTitle } from '@/components/ui/sheet'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { cn } from '@/lib/utils'
-import { Button } from './button'
-import { Input } from './input'
-import { Separator } from './separator'
-import { Sheet, SheetDescription, SheetHeader, SheetPopup, SheetTitle } from './sheet'
-import { Skeleton } from './skeleton'
-import { Tooltip, TooltipPopup, TooltipTrigger } from './tooltip'
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state'
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -602,7 +600,7 @@ function SidebarMenuSub({ className, ...props }: React.ComponentProps<'ul'>) {
   return (
     <ul
       className={cn(
-        'ms-3 me-px flex min-w-0 translate-x-px flex-col gap-1 border-sidebar-border border-l py-0.5 ps-2',
+        'mx-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-sidebar-border border-l px-2.5 py-0.5',
         'group-data-[collapsible=icon]:hidden',
         className,
       )}

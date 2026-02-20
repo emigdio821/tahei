@@ -1,7 +1,7 @@
 import { toast } from 'sonner'
+import { getAllBookmarkUrls } from '@/api/server-functions/bookmarks'
 import { AlertDialogGeneric } from '@/components/shared/alert-dialog-generic'
-import { appName } from '@/lib/config/site'
-import { getAllBookmarkUrls } from '@/server-actions/bookmarks'
+import { appName } from '@/lib/config'
 
 interface ExportBookmarksDialogProps {
   open: boolean
@@ -23,7 +23,7 @@ export function ExportBookmarksDialog({ open, onOpenChange }: ExportBookmarksDia
       const blob = new Blob([fileData], { type: 'text/plain' })
       const url = URL.createObjectURL(blob)
       const link = document.createElement('a')
-      link.download = `${appName}-bookmarks.txt`
+      link.download = `${appName.toLocaleLowerCase()}-bookmarks.txt`
       link.href = url
       link.click()
       onOpenChange(false)

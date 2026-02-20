@@ -1,12 +1,10 @@
-'use client'
-
 import { useQuery } from '@tanstack/react-query'
 import { parseAsBoolean, parseAsNativeArrayOf, parseAsString, useQueryStates } from 'nuqs'
+import { bookmarksQueryOptions } from '@/api/tanstack-queries/bookmarks'
 import { TSQueryGenericError } from '@/components/shared/errors/query-generic'
 import { TableGenericSkeleton } from '@/components/shared/skeletons/table-generic'
 import { DataTable } from '@/components/shared/table/data-table'
 import { normalizeString } from '@/lib/utils'
-import { bookmarksQueryOptions } from '@/tanstack-queries/bookmarks'
 import { BookmarksActionBar } from './action-bar'
 import { bookmarksTableColumns } from './columns'
 

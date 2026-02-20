@@ -1,9 +1,7 @@
-'use client'
-
 import { IconLogout, IconRefresh, IconSelector, IconSettings } from '@tabler/icons-react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { Link, useNavigate } from '@tanstack/react-router'
+import { loggedUserQueryOptions } from '@/api/tanstack-queries/logged-user'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,13 +12,12 @@ import {
 } from '@/components/ui/menu'
 import { authClient } from '@/lib/auth/client'
 import { getAvatarFallback } from '@/lib/utils'
-import { loggedUserQueryOptions } from '@/tanstack-queries/logged-user'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '../ui/sidebar'
 import { Skeleton } from '../ui/skeleton'
 
 export function NavUser() {
-  const router = useRouter()
+  const navigate = useNavigate()
   const queryClient = useQueryClient()
 
   const { data: user, isLoading, error, refetch } = useQuery(loggedUserQueryOptions())
@@ -30,7 +27,7 @@ export function NavUser() {
       fetchOptions: {
         onSuccess: async () => {
           queryClient.clear()
-          router.replace('/login')
+          navigate({ to: '/login', reloadDocument: true })
         },
         onError: (error) => {
           console.error('Error during sign out:', error)
@@ -92,7 +89,7 @@ export function NavUser() {
 
               <DropdownMenuItem
                 render={
-                  <Link href="/settings">
+                  <Link to="/settings">
                     <IconSettings className="size-4" />
                     Settings
                   </Link>
