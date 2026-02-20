@@ -6,6 +6,7 @@ import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { moveBookmarksToFolderBatch } from '@/api/server-functions/bookmarks'
 import { BOOKMARKS_QUERY_KEY } from '@/api/tanstack-queries/bookmarks'
+import { FOLDERS_QUERY_KEY } from '@/api/tanstack-queries/folders'
 import { LoaderIcon } from '@/components/icons'
 import { FoldersCombobox } from '@/components/shared/dropdowns/folders-combobox'
 import { Button } from '@/components/ui/button'
@@ -46,6 +47,19 @@ export function MoveBookmarksToFolderDialog({
     },
   })
 
+  function keysToInvalidate(): (string | unknown[])[] {
+    const keys: (string | unknown[])[] = [BOOKMARKS_QUERY_KEY]
+    const formFolder = form.getValues('folderId')
+
+    if (formFolder) {
+      keys.push([FOLDERS_QUERY_KEY, formFolder])
+    } else {
+      keys.push(FOLDERS_QUERY_KEY)
+    }
+
+    return keys
+  }
+
   const moveBookmarksToFolderMutation = useMutation({
     mutationFn: async (data: MoveBookmarksToFolderFormData) => {
       const bookmarkIds = bookmarks.map((b) => b.id)
@@ -60,7 +74,10 @@ export function MoveBookmarksToFolderDialog({
       const succeeded = results.filter((r) => r.success).length
       const failed = results.filter((r) => !r.success).length
 
-      queryClient.invalidateQueries({ queryKey: [BOOKMARKS_QUERY_KEY] })
+      keysToInvalidate().forEach((key) => {
+        const queryKey = Array.isArray(key) ? key : [key]
+        queryClient.invalidateQueries({ queryKey })
+      })
 
       if (failed === 0) {
         toast.success('Success', {

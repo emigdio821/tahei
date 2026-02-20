@@ -6,6 +6,7 @@ import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { updateBookmarkTagsBatch } from '@/api/server-functions/bookmarks'
 import { BOOKMARKS_QUERY_KEY } from '@/api/tanstack-queries/bookmarks'
+import { TAGS_QUERY_KEY } from '@/api/tanstack-queries/tags'
 import { LoaderIcon } from '@/components/icons'
 import { TagsMultiCombobox } from '@/components/shared/dropdowns/tags-multi-combobox'
 import { Button } from '@/components/ui/button'
@@ -61,6 +62,7 @@ export function UpdateBookmarkTagsDialog({
       const failed = results.filter((r) => !r.success).length
 
       queryClient.invalidateQueries({ queryKey: [BOOKMARKS_QUERY_KEY] })
+      queryClient.invalidateQueries({ queryKey: [TAGS_QUERY_KEY] })
 
       if (failed === 0) {
         toast.success('Success', {

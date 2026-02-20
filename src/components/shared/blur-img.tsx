@@ -31,7 +31,7 @@ export function BlurImage({ alt, fallback, className, fill, ...props }: BlurImag
       className={cn(
         'rounded-[inherit] object-cover transition-all duration-700 ease-in-out',
         fill && 'absolute inset-0 size-full',
-        isLoading ? 'scale-105 blur-sm' : 'scale-100 blur-0',
+        isLoading ? 'scale-105 blur-xs' : 'scale-100 blur-0',
         className,
       )}
       onLoad={() => setLoading(false)}
