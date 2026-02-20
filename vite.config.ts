@@ -15,6 +15,14 @@ const config = defineConfig({
     nitro({ dev: process.env.NODE_ENV === 'development' }),
     viteReact(),
   ],
+  ssr: {
+    external: ['re2'],
+  },
+  build: {
+    rollupOptions: {
+      external: ['re2'],
+    },
+  },
 })
 
 export default config
