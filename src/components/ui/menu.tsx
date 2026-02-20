@@ -118,7 +118,7 @@ function MenuCheckboxItem({
         </>
       ) : (
         <>
-          <MenuPrimitive.CheckboxItemIndicator className="col-start-1">
+          <MenuPrimitive.CheckboxItemIndicator className="col-start-1 -ms-0.5">
             <CheckIcon />
           </MenuPrimitive.CheckboxItemIndicator>
           <span className="col-start-2">{children}</span>
@@ -142,7 +142,7 @@ function MenuRadioItem({ className, children, ...props }: MenuPrimitive.RadioIte
       data-slot="menu-radio-item"
       {...props}
     >
-      <MenuPrimitive.RadioItemIndicator className="col-start-1">
+      <MenuPrimitive.RadioItemIndicator className="col-start-1 -ms-0.5">
         <CheckIcon />
       </MenuPrimitive.RadioItemIndicator>
       <span className="col-start-2">{children}</span>
