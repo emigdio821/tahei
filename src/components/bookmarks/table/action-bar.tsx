@@ -1,16 +1,14 @@
-'use client'
-
 import { IconFolder, IconHeart, IconTag, IconTrash, IconX } from '@tabler/icons-react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import type { Table } from '@tanstack/react-table'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { deleteBookmarksBatch, toggleFavoriteBookmarksBatch } from '@/api/server-functions/bookmarks'
+import { BOOKMARKS_QUERY_KEY } from '@/api/tanstack-queries/bookmarks'
 import { AlertDialogGeneric } from '@/components/shared/alert-dialog-generic'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import type { Bookmark } from '@/db/schema/zod/bookmarks'
-import { deleteBookmarksBatch, toggleFavoriteBookmarksBatch } from '@/server-actions/bookmarks'
-import { BOOKMARKS_QUERY_KEY } from '@/tanstack-queries/bookmarks'
 import { MoveBookmarksToFolderDialog } from '../dialogs/move-to-folder'
 import { UpdateBookmarkTagsDialog } from '../dialogs/update-tags'
 
@@ -32,7 +30,7 @@ export function BookmarksActionBar({ table }: BookmarksActionBarProps) {
 
   const batchDeleteMutation = useMutation({
     mutationFn: async (bookmarkIds: string[]) => {
-      return await deleteBookmarksBatch(bookmarkIds)
+      return await deleteBookmarksBatch({ data: bookmarkIds })
     },
     onSuccess: (results) => {
       const succeeded = results.filter((r) => r.success).length
@@ -68,7 +66,7 @@ export function BookmarksActionBar({ table }: BookmarksActionBarProps) {
 
   const batchToggleFavoriteMutation = useMutation({
     mutationFn: async ({ bookmarkIds, isFavorite }: { bookmarkIds: string[]; isFavorite: boolean }) => {
-      return await toggleFavoriteBookmarksBatch(bookmarkIds, isFavorite)
+      return await toggleFavoriteBookmarksBatch({ data: { bookmarkIds, isFavorite } })
     },
     onSuccess: (results, variables) => {
       const succeeded = results.filter((r) => r.success).length

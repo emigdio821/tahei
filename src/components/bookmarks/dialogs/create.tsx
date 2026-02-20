@@ -3,6 +3,10 @@ import { IconInfoCircle } from '@tabler/icons-react'
 import type React from 'react'
 import { Activity, useId } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { createBookmark } from '@/api/server-functions/bookmarks'
+import { BOOKMARKS_QUERY_KEY } from '@/api/tanstack-queries/bookmarks'
+import { FOLDERS_QUERY_KEY } from '@/api/tanstack-queries/folders'
+import { TAGS_QUERY_KEY } from '@/api/tanstack-queries/tags'
 import { LoaderIcon } from '@/components/icons'
 import { FoldersCombobox } from '@/components/shared/dropdowns/folders-combobox'
 import { TagsMultiCombobox } from '@/components/shared/dropdowns/tags-multi-combobox'
@@ -27,10 +31,6 @@ import { useEntityMutation } from '@/hooks/use-entity-mutation'
 import { BOOKMARK_NAME_MAX_LENGTH, DESCRIPTION_MAX_LENGTH } from '@/lib/constants'
 import { useBookmarkCreationContext } from '@/lib/contexts/bookmark-creation'
 import { type CreateBookmarkFormData, createBookmarkSchema } from '@/lib/form-schemas/bookmarks'
-import { createBookmark } from '@/server-actions/bookmarks'
-import { BOOKMARKS_QUERY_KEY } from '@/tanstack-queries/bookmarks'
-import { FOLDERS_QUERY_KEY } from '@/tanstack-queries/folders'
-import { TAGS_QUERY_KEY } from '@/tanstack-queries/tags'
 
 interface CreateManualBookmarkDialogProps extends React.ComponentProps<typeof Dialog> {
   open: boolean
@@ -73,7 +73,7 @@ export function CreateBookmarkDialog({ open, onOpenChange, ...props }: CreateMan
 
   const createBookmarkMutation = useEntityMutation({
     mutationFn: async (data: CreateBookmarkFormData) => {
-      return await createBookmark(data)
+      return await createBookmark({ data })
     },
     invalidateKeys: keysToInvalidate(),
     successDescription: 'The bookmark has been created.',

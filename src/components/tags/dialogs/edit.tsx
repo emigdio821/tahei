@@ -1,6 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useId } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { updateTag } from '@/api/server-functions/tags'
+import { TAGS_QUERY_KEY } from '@/api/tanstack-queries/tags'
 import { LoaderIcon } from '@/components/icons'
 import { Button } from '@/components/ui/button'
 import {
@@ -19,8 +21,6 @@ import type { TagWithBookmarkCount } from '@/db/schema/zod/tags'
 import { useEntityMutation } from '@/hooks/use-entity-mutation'
 import { TAG_NAME_MAX_LENGTH } from '@/lib/constants'
 import { type UpdateTagFormData, updateTagSchema } from '@/lib/form-schemas/tags'
-import { updateTag } from '@/server-actions/tags'
-import { TAGS_QUERY_KEY } from '@/tanstack-queries/tags'
 
 interface EditTagDialogProps extends React.ComponentProps<typeof Dialog> {
   tag: TagWithBookmarkCount
@@ -41,7 +41,7 @@ export function EditTagDialog({ open, onOpenChange, tag, ...props }: EditTagDial
 
   const updateTagMutation = useEntityMutation({
     mutationFn: async (data: UpdateTagFormData) => {
-      return await updateTag(data)
+      return await updateTag({ data })
     },
     invalidateKeys: [TAGS_QUERY_KEY],
     successDescription: 'The tag has been updated.',

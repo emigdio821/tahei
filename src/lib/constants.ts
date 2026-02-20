@@ -4,3 +4,4 @@ export const FOLDER_NAME_MAX_LENGTH = 50
 export const DESCRIPTION_MAX_LENGTH = 160
 export const PASSWORD_MIN_LENGTH = 8
 export const PASSWORD_MAX_LENGTH = 128
+export const DEFAULT_ERROR = 'An unexpected error occurred. Please try again later.'

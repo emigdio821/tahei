@@ -1,10 +1,8 @@
-'use client'
-
 import { useQuery } from '@tanstack/react-query'
 import { parseAsNativeArrayOf, parseAsString, useQueryState } from 'nuqs'
 import { useState } from 'react'
+import { tagsQueryOptions } from '@/api/tanstack-queries/tags'
 import { cn } from '@/lib/utils'
-import { tagsQueryOptions } from '@/tanstack-queries/tags'
 import { TagsActionsCtxMenu } from '../tags/actions-context-menu'
 import { CreateTagDialog } from '../tags/dialogs/create'
 import { Badge } from '../ui/badge'

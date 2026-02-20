@@ -1,3 +1,5 @@
+import type * as React from 'react'
+
 import { cn } from '@/lib/utils'
 
 function Table({ className, ...props }: React.ComponentProps<'table'>) {
@@ -5,7 +7,7 @@ function Table({ className, ...props }: React.ComponentProps<'table'>) {
     <div className="relative w-full overflow-x-auto" data-slot="table-container">
       <table
         className={cn(
-          'w-full table-fixed caption-bottom in-data-[slot=frame]:border-separate in-data-[slot=frame]:border-spacing-0 text-sm',
+          'w-full caption-bottom in-data-[slot=frame]:border-separate in-data-[slot=frame]:border-spacing-0 text-sm',
           className,
         )}
         data-slot="table"
@@ -84,7 +86,7 @@ function TableCell({ className, ...props }: React.ComponentProps<'td'>) {
   return (
     <td
       className={cn(
-        'p-2.5 align-middle leading-none in-data-[slot=frame]:first:p-[calc(--spacing(2.5)-1px)] in-data-[slot=frame]:last:p-[calc(--spacing(2.5)-1px)] has-[[role=checkbox]]:pe-0',
+        'whitespace-nowrap p-2.5 align-middle leading-none in-data-[slot=frame]:first:p-[calc(--spacing(2.5)-1px)] in-data-[slot=frame]:last:p-[calc(--spacing(2.5)-1px)] has-[[role=checkbox]]:pe-0',
         className,
       )}
       data-slot="table-cell"

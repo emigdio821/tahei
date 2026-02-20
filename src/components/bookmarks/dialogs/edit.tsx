@@ -1,9 +1,11 @@
-'use client'
-
 import { zodResolver } from '@hookform/resolvers/zod'
 import { IconInfoCircle } from '@tabler/icons-react'
 import { useId } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { updateBookmark } from '@/api/server-functions/bookmarks'
+import { BOOKMARKS_QUERY_KEY } from '@/api/tanstack-queries/bookmarks'
+import { FOLDERS_QUERY_KEY } from '@/api/tanstack-queries/folders'
+import { TAGS_QUERY_KEY } from '@/api/tanstack-queries/tags'
 import { LoaderIcon } from '@/components/icons'
 import { FoldersCombobox } from '@/components/shared/dropdowns/folders-combobox'
 import { TagsMultiCombobox } from '@/components/shared/dropdowns/tags-multi-combobox'
@@ -28,10 +30,6 @@ import type { Bookmark } from '@/db/schema/zod/bookmarks'
 import { useEntityMutation } from '@/hooks/use-entity-mutation'
 import { BOOKMARK_NAME_MAX_LENGTH, DESCRIPTION_MAX_LENGTH } from '@/lib/constants'
 import { type UpdateBookmarkFormData, updateBookmarkSchema } from '@/lib/form-schemas/bookmarks'
-import { updateBookmark } from '@/server-actions/bookmarks'
-import { BOOKMARKS_QUERY_KEY } from '@/tanstack-queries/bookmarks'
-import { FOLDERS_QUERY_KEY } from '@/tanstack-queries/folders'
-import { TAGS_QUERY_KEY } from '@/tanstack-queries/tags'
 
 interface EditBookmarkDialogProps extends React.ComponentPropsWithoutRef<typeof Dialog> {
   bookmark: Bookmark
@@ -82,7 +80,9 @@ export function EditBookmarkDialog({ bookmark, open, onOpenChange, ...props }: E
 
   const updateBookmarkMutation = useEntityMutation({
     mutationFn: async (data: UpdateBookmarkFormData) => {
-      return await updateBookmark(bookmark.id, data)
+      return await updateBookmark({
+        data: { id: bookmark.id, data },
+      })
     },
     invalidateKeys: keysToInvalidate(),
     successDescription: 'The bookmark has been updated.',

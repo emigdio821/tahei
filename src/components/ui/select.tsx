@@ -1,5 +1,3 @@
-'use client'
-
 import { mergeProps } from '@base-ui/react/merge-props'
 import { Select as SelectPrimitive } from '@base-ui/react/select'
 import { useRender } from '@base-ui/react/use-render'
@@ -42,7 +40,7 @@ function SelectButton({ className, size, render, children, ...props }: SelectBut
         <IconSelector className={selectTriggerIconClassName} />
       </>
     ),
-    className: cn(selectTriggerVariants({ size }), 'min-w-none', className),
+    className: cn(selectTriggerVariants({ size }), 'min-w-0', className),
     'data-slot': 'select-button',
     type: typeValue,
   }

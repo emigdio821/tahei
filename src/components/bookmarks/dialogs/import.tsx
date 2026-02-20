@@ -6,6 +6,8 @@ import { useId, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
+import { type CreateBookmarksBatchResult, createBookmarksBatch } from '@/api/server-functions/bookmarks'
+import { BOOKMARKS_QUERY_KEY } from '@/api/tanstack-queries/bookmarks'
 import { LoaderIcon } from '@/components/icons'
 import { FoldersCombobox } from '@/components/shared/dropdowns/folders-combobox'
 import { TagsMultiCombobox } from '@/components/shared/dropdowns/tags-multi-combobox'
@@ -32,8 +34,6 @@ import {
 } from '@/components/ui/progress'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { type ImportBookmarksFormData, importBookmarksSchema } from '@/lib/form-schemas/bookmarks'
-import { type CreateBookmarksBatchResult, createBookmarksBatch } from '@/server-actions/bookmarks'
-import { BOOKMARKS_QUERY_KEY } from '@/tanstack-queries/bookmarks'
 
 interface ImportBookmarksDialogProps extends React.ComponentProps<typeof Dialog> {
   open: boolean
@@ -72,7 +72,7 @@ export function ImportBookmarkDialog({ open, onOpenChange, ...props }: ImportBoo
 
       for (let i = 0; i < bookmarksData.length; i += CHUNK_SIZE) {
         const chunk = bookmarksData.slice(i, i + CHUNK_SIZE)
-        const chunkResults = await createBookmarksBatch(chunk)
+        const chunkResults = await createBookmarksBatch({ data: chunk })
         allResults.push(...chunkResults)
         setProgress((Math.min(i + CHUNK_SIZE, bookmarksData.length) / bookmarksData.length) * 100)
       }

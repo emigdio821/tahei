@@ -4,6 +4,8 @@ import type React from 'react'
 import { useId } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+import { moveBookmarksToFolderBatch } from '@/api/server-functions/bookmarks'
+import { BOOKMARKS_QUERY_KEY } from '@/api/tanstack-queries/bookmarks'
 import { LoaderIcon } from '@/components/icons'
 import { FoldersCombobox } from '@/components/shared/dropdowns/folders-combobox'
 import { Button } from '@/components/ui/button'
@@ -20,8 +22,6 @@ import {
 import { Field, FieldError, FieldLabel } from '@/components/ui/field'
 import type { Bookmark } from '@/db/schema/zod/bookmarks'
 import { type MoveBookmarksToFolderFormData, moveBookmarksToFolderSchema } from '@/lib/form-schemas/bookmarks'
-import { moveBookmarksToFolderBatch } from '@/server-actions/bookmarks'
-import { BOOKMARKS_QUERY_KEY } from '@/tanstack-queries/bookmarks'
 
 interface MoveBookmarksToFolderDialogProps extends React.ComponentProps<typeof Dialog> {
   open: boolean
@@ -49,7 +49,12 @@ export function MoveBookmarksToFolderDialog({
   const moveBookmarksToFolderMutation = useMutation({
     mutationFn: async (data: MoveBookmarksToFolderFormData) => {
       const bookmarkIds = bookmarks.map((b) => b.id)
-      return await moveBookmarksToFolderBatch(bookmarkIds, data.folderId)
+      return await moveBookmarksToFolderBatch({
+        data: {
+          bookmarkIds,
+          folderId: data.folderId,
+        },
+      })
     },
     onSuccess: (results) => {
       const succeeded = results.filter((r) => r.success).length

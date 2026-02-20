@@ -1,8 +1,6 @@
-'use client'
-
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
-import { foldersQueryOptions } from '@/tanstack-queries/folders'
+import { foldersQueryOptions } from '@/api/tanstack-queries/folders'
 import { CreateFolderDialog } from '../folders/dialogs/create'
 import { FolderTree } from '../folders/folder-tree'
 import { TextGenericSkeleton } from '../shared/skeletons/text-generic'

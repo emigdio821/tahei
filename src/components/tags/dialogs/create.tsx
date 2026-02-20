@@ -1,6 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useId } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { createTag } from '@/api/server-functions/tags'
+import { TAGS_QUERY_KEY } from '@/api/tanstack-queries/tags'
 import { LoaderIcon } from '@/components/icons'
 import { Button } from '@/components/ui/button'
 import {
@@ -18,8 +20,6 @@ import { Input } from '@/components/ui/input'
 import { useEntityMutation } from '@/hooks/use-entity-mutation'
 import { TAG_NAME_MAX_LENGTH } from '@/lib/constants'
 import { type CreateTagFormData, createTagSchema } from '@/lib/form-schemas/tags'
-import { createTag } from '@/server-actions/tags'
-import { TAGS_QUERY_KEY } from '@/tanstack-queries/tags'
 
 interface CreateTagDialogProps extends React.ComponentProps<typeof Dialog> {
   open: boolean
@@ -39,7 +39,7 @@ export function CreateTagDialog({ open, onOpenChange, ...props }: CreateTagDialo
 
   const createTagMutation = useEntityMutation({
     mutationFn: async (name: string) => {
-      return await createTag(name)
+      return await createTag({ data: name })
     },
     invalidateKeys: [TAGS_QUERY_KEY],
     successDescription: 'The tag has been created.',

@@ -1,5 +1,5 @@
 import { eq } from 'drizzle-orm'
-import { authServer } from '@/lib/auth/server'
+import { auth } from '@/lib/auth'
 import { db } from './index'
 import { user } from './schema'
 
@@ -21,7 +21,7 @@ async function seed() {
     return
   }
 
-  const signUpResult = await authServer.api.signUpEmail({
+  const signUpResult = await auth.api.signUpEmail({
     body: {
       email: EMAIL,
       password: PASSWORD,

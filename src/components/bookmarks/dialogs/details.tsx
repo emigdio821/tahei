@@ -1,7 +1,5 @@
-'use client'
-
 import { IconExternalLink, IconFolder, IconTag } from '@tabler/icons-react'
-import { usePathname } from 'next/navigation'
+import { useLocation } from '@tanstack/react-router'
 import { BlurImage } from '@/components/shared/blur-img'
 import { CopyButton } from '@/components/shared/copy-btn'
 import { Badge } from '@/components/ui/badge'
@@ -31,7 +29,7 @@ export function BookmarkDetailsDialog({
   onOpenChange,
   ...props
 }: BookmarkDetailsDialogProps) {
-  const pathname = usePathname()
+  const pathname = useLocation().pathname
 
   const folderHref: `/folders/${string}` | null = bookmark.folder ? `/folders/${bookmark.folder.id}` : null
 

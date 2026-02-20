@@ -1,10 +1,8 @@
-'use client'
-
 import { IconEdit, IconTrash } from '@tabler/icons-react'
 import { useState } from 'react'
+import { deleteFolder, type FolderTreeNode } from '@/api/server-functions/folders'
+import { FOLDERS_QUERY_KEY } from '@/api/tanstack-queries/folders'
 import { useEntityMutation } from '@/hooks/use-entity-mutation'
-import { deleteFolder, type FolderTreeNode } from '@/server-actions/folders'
-import { FOLDERS_QUERY_KEY } from '@/tanstack-queries/folders'
 import { AlertDialogGeneric } from '../shared/alert-dialog-generic'
 import {
   ContextMenu,
@@ -27,7 +25,7 @@ export function FolderActionsCtxMenu({ folder, trigger }: ActionsProps) {
 
   const deleteFolderMutation = useEntityMutation({
     mutationFn: async (id: string) => {
-      return await deleteFolder(id)
+      return await deleteFolder({ data: id })
     },
     invalidateKeys: [FOLDERS_QUERY_KEY],
     successDescription: 'The folder has been deleted.',

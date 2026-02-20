@@ -4,6 +4,8 @@ import type React from 'react'
 import { useId } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+import { updateBookmarkTagsBatch } from '@/api/server-functions/bookmarks'
+import { BOOKMARKS_QUERY_KEY } from '@/api/tanstack-queries/bookmarks'
 import { LoaderIcon } from '@/components/icons'
 import { TagsMultiCombobox } from '@/components/shared/dropdowns/tags-multi-combobox'
 import { Button } from '@/components/ui/button'
@@ -20,8 +22,6 @@ import {
 import { Field, FieldError, FieldLabel } from '@/components/ui/field'
 import type { Bookmark } from '@/db/schema/zod/bookmarks'
 import { type UpdateBookmarkTagsFormData, updateBookmarkTagsSchema } from '@/lib/form-schemas/bookmarks'
-import { updateBookmarkTagsBatch } from '@/server-actions/bookmarks'
-import { BOOKMARKS_QUERY_KEY } from '@/tanstack-queries/bookmarks'
 
 interface UpdateBookmarkTagsDialogProps extends React.ComponentProps<typeof Dialog> {
   open: boolean
@@ -49,7 +49,12 @@ export function UpdateBookmarkTagsDialog({
   const updateBookmarkTagsMutation = useMutation({
     mutationFn: async (data: UpdateBookmarkTagsFormData) => {
       const bookmarkIds = bookmarks.map((b) => b.id)
-      return await updateBookmarkTagsBatch(bookmarkIds, data.tags || [])
+      return await updateBookmarkTagsBatch({
+        data: {
+          bookmarkIds,
+          tagIds: data.tags || [],
+        },
+      })
     },
     onSuccess: (results) => {
       const succeeded = results.filter((r) => r.success).length

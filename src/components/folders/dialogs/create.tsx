@@ -1,6 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useId } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { createFolder } from '@/api/server-functions/folders'
+import { FOLDERS_QUERY_KEY } from '@/api/tanstack-queries/folders'
 import { LoaderIcon } from '@/components/icons'
 import { FoldersCombobox } from '@/components/shared/dropdowns/folders-combobox'
 import { Button } from '@/components/ui/button'
@@ -19,8 +21,6 @@ import { Input } from '@/components/ui/input'
 import { useEntityMutation } from '@/hooks/use-entity-mutation'
 import { FOLDER_NAME_MAX_LENGTH } from '@/lib/constants'
 import { type CreateFolderFormData, createFolderSchema } from '@/lib/form-schemas/folders'
-import { createFolder } from '@/server-actions/folders'
-import { FOLDERS_QUERY_KEY } from '@/tanstack-queries/folders'
 
 interface CreateFolderDialogProps extends React.ComponentProps<typeof Dialog> {
   open: boolean
@@ -41,7 +41,7 @@ export function CreateFolderDialog({ open, onOpenChange, ...props }: CreateFolde
 
   const createFolderMutation = useEntityMutation({
     mutationFn: async (data: CreateFolderFormData) => {
-      return await createFolder(data)
+      return await createFolder({ data })
     },
     invalidateKeys: [FOLDERS_QUERY_KEY],
     successDescription: 'The folder has been created.',
@@ -64,7 +64,7 @@ export function CreateFolderDialog({ open, onOpenChange, ...props }: CreateFolde
       }}
       {...props}
     >
-      <DialogContent>
+      <DialogContent className="sm:max-w-sm">
         <DialogHeader>
           <DialogTitle>Create folder</DialogTitle>
           <DialogDescription>Enter the information for the new folder.</DialogDescription>

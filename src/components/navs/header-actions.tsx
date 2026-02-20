@@ -1,10 +1,8 @@
-'use client'
-
 import { IconBookmark, IconFolder, IconInfoCircle, IconSearch, IconTag } from '@tabler/icons-react'
 import { useQuery } from '@tanstack/react-query'
 import { parseAsString, useQueryState } from 'nuqs'
 import { useState } from 'react'
-import { bookmarksQueryOptions } from '@/tanstack-queries/bookmarks'
+import { bookmarksQueryOptions } from '@/api/tanstack-queries/bookmarks'
 import { CreateBookmarkDialog } from '../bookmarks/dialogs/create'
 import { CreateFolderDialog } from '../folders/dialogs/create'
 import { CreateTagDialog } from '../tags/dialogs/create'

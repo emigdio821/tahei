@@ -1,9 +1,7 @@
-'use client'
-
 import { IconChevronRight, IconFolder } from '@tabler/icons-react'
 import { parseAsString, useQueryState } from 'nuqs'
+import type { FolderTreeNode } from '@/api/server-functions/folders'
 import { cn } from '@/lib/utils'
-import type { FolderTreeNode } from '@/server-actions/folders'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/collapsible'
 import {
   SidebarMenuAction,

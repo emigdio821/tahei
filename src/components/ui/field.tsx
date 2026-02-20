@@ -1,5 +1,4 @@
 /** biome-ignore-all lint/a11y/useSemanticElements: not applicable */
-'use client'
 
 import { cva, type VariantProps } from 'class-variance-authority'
 import { useMemo } from 'react'
@@ -54,7 +53,7 @@ function FieldGroup({ className, ...props }: React.ComponentProps<'div'>) {
 const fieldVariants = cva('group/field flex w-full gap-2 data-[invalid=true]:text-destructive', {
   variants: {
     orientation: {
-      vertical: 'flex-col [&>.sr-only]:w-auto',
+      vertical: 'flex-col *:w-full [&>.sr-only]:w-auto',
       horizontal:
         'flex-row items-center has-[>[data-slot=field-content]]:items-start *:data-[slot=field-label]:flex-auto has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px',
       responsive:

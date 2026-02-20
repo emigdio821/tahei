@@ -4,7 +4,7 @@ A simple, open-source, self-hosted bookmark manager.
 
 ## Tech Stack
 
-- Next.js 16 + React 19
+- TanStack Start + React 19
 - TypeScript
 - Tailwind CSS
 - Drizzle ORM
